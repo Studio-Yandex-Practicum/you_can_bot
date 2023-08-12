@@ -16,21 +16,18 @@ jobs:
       uses: actions/setup-python@v4
       with:
         python-version: "3.11"
-    - 
-      name: Install Poetry
-      uses: Gr1N/setup-poetry@v8
-
-    - 
+    -
       name: Install dependencies
       run: |
-        poetry install
+        python -m pip install --upgrade pip
+        pip install flake8 pep8-naming flake8-broken-line flake8-return
+        pip install black==22.3.0
+        pip install -r requirements.txt
     -
       name: Test with flake8
       run: |
-        poetry shell
         python -m flake8
     -
       name: Test with isort
       run: |
-        poetry shell
         python -m isort
