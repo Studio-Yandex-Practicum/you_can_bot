@@ -60,13 +60,13 @@ _Пример использования:_
 Также poetry позволяет разделять зависимости необходимые для разработки, от
 основных.
 Для добавления зависимости необходимой для разработки и тестирования необходимо
-добавить флаг ***--dev***
+добавить флаг ***--group dev***
 
-> poetry add <package_name> --dev
+> poetry add <package_name> --group dev
 
 _Пример использования:_
 
-> poetry add pytest --dev
+> poetry add pytest --group dev
 
 </details>
 
@@ -108,4 +108,16 @@ _Примеры:_
 
 > source .venv/bin/activate
 
+</details>
+
+## Запуск проекта локально <a id="run-local"></a>
+<details>
+ <summary>
+ Запуск проекта локально
+ </summary>
+<br>
+
+```
+python src/run_bot.py
+```
 </details>
