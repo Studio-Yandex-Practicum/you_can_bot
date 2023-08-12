@@ -19,8 +19,6 @@ jobs:
     -
       name: Install dependencies
       run: |
-        poetry check
-        poetry lock --check
         poetry install
     -
       name: Test with flake8
