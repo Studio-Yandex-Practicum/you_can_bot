@@ -23,7 +23,7 @@ jobs:
     - 
       name: Install dependencies
       run: |
-        poetry install --group dev
+        poetry install
     -
       name: Test with flake8
       run: |
