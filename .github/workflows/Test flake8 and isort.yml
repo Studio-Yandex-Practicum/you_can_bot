@@ -27,8 +27,10 @@ jobs:
     -
       name: Test with flake8
       run: |
+        poetry shell
         python -m flake8
     -
       name: Test with isort
       run: |
+        poetry shell
         python -m isort
