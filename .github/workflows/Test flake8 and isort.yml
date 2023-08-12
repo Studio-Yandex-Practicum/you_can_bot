@@ -29,5 +29,4 @@ jobs:
         python -m flake8
     -
       name: Test with isort
-      run: |
-        isort .
+      uses: isort/isort-action@master
