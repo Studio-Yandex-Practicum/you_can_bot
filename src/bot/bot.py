@@ -11,8 +11,7 @@ def create_bot():
     Create telegram bot application
     :return: Created telegram bot application
     """
-    bot_app = ApplicationBuilder().token(os.getenv("TOKEN")).build()
-    return bot_app
+    return ApplicationBuilder().token(os.getenv("TOKEN")).build()
 
 
 def init_polling():
