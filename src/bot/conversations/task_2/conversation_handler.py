@@ -1,9 +1,12 @@
 import logging
 
 from telegram import ReplyKeyboardMarkup, ReplyKeyboardRemove, Update
-from telegram.ext import ContextTypes, filters
+from telegram.ext import (
+    CommandHandler, ContextTypes, ConversationHandler, filters, MessageHandler
+)
 
 from templates import (
+    CANCEL_COMMAND, DESCRIPTION_MESSAGE, MAGIC_WORD_FOR_START_THIS_HANDLER,
     MESSAGE_18, MESSAGE_19, MESSAGE_20, MESSAGE_21, MESSAGE_22, MESSAGE_23,
     MESSAGE_24, MESSAGE_25, MESSAGE_26, MESSAGE_27, MESSAGE_28, MESSAGE_29,
     MESSAGE_30, MESSAGE_31, MESSAGE_32, MESSAGE_33, MESSAGE_34, MESSAGE_35,
@@ -15,9 +18,9 @@ from templates import (
     MESSAGE_66, MESSAGE_67, MESSAGE_68, MESSAGE_69, MESSAGE_70, MESSAGE_71,
     MESSAGE_72, MESSAGE_73, MESSAGE_74, MESSAGE_75, MESSAGE_76, MESSAGE_77,
     MESSAGE_78, MESSAGE_79, MESSAGE_80, MESSAGE_81, MESSAGE_82, MESSAGE_83,
-    MESSAGE_84, MESSAGE_85, MESSAGE_86, MESSAGE_87, DESCRIPTION_MESSAGE, STOP,
-    START
+    MESSAGE_84, MESSAGE_85, MESSAGE_86, MESSAGE_87, NEXT, START, STOP
 )
+
 
 logging.basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO
@@ -26,15 +29,13 @@ logging.getLogger("httpx").setLevel(logging.WARNING)
 logger = logging.getLogger(__name__)
 
 
-MAGIC_WORD_FOR_START_THIS_HANDLER = 'Часть 2'
-CANCEL_COMMAND = 'cancel'
-NEXT = 'ЗАДАНИЕ 2'
 NEXT_PLACEHOLDER = f'Жми смело кнопку {NEXT}'
 NEXT_KEYBOARD = [[NEXT]]
 REPLY_KEYBOARD = [['а', 'б']]
 INPUT_PLACEHOLDER = 'а или б ?'
 ANSWER = 'Ответ пользователя %s на %s вопрос: %s'
 CANSEL = 'Пользователь %s закончил диалог.'
+FILTER = filters.Regex("^(а|б)$")
 (
     QUESTION_18,
     QUESTION_19, QUESTION_20, QUESTION_21, QUESTION_22, QUESTION_23,
@@ -52,7 +53,6 @@ CANSEL = 'Пользователь %s закончил диалог.'
     QUESTION_79, QUESTION_80, QUESTION_81, QUESTION_82, QUESTION_83,
     QUESTION_84, QUESTION_85, QUESTION_86, QUESTION_87, DESCRIPTION
 ) = range(18, 89)
-FILTER = filters.Regex("^(а|б)$")
 
 
 async def start(
@@ -1337,34 +1337,22 @@ async def description(
     )
     await context.bot.send_message(
         chat_id=update.effective_chat.id,
-        text=DESCRIPTION_MESSAGE,
-        reply_markup=ReplyKeyboardMarkup([[f'/{CANCEL_COMMAND}']])
+        text=DESCRIPTION_MESSAGE
     )
+    return ConversationHandler.END
 
 async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     """Конец диалога."""
     logger.info(CANSEL, update.message.from_user.first_name)
-    await update.message.reply_text(STOP, reply_markup=ReplyKeyboardRemove())
+    # context.user_data.clear()
+    await update.message.reply_text(
+        STOP,
+        reply_markup=ReplyKeyboardRemove()
+    )
     return ConversationHandler.END
 
 
-if __name__ == "__main__":
-    import os
-    from dotenv import load_dotenv
-    from telegram.ext import (
-        Application,
-        CommandHandler,
-        ConversationHandler,
-        MessageHandler,
-    )
-    load_dotenv()
-    
-    
-    TOKEN = os.getenv('TOKEN')
-    
-    
-    application = Application.builder().token(TOKEN).build()
-    conv_handler = ConversationHandler(
+acquaintance_handler = ConversationHandler(
         entry_points=[
             MessageHandler(
                 filters.Regex(MAGIC_WORD_FOR_START_THIS_HANDLER),
@@ -1448,5 +1436,19 @@ if __name__ == "__main__":
         },
         fallbacks=[CommandHandler(CANCEL_COMMAND, cancel)],
     )
-    application.add_handler(conv_handler)
+
+
+if __name__ == "__main__":
+    import os
+
+    from dotenv import load_dotenv
+    from telegram.ext import Application
+
+
+    load_dotenv()
+    TOKEN = os.getenv('TOKEN')
+
+    
+    application = Application.builder().token(TOKEN).build()
+    application.add_handler(acquaintance_handler)
     application.run_polling(allowed_updates=Update.ALL_TYPES)
