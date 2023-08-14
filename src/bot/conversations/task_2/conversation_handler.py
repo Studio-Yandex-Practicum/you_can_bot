@@ -15,7 +15,8 @@ from templates import (
     MESSAGE_66, MESSAGE_67, MESSAGE_68, MESSAGE_69, MESSAGE_70, MESSAGE_71,
     MESSAGE_72, MESSAGE_73, MESSAGE_74, MESSAGE_75, MESSAGE_76, MESSAGE_77,
     MESSAGE_78, MESSAGE_79, MESSAGE_80, MESSAGE_81, MESSAGE_82, MESSAGE_83,
-    MESSAGE_84, MESSAGE_85, MESSAGE_86, MESSAGE_87, DESCRIPTION_MESSAGE, STOP
+    MESSAGE_84, MESSAGE_85, MESSAGE_86, MESSAGE_87, DESCRIPTION_MESSAGE, STOP,
+    START
 )
 
 logging.basicConfig(
@@ -25,14 +26,18 @@ logging.getLogger("httpx").setLevel(logging.WARNING)
 logger = logging.getLogger(__name__)
 
 
-START_COMMAND = 'start'
+MAGIC_WORD_FOR_START_THIS_HANDLER = 'Часть 2'
 CANCEL_COMMAND = 'cancel'
+NEXT = 'ЗАДАНИЕ 2'
+NEXT_PLACEHOLDER = f'Жми смело кнопку {NEXT}'
+NEXT_KEYBOARD = [[NEXT]]
 REPLY_KEYBOARD = [['а', 'б']]
 INPUT_PLACEHOLDER = 'а или б ?'
 ANSWER = 'Ответ пользователя %s на %s вопрос: %s'
 CANSEL = 'Пользователь %s закончил диалог.'
 (
-    QUESTION_19, QUESTION_20, QUESTION_21, QUESTION_22, QUESTION_23, 
+    QUESTION_18,
+    QUESTION_19, QUESTION_20, QUESTION_21, QUESTION_22, QUESTION_23,
     QUESTION_24, QUESTION_25, QUESTION_26, QUESTION_27, QUESTION_28,
     QUESTION_29, QUESTION_30, QUESTION_31, QUESTION_32, QUESTION_33,
     QUESTION_34, QUESTION_35, QUESTION_36, QUESTION_37, QUESTION_38,
@@ -46,19 +51,35 @@ CANSEL = 'Пользователь %s закончил диалог.'
     QUESTION_74, QUESTION_75, QUESTION_76, QUESTION_77, QUESTION_78,
     QUESTION_79, QUESTION_80, QUESTION_81, QUESTION_82, QUESTION_83,
     QUESTION_84, QUESTION_85, QUESTION_86, QUESTION_87, DESCRIPTION
-) = range(19, 89)
+) = range(18, 89)
 FILTER = filters.Regex("^(а|б)$")
 
 
 async def start(
     update: Update, context: ContextTypes.DEFAULT_TYPE
 ) -> int:
-    """Вступление и 18 вопрос."""
+    """Вступление."""
+    await update.message.reply_text(
+        START,
+        reply_markup=ReplyKeyboardMarkup(
+            NEXT_KEYBOARD,
+            one_time_keyboard=True,
+            resize_keyboard=True,
+            input_field_placeholder=NEXT_PLACEHOLDER
+        ),
+    )
+    return QUESTION_18
+
+async def question_18(
+    update: Update, context: ContextTypes.DEFAULT_TYPE
+) -> int:
+    """18 вопрос."""
     await update.message.reply_text(
         MESSAGE_18,
         reply_markup=ReplyKeyboardMarkup(
             REPLY_KEYBOARD,
             one_time_keyboard=True,
+            resize_keyboard=True,
             input_field_placeholder=INPUT_PLACEHOLDER
         ),
     )
@@ -76,6 +97,7 @@ async def question_19(
         reply_markup=ReplyKeyboardMarkup(
             REPLY_KEYBOARD,
             one_time_keyboard=True,
+            resize_keyboard=True,
             input_field_placeholder=INPUT_PLACEHOLDER
         ),
     )
@@ -93,6 +115,7 @@ async def question_20(
         reply_markup=ReplyKeyboardMarkup(
             REPLY_KEYBOARD,
             one_time_keyboard=True,
+            resize_keyboard=True,
             input_field_placeholder=INPUT_PLACEHOLDER
         ),
     )
@@ -110,6 +133,7 @@ async def question_21(
         reply_markup=ReplyKeyboardMarkup(
             REPLY_KEYBOARD,
             one_time_keyboard=True,
+            resize_keyboard=True,
             input_field_placeholder=INPUT_PLACEHOLDER
         ),
     )
@@ -128,6 +152,7 @@ async def question_22(
         reply_markup=ReplyKeyboardMarkup(
             REPLY_KEYBOARD,
             one_time_keyboard=True,
+            resize_keyboard=True,
             input_field_placeholder=INPUT_PLACEHOLDER
         ),
     )
@@ -145,6 +170,7 @@ async def question_23(
         reply_markup=ReplyKeyboardMarkup(
             REPLY_KEYBOARD,
             one_time_keyboard=True,
+            resize_keyboard=True,
             input_field_placeholder=INPUT_PLACEHOLDER
         ),
     )
@@ -162,6 +188,7 @@ async def question_24(
         reply_markup=ReplyKeyboardMarkup(
             REPLY_KEYBOARD,
             one_time_keyboard=True,
+            resize_keyboard=True,
             input_field_placeholder=INPUT_PLACEHOLDER
         ),
     )
@@ -179,6 +206,7 @@ async def question_25(
         reply_markup=ReplyKeyboardMarkup(
             REPLY_KEYBOARD,
             one_time_keyboard=True,
+            resize_keyboard=True,
             input_field_placeholder=INPUT_PLACEHOLDER
         ),
     )
@@ -196,6 +224,7 @@ async def question_26(
         reply_markup=ReplyKeyboardMarkup(
             REPLY_KEYBOARD,
             one_time_keyboard=True,
+            resize_keyboard=True,
             input_field_placeholder=INPUT_PLACEHOLDER
         ),
     )
@@ -213,6 +242,7 @@ async def question_27(
         reply_markup=ReplyKeyboardMarkup(
             REPLY_KEYBOARD,
             one_time_keyboard=True,
+            resize_keyboard=True,
             input_field_placeholder=INPUT_PLACEHOLDER
         ),
     )
@@ -230,6 +260,7 @@ async def question_28(
         reply_markup=ReplyKeyboardMarkup(
             REPLY_KEYBOARD,
             one_time_keyboard=True,
+            resize_keyboard=True,
             input_field_placeholder=INPUT_PLACEHOLDER
         ),
     )
@@ -247,6 +278,7 @@ async def question_29(
         reply_markup=ReplyKeyboardMarkup(
             REPLY_KEYBOARD,
             one_time_keyboard=True,
+            resize_keyboard=True,
             input_field_placeholder=INPUT_PLACEHOLDER
         ),
     )
@@ -264,6 +296,7 @@ async def question_30(
         reply_markup=ReplyKeyboardMarkup(
             REPLY_KEYBOARD,
             one_time_keyboard=True,
+            resize_keyboard=True,
             input_field_placeholder=INPUT_PLACEHOLDER
         ),
     )
@@ -281,6 +314,7 @@ async def question_31(
         reply_markup=ReplyKeyboardMarkup(
             REPLY_KEYBOARD,
             one_time_keyboard=True,
+            resize_keyboard=True,
             input_field_placeholder=INPUT_PLACEHOLDER
         ),
     )
@@ -298,6 +332,7 @@ async def question_32(
         reply_markup=ReplyKeyboardMarkup(
             REPLY_KEYBOARD,
             one_time_keyboard=True,
+            resize_keyboard=True,
             input_field_placeholder=INPUT_PLACEHOLDER
         ),
     )
@@ -315,6 +350,7 @@ async def question_33(
         reply_markup=ReplyKeyboardMarkup(
             REPLY_KEYBOARD,
             one_time_keyboard=True,
+            resize_keyboard=True,
             input_field_placeholder=INPUT_PLACEHOLDER
         ),
     )
@@ -332,6 +368,7 @@ async def question_34(
         reply_markup=ReplyKeyboardMarkup(
             REPLY_KEYBOARD,
             one_time_keyboard=True,
+            resize_keyboard=True,
             input_field_placeholder=INPUT_PLACEHOLDER
         ),
     )
@@ -349,6 +386,7 @@ async def question_35(
         reply_markup=ReplyKeyboardMarkup(
             REPLY_KEYBOARD,
             one_time_keyboard=True,
+            resize_keyboard=True,
             input_field_placeholder=INPUT_PLACEHOLDER
         ),
     )
@@ -366,6 +404,7 @@ async def question_36(
         reply_markup=ReplyKeyboardMarkup(
             REPLY_KEYBOARD,
             one_time_keyboard=True,
+            resize_keyboard=True,
             input_field_placeholder=INPUT_PLACEHOLDER
         ),
     )
@@ -383,6 +422,7 @@ async def question_37(
         reply_markup=ReplyKeyboardMarkup(
             REPLY_KEYBOARD,
             one_time_keyboard=True,
+            resize_keyboard=True,
             input_field_placeholder=INPUT_PLACEHOLDER
         ),
     )
@@ -400,6 +440,7 @@ async def question_38(
         reply_markup=ReplyKeyboardMarkup(
             REPLY_KEYBOARD,
             one_time_keyboard=True,
+            resize_keyboard=True,
             input_field_placeholder=INPUT_PLACEHOLDER
         ),
     )
@@ -417,6 +458,7 @@ async def question_39(
         reply_markup=ReplyKeyboardMarkup(
             REPLY_KEYBOARD,
             one_time_keyboard=True,
+            resize_keyboard=True,
             input_field_placeholder=INPUT_PLACEHOLDER
         ),
     )
@@ -434,6 +476,7 @@ async def question_40(
         reply_markup=ReplyKeyboardMarkup(
             REPLY_KEYBOARD,
             one_time_keyboard=True,
+            resize_keyboard=True,
             input_field_placeholder=INPUT_PLACEHOLDER
         ),
     )
@@ -451,6 +494,7 @@ async def question_41(
         reply_markup=ReplyKeyboardMarkup(
             REPLY_KEYBOARD,
             one_time_keyboard=True,
+            resize_keyboard=True,
             input_field_placeholder=INPUT_PLACEHOLDER
         ),
     )
@@ -468,6 +512,7 @@ async def question_42(
         reply_markup=ReplyKeyboardMarkup(
             REPLY_KEYBOARD,
             one_time_keyboard=True,
+            resize_keyboard=True,
             input_field_placeholder=INPUT_PLACEHOLDER
         ),
     )
@@ -485,6 +530,7 @@ async def question_43(
         reply_markup=ReplyKeyboardMarkup(
             REPLY_KEYBOARD,
             one_time_keyboard=True,
+            resize_keyboard=True,
             input_field_placeholder=INPUT_PLACEHOLDER
         ),
     )
@@ -502,6 +548,7 @@ async def question_44(
         reply_markup=ReplyKeyboardMarkup(
             REPLY_KEYBOARD,
             one_time_keyboard=True,
+            resize_keyboard=True,
             input_field_placeholder=INPUT_PLACEHOLDER
         ),
     )
@@ -519,6 +566,7 @@ async def question_45(
         reply_markup=ReplyKeyboardMarkup(
             REPLY_KEYBOARD,
             one_time_keyboard=True,
+            resize_keyboard=True,
             input_field_placeholder=INPUT_PLACEHOLDER
         ),
     )
@@ -536,6 +584,7 @@ async def question_46(
         reply_markup=ReplyKeyboardMarkup(
             REPLY_KEYBOARD,
             one_time_keyboard=True,
+            resize_keyboard=True,
             input_field_placeholder=INPUT_PLACEHOLDER
         ),
     )
@@ -553,6 +602,7 @@ async def question_47(
         reply_markup=ReplyKeyboardMarkup(
             REPLY_KEYBOARD,
             one_time_keyboard=True,
+            resize_keyboard=True,
             input_field_placeholder=INPUT_PLACEHOLDER
         ),
     )
@@ -570,6 +620,7 @@ async def question_48(
         reply_markup=ReplyKeyboardMarkup(
             REPLY_KEYBOARD,
             one_time_keyboard=True,
+            resize_keyboard=True,
             input_field_placeholder=INPUT_PLACEHOLDER
         ),
     )
@@ -587,6 +638,7 @@ async def question_49(
         reply_markup=ReplyKeyboardMarkup(
             REPLY_KEYBOARD,
             one_time_keyboard=True,
+            resize_keyboard=True,
             input_field_placeholder=INPUT_PLACEHOLDER
         ),
     )
@@ -604,6 +656,7 @@ async def question_50(
         reply_markup=ReplyKeyboardMarkup(
             REPLY_KEYBOARD,
             one_time_keyboard=True,
+            resize_keyboard=True,
             input_field_placeholder=INPUT_PLACEHOLDER
         ),
     )
@@ -621,6 +674,7 @@ async def question_51(
         reply_markup=ReplyKeyboardMarkup(
             REPLY_KEYBOARD,
             one_time_keyboard=True,
+            resize_keyboard=True,
             input_field_placeholder=INPUT_PLACEHOLDER
         ),
     )
@@ -638,6 +692,7 @@ async def question_52(
         reply_markup=ReplyKeyboardMarkup(
             REPLY_KEYBOARD,
             one_time_keyboard=True,
+            resize_keyboard=True,
             input_field_placeholder=INPUT_PLACEHOLDER
         ),
     )
@@ -655,6 +710,7 @@ async def question_53(
         reply_markup=ReplyKeyboardMarkup(
             REPLY_KEYBOARD,
             one_time_keyboard=True,
+            resize_keyboard=True,
             input_field_placeholder=INPUT_PLACEHOLDER
         ),
     )
@@ -672,6 +728,7 @@ async def question_54(
         reply_markup=ReplyKeyboardMarkup(
             REPLY_KEYBOARD,
             one_time_keyboard=True,
+            resize_keyboard=True,
             input_field_placeholder=INPUT_PLACEHOLDER
         ),
     )
@@ -689,6 +746,7 @@ async def question_55(
         reply_markup=ReplyKeyboardMarkup(
             REPLY_KEYBOARD,
             one_time_keyboard=True,
+            resize_keyboard=True,
             input_field_placeholder=INPUT_PLACEHOLDER
         ),
     )
@@ -706,6 +764,7 @@ async def question_56(
         reply_markup=ReplyKeyboardMarkup(
             REPLY_KEYBOARD,
             one_time_keyboard=True,
+            resize_keyboard=True,
             input_field_placeholder=INPUT_PLACEHOLDER
         ),
     )
@@ -723,6 +782,7 @@ async def question_57(
         reply_markup=ReplyKeyboardMarkup(
             REPLY_KEYBOARD,
             one_time_keyboard=True,
+            resize_keyboard=True,
             input_field_placeholder=INPUT_PLACEHOLDER
         ),
     )
@@ -740,6 +800,7 @@ async def question_58(
         reply_markup=ReplyKeyboardMarkup(
             REPLY_KEYBOARD,
             one_time_keyboard=True,
+            resize_keyboard=True,
             input_field_placeholder=INPUT_PLACEHOLDER
         ),
     )
@@ -757,6 +818,7 @@ async def question_59(
         reply_markup=ReplyKeyboardMarkup(
             REPLY_KEYBOARD,
             one_time_keyboard=True,
+            resize_keyboard=True,
             input_field_placeholder=INPUT_PLACEHOLDER
         ),
     )
@@ -774,6 +836,7 @@ async def question_60(
         reply_markup=ReplyKeyboardMarkup(
             REPLY_KEYBOARD,
             one_time_keyboard=True,
+            resize_keyboard=True,
             input_field_placeholder=INPUT_PLACEHOLDER
         ),
     )
@@ -791,6 +854,7 @@ async def question_61(
         reply_markup=ReplyKeyboardMarkup(
             REPLY_KEYBOARD,
             one_time_keyboard=True,
+            resize_keyboard=True,
             input_field_placeholder=INPUT_PLACEHOLDER
         ),
     )
@@ -808,6 +872,7 @@ async def question_62(
         reply_markup=ReplyKeyboardMarkup(
             REPLY_KEYBOARD,
             one_time_keyboard=True,
+            resize_keyboard=True,
             input_field_placeholder=INPUT_PLACEHOLDER
         ),
     )
@@ -825,6 +890,7 @@ async def question_63(
         reply_markup=ReplyKeyboardMarkup(
             REPLY_KEYBOARD,
             one_time_keyboard=True,
+            resize_keyboard=True,
             input_field_placeholder=INPUT_PLACEHOLDER
         ),
     )
@@ -842,6 +908,7 @@ async def question_64(
         reply_markup=ReplyKeyboardMarkup(
             REPLY_KEYBOARD,
             one_time_keyboard=True,
+            resize_keyboard=True,
             input_field_placeholder=INPUT_PLACEHOLDER
         ),
     )
@@ -859,6 +926,7 @@ async def question_65(
         reply_markup=ReplyKeyboardMarkup(
             REPLY_KEYBOARD,
             one_time_keyboard=True,
+            resize_keyboard=True,
             input_field_placeholder=INPUT_PLACEHOLDER
         ),
     )
@@ -876,6 +944,7 @@ async def question_66(
         reply_markup=ReplyKeyboardMarkup(
             REPLY_KEYBOARD,
             one_time_keyboard=True,
+            resize_keyboard=True,
             input_field_placeholder=INPUT_PLACEHOLDER
         ),
     )
@@ -893,6 +962,7 @@ async def question_67(
         reply_markup=ReplyKeyboardMarkup(
             REPLY_KEYBOARD,
             one_time_keyboard=True,
+            resize_keyboard=True,
             input_field_placeholder=INPUT_PLACEHOLDER
         ),
     )
@@ -910,6 +980,7 @@ async def question_68(
         reply_markup=ReplyKeyboardMarkup(
             REPLY_KEYBOARD,
             one_time_keyboard=True,
+            resize_keyboard=True,
             input_field_placeholder=INPUT_PLACEHOLDER
         ),
     )
@@ -927,6 +998,7 @@ async def question_69(
         reply_markup=ReplyKeyboardMarkup(
             REPLY_KEYBOARD,
             one_time_keyboard=True,
+            resize_keyboard=True,
             input_field_placeholder=INPUT_PLACEHOLDER
         ),
     )
@@ -944,6 +1016,7 @@ async def question_70(
         reply_markup=ReplyKeyboardMarkup(
             REPLY_KEYBOARD,
             one_time_keyboard=True,
+            resize_keyboard=True,
             input_field_placeholder=INPUT_PLACEHOLDER
         ),
     )
@@ -961,6 +1034,7 @@ async def question_71(
         reply_markup=ReplyKeyboardMarkup(
             REPLY_KEYBOARD,
             one_time_keyboard=True,
+            resize_keyboard=True,
             input_field_placeholder=INPUT_PLACEHOLDER
         ),
     )
@@ -978,6 +1052,7 @@ async def question_72(
         reply_markup=ReplyKeyboardMarkup(
             REPLY_KEYBOARD,
             one_time_keyboard=True,
+            resize_keyboard=True,
             input_field_placeholder=INPUT_PLACEHOLDER
         ),
     )
@@ -995,6 +1070,7 @@ async def question_73(
         reply_markup=ReplyKeyboardMarkup(
             REPLY_KEYBOARD,
             one_time_keyboard=True,
+            resize_keyboard=True,
             input_field_placeholder=INPUT_PLACEHOLDER
         ),
     )
@@ -1012,6 +1088,7 @@ async def question_74(
         reply_markup=ReplyKeyboardMarkup(
             REPLY_KEYBOARD,
             one_time_keyboard=True,
+            resize_keyboard=True,
             input_field_placeholder=INPUT_PLACEHOLDER
         ),
     )
@@ -1029,6 +1106,7 @@ async def question_75(
         reply_markup=ReplyKeyboardMarkup(
             REPLY_KEYBOARD,
             one_time_keyboard=True,
+            resize_keyboard=True,
             input_field_placeholder=INPUT_PLACEHOLDER
         ),
     )
@@ -1046,6 +1124,7 @@ async def question_76(
         reply_markup=ReplyKeyboardMarkup(
             REPLY_KEYBOARD,
             one_time_keyboard=True,
+            resize_keyboard=True,
             input_field_placeholder=INPUT_PLACEHOLDER
         ),
     )
@@ -1063,6 +1142,7 @@ async def question_77(
         reply_markup=ReplyKeyboardMarkup(
             REPLY_KEYBOARD,
             one_time_keyboard=True,
+            resize_keyboard=True,
             input_field_placeholder=INPUT_PLACEHOLDER
         ),
     )
@@ -1080,6 +1160,7 @@ async def question_78(
         reply_markup=ReplyKeyboardMarkup(
             REPLY_KEYBOARD,
             one_time_keyboard=True,
+            resize_keyboard=True,
             input_field_placeholder=INPUT_PLACEHOLDER
         ),
     )
@@ -1097,6 +1178,7 @@ async def question_79(
         reply_markup=ReplyKeyboardMarkup(
             REPLY_KEYBOARD,
             one_time_keyboard=True,
+            resize_keyboard=True,
             input_field_placeholder=INPUT_PLACEHOLDER
         ),
     )
@@ -1114,6 +1196,7 @@ async def question_80(
         reply_markup=ReplyKeyboardMarkup(
             REPLY_KEYBOARD,
             one_time_keyboard=True,
+            resize_keyboard=True,
             input_field_placeholder=INPUT_PLACEHOLDER
         ),
     )
@@ -1131,6 +1214,7 @@ async def question_81(
         reply_markup=ReplyKeyboardMarkup(
             REPLY_KEYBOARD,
             one_time_keyboard=True,
+            resize_keyboard=True,
             input_field_placeholder=INPUT_PLACEHOLDER
         ),
     )
@@ -1148,6 +1232,7 @@ async def question_82(
         reply_markup=ReplyKeyboardMarkup(
             REPLY_KEYBOARD,
             one_time_keyboard=True,
+            resize_keyboard=True,
             input_field_placeholder=INPUT_PLACEHOLDER
         ),
     )
@@ -1165,6 +1250,7 @@ async def question_83(
         reply_markup=ReplyKeyboardMarkup(
             REPLY_KEYBOARD,
             one_time_keyboard=True,
+            resize_keyboard=True,
             input_field_placeholder=INPUT_PLACEHOLDER
         ),
     )
@@ -1182,6 +1268,7 @@ async def question_84(
         reply_markup=ReplyKeyboardMarkup(
             REPLY_KEYBOARD,
             one_time_keyboard=True,
+            resize_keyboard=True,
             input_field_placeholder=INPUT_PLACEHOLDER
         ),
     )
@@ -1199,6 +1286,7 @@ async def question_85(
         reply_markup=ReplyKeyboardMarkup(
             REPLY_KEYBOARD,
             one_time_keyboard=True,
+            resize_keyboard=True,
             input_field_placeholder=INPUT_PLACEHOLDER
         ),
     )
@@ -1216,6 +1304,7 @@ async def question_86(
         reply_markup=ReplyKeyboardMarkup(
             REPLY_KEYBOARD,
             one_time_keyboard=True,
+            resize_keyboard=True,
             input_field_placeholder=INPUT_PLACEHOLDER
         ),
     )
@@ -1233,6 +1322,7 @@ async def question_87(
         reply_markup=ReplyKeyboardMarkup(
             REPLY_KEYBOARD,
             one_time_keyboard=True,
+            resize_keyboard=True,
             input_field_placeholder=INPUT_PLACEHOLDER
         ),
     )
@@ -1275,8 +1365,16 @@ if __name__ == "__main__":
     
     application = Application.builder().token(TOKEN).build()
     conv_handler = ConversationHandler(
-        entry_points=[CommandHandler(START_COMMAND, start)],
+        entry_points=[
+            MessageHandler(
+                filters.Regex(MAGIC_WORD_FOR_START_THIS_HANDLER),
+                start
+            )
+        ],
         states={
+            QUESTION_18: [
+                MessageHandler(filters.TEXT & ~filters.COMMAND, question_18)
+            ],
             QUESTION_19: [MessageHandler(FILTER, question_19)],
             QUESTION_20: [MessageHandler(FILTER, question_20)],
             QUESTION_21: [MessageHandler(FILTER, question_21)],
