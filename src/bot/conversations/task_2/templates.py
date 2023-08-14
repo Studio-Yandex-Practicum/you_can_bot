@@ -1,6 +1,6 @@
-MAGIC_WORD_FOR_START_THIS_HANDLER = 'Часть 2'
-CANCEL_COMMAND = 'cancel'
-NEXT = 'ЗАДАНИЕ 2'
+from keyboards import MAGIC_WORD_FOR_START_THIS_HANDLER
+
+
 DESCRIPTION_MESSAGE = (
     'Расшифровка: \n\n'
 )

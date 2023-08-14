@@ -1,12 +1,10 @@
 import logging
 
 from telegram import ReplyKeyboardMarkup, ReplyKeyboardRemove, Update
-from telegram.ext import (
-    CommandHandler, ContextTypes, ConversationHandler, filters, MessageHandler
-)
+from telegram.ext import ContextTypes, ConversationHandler
 
 from templates import (
-    CANCEL_COMMAND, DESCRIPTION_MESSAGE, MAGIC_WORD_FOR_START_THIS_HANDLER,
+    DESCRIPTION_MESSAGE, START, STOP,
     MESSAGE_18, MESSAGE_19, MESSAGE_20, MESSAGE_21, MESSAGE_22, MESSAGE_23,
     MESSAGE_24, MESSAGE_25, MESSAGE_26, MESSAGE_27, MESSAGE_28, MESSAGE_29,
     MESSAGE_30, MESSAGE_31, MESSAGE_32, MESSAGE_33, MESSAGE_34, MESSAGE_35,
@@ -18,24 +16,14 @@ from templates import (
     MESSAGE_66, MESSAGE_67, MESSAGE_68, MESSAGE_69, MESSAGE_70, MESSAGE_71,
     MESSAGE_72, MESSAGE_73, MESSAGE_74, MESSAGE_75, MESSAGE_76, MESSAGE_77,
     MESSAGE_78, MESSAGE_79, MESSAGE_80, MESSAGE_81, MESSAGE_82, MESSAGE_83,
-    MESSAGE_84, MESSAGE_85, MESSAGE_86, MESSAGE_87, NEXT, START, STOP
+    MESSAGE_84, MESSAGE_85, MESSAGE_86, MESSAGE_87
+)
+from keyboards import (
+    NEXT_PLACEHOLDER, NEXT_KEYBOARD, REPLY_KEYBOARD, INPUT_PLACEHOLDER,
+    ANSWER, CANSEL
 )
 
 
-logging.basicConfig(
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO
-)
-logging.getLogger("httpx").setLevel(logging.WARNING)
-logger = logging.getLogger(__name__)
-
-
-NEXT_PLACEHOLDER = f'Жми смело кнопку {NEXT}'
-NEXT_KEYBOARD = [[NEXT]]
-REPLY_KEYBOARD = [['а', 'б']]
-INPUT_PLACEHOLDER = 'а или б ?'
-ANSWER = 'Ответ пользователя %s на %s вопрос: %s'
-CANSEL = 'Пользователь %s закончил диалог.'
-FILTER = filters.Regex("^(а|б)$")
 (
     QUESTION_18,
     QUESTION_19, QUESTION_20, QUESTION_21, QUESTION_22, QUESTION_23,
@@ -53,6 +41,13 @@ FILTER = filters.Regex("^(а|б)$")
     QUESTION_79, QUESTION_80, QUESTION_81, QUESTION_82, QUESTION_83,
     QUESTION_84, QUESTION_85, QUESTION_86, QUESTION_87, DESCRIPTION
 ) = range(18, 89)
+
+
+logging.basicConfig(
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO
+)
+logging.getLogger("httpx").setLevel(logging.WARNING)
+logger = logging.getLogger(__name__)
 
 
 async def start(
@@ -721,7 +716,7 @@ async def question_54(
 ) -> int:
     """54 вопрос."""
     logger.info(
-        ANSWER, update.message.from_user.username, 52, update.message.text
+        ANSWER, update.message.from_user.username, 53, update.message.text
     )
     await update.message.reply_text(
         MESSAGE_54,
@@ -1350,105 +1345,3 @@ async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
         reply_markup=ReplyKeyboardRemove()
     )
     return ConversationHandler.END
-
-
-acquaintance_handler = ConversationHandler(
-        entry_points=[
-            MessageHandler(
-                filters.Regex(MAGIC_WORD_FOR_START_THIS_HANDLER),
-                start
-            )
-        ],
-        states={
-            QUESTION_18: [
-                MessageHandler(filters.TEXT & ~filters.COMMAND, question_18)
-            ],
-            QUESTION_19: [MessageHandler(FILTER, question_19)],
-            QUESTION_20: [MessageHandler(FILTER, question_20)],
-            QUESTION_21: [MessageHandler(FILTER, question_21)],
-            QUESTION_22: [MessageHandler(FILTER, question_22)],
-            QUESTION_23: [MessageHandler(FILTER, question_23)],
-            QUESTION_24: [MessageHandler(FILTER, question_24)],
-            QUESTION_25: [MessageHandler(FILTER, question_25)],
-            QUESTION_26: [MessageHandler(FILTER, question_26)],
-            QUESTION_27: [MessageHandler(FILTER, question_27)],
-            QUESTION_28: [MessageHandler(FILTER, question_28)],
-            QUESTION_29: [MessageHandler(FILTER, question_29)],
-            QUESTION_30: [MessageHandler(FILTER, question_30)],
-            QUESTION_31: [MessageHandler(FILTER, question_31)],
-            QUESTION_32: [MessageHandler(FILTER, question_32)],
-            QUESTION_33: [MessageHandler(FILTER, question_33)],
-            QUESTION_34: [MessageHandler(FILTER, question_34)],
-            QUESTION_35: [MessageHandler(FILTER, question_35)],
-            QUESTION_36: [MessageHandler(FILTER, question_36)],
-            QUESTION_37: [MessageHandler(FILTER, question_37)],
-            QUESTION_38: [MessageHandler(FILTER, question_38)],
-            QUESTION_39: [MessageHandler(FILTER, question_39)],
-            QUESTION_40: [MessageHandler(FILTER, question_40)],
-            QUESTION_41: [MessageHandler(FILTER, question_41)],
-            QUESTION_42: [MessageHandler(FILTER, question_42)],
-            QUESTION_43: [MessageHandler(FILTER, question_43)],
-            QUESTION_44: [MessageHandler(FILTER, question_44)],
-            QUESTION_45: [MessageHandler(FILTER, question_45)],
-            QUESTION_46: [MessageHandler(FILTER, question_46)],
-            QUESTION_47: [MessageHandler(FILTER, question_47)],
-            QUESTION_48: [MessageHandler(FILTER, question_48)],
-            QUESTION_49: [MessageHandler(FILTER, question_49)],
-            QUESTION_50: [MessageHandler(FILTER, question_50)],
-            QUESTION_51: [MessageHandler(FILTER, question_51)],
-            QUESTION_52: [MessageHandler(FILTER, question_52)],
-            QUESTION_53: [MessageHandler(FILTER, question_53)],
-            QUESTION_54: [MessageHandler(FILTER, question_54)],
-            QUESTION_55: [MessageHandler(FILTER, question_55)],
-            QUESTION_56: [MessageHandler(FILTER, question_56)],
-            QUESTION_57: [MessageHandler(FILTER, question_57)],
-            QUESTION_58: [MessageHandler(FILTER, question_58)],
-            QUESTION_59: [MessageHandler(FILTER, question_59)],
-            QUESTION_60: [MessageHandler(FILTER, question_60)],
-            QUESTION_61: [MessageHandler(FILTER, question_61)],
-            QUESTION_62: [MessageHandler(FILTER, question_62)],
-            QUESTION_63: [MessageHandler(FILTER, question_63)],
-            QUESTION_64: [MessageHandler(FILTER, question_64)],
-            QUESTION_65: [MessageHandler(FILTER, question_65)],
-            QUESTION_66: [MessageHandler(FILTER, question_66)],
-            QUESTION_67: [MessageHandler(FILTER, question_67)],
-            QUESTION_68: [MessageHandler(FILTER, question_68)],
-            QUESTION_69: [MessageHandler(FILTER, question_69)],
-            QUESTION_70: [MessageHandler(FILTER, question_70)],
-            QUESTION_71: [MessageHandler(FILTER, question_71)],
-            QUESTION_72: [MessageHandler(FILTER, question_72)],
-            QUESTION_73: [MessageHandler(FILTER, question_73)],
-            QUESTION_74: [MessageHandler(FILTER, question_74)],
-            QUESTION_75: [MessageHandler(FILTER, question_75)],
-            QUESTION_76: [MessageHandler(FILTER, question_76)],
-            QUESTION_77: [MessageHandler(FILTER, question_77)],
-            QUESTION_78: [MessageHandler(FILTER, question_78)],
-            QUESTION_79: [MessageHandler(FILTER, question_79)],
-            QUESTION_80: [MessageHandler(FILTER, question_80)],
-            QUESTION_81: [MessageHandler(FILTER, question_81)],
-            QUESTION_82: [MessageHandler(FILTER, question_82)],
-            QUESTION_83: [MessageHandler(FILTER, question_83)],
-            QUESTION_84: [MessageHandler(FILTER, question_84)],
-            QUESTION_85: [MessageHandler(FILTER, question_85)],
-            QUESTION_86: [MessageHandler(FILTER, question_86)],
-            QUESTION_87: [MessageHandler(FILTER, question_87)],
-            DESCRIPTION: [MessageHandler(FILTER, description)]
-        },
-        fallbacks=[CommandHandler(CANCEL_COMMAND, cancel)],
-    )
-
-
-if __name__ == "__main__":
-    import os
-
-    from dotenv import load_dotenv
-    from telegram.ext import Application
-
-
-    load_dotenv()
-    TOKEN = os.getenv('TOKEN')
-
-    
-    application = Application.builder().token(TOKEN).build()
-    application.add_handler(acquaintance_handler)
-    application.run_polling(allowed_updates=Update.ALL_TYPES)

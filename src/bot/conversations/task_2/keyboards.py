@@ -1,0 +1,9 @@
+MAGIC_WORD_FOR_START_THIS_HANDLER = 'Часть 2'
+CANCEL_COMMAND = 'cancel'
+NEXT = 'ЗАДАНИЕ 2'
+NEXT_PLACEHOLDER = f'Жми смело кнопку {NEXT}'
+NEXT_KEYBOARD = [[NEXT]]
+REPLY_KEYBOARD = [['а', 'б']]
+INPUT_PLACEHOLDER = 'а или б ?'
+ANSWER = 'Ответ пользователя %s на %s вопрос: %s'
+CANSEL = 'Пользователь %s закончил диалог.'
