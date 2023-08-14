@@ -1,4 +1,6 @@
-from telegram import Update, ReplyKeyboardMarkup, ReplyKeyboardRemove
+import re
+
+from telegram import Update, ReplyKeyboardRemove
 from telegram.ext import (
     ConversationHandler,
     CommandHandler,
@@ -15,30 +17,23 @@ from .templates import (
     FIRST_TASK_BUTTON_LABEL,
     CANCEL_ACQUAINTANCE,
     START_MESSAGE,
-    HELLO_BUTTON_LABEL
+    HELLO_BUTTON_LABEL,
+    WRONG_NAME_SURNAME,
+    ILLEGAL_CHARACTERS_NAME_SURNAME
 )
 
+from .keyboards import HELLO_BUTTON, START_BUTTON, FIRST_TASK_BUTTON
 
-NAME, START, FIRST_TASK = range(3)
 
-HELLO_BUTTON = ReplyKeyboardMarkup(
-    [[HELLO_BUTTON_LABEL]],
-    resize_keyboard=True
-)
+HELLO, NAME, START, FIRST_TASK = range(4)
 
-START_BUTTON = ReplyKeyboardMarkup(
-    [[START_BUTTON_LABEL]],
-    resize_keyboard=True
-)
-FIRST_TASK_BUTTON = ReplyKeyboardMarkup(
-    [[FIRST_TASK_BUTTON_LABEL]],
-    resize_keyboard=True
-)
+REGEXP_NAME_SURNAME = r'^[а-яА-ЯёЁa-zA-Z]+$'
 
 
 async def start(update, context) -> None:
     """Первое сообщение от бота при вводе команды /start."""
     await update.message.reply_text(START_MESSAGE, reply_markup=HELLO_BUTTON)
+    return HELLO
 
 
 async def start_acquaintance(
@@ -53,12 +48,25 @@ async def start_acquaintance(
 
 async def name(
         update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    """Сохраняет предоставленное имя в контексте
+    """Сохраняет предоставленное имя и фамилию в контексте
     и знакомит пользователя со скиллсетами."""
-    user_name = update.message.text.title()
-    context.user_data["user_title_name"] = user_name
+    user_input_data = update.message.text.title().split()
+
+    if len(user_input_data) != 2:
+        await update.message.reply_text(WRONG_NAME_SURNAME)
+        return NAME
+
+    for element in user_input_data:
+        if re.search(REGEXP_NAME_SURNAME, element) is None:
+            await update.message.reply_text(ILLEGAL_CHARACTERS_NAME_SURNAME)
+            return NAME
+
+    user_name, user_surname = user_input_data
+
+    context.user_data["user_name"] = user_name
+    context.user_data["user_surname"] = user_surname
     await update.message.reply_text(
-        SKILL_SET_INFORMATION.format(user_name),
+        SKILL_SET_INFORMATION.format(f'{user_name} {user_surname}'),
         reply_markup=START_BUTTON
     )
     return START
@@ -88,8 +96,9 @@ async def first_task(
     """
 
     data = {
-        'name': context.user_data["user_title_name"],
-        'chat_id': update.effective_chat.id
+        'name': context.user_data["user_name"],
+        'surname': context.user_data["user_surname"],
+        'telegram_id': update.effective_chat.id
     }
 
     return ConversationHandler.END
@@ -107,11 +116,12 @@ async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
 
 
 acquaintance_handler = ConversationHandler(
-    entry_points=[MessageHandler(
-        filters.Regex(HELLO_BUTTON_LABEL),
-        start_acquaintance
-    )],
+    entry_points=[CommandHandler('start', start)],
     states={
+        HELLO: [MessageHandler(
+            filters.Regex(HELLO_BUTTON_LABEL),
+            start_acquaintance
+        )],
         NAME: [MessageHandler(filters.TEXT & ~filters.COMMAND, name)],
         START: [MessageHandler(
             filters.Regex(START_BUTTON_LABEL),
