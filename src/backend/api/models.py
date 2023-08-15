@@ -1,12 +1,31 @@
 from django.conf import settings
-from django.contrib.auth.models import AbstractUser
 from django.db import models
-# from django.core.validators import MaxValueValidator, MinValueValidator
-# https://lucid.app/lucidchart/51f93cb7-9379-4588-be1b-61ddf4d9d637/view?page=0_0#
+
+
+class Answer(models.Model):
+    """Модель ответов."""
+
+    number = models.PositiveIntegerField(
+        'Номер ответа',
+        help_text='Введите номер ответа'
+    )
+    content = models.CharField(
+        'Содержание ответа',
+        help_text='Введите содержание ответа',
+        max_length=settings.MAX_LENGTH_COMMON_CHARFIELD
+    )
+
+    class Meta:
+        ordering = ('pk',)
+        verbose_name = 'ответ'
+        verbose_name_plural = '3. Ответы на задания'
+
+    def __str__(self):
+        return f'{self.number} {self.content}'
 
 
 class TaskStatus(models.Model):
-    """Модель Заданий."""
+    """Модель заданий."""
 
     number = models.PositiveIntegerField(
         'Номер задания',
@@ -35,73 +54,44 @@ class TaskStatus(models.Model):
 
     class Meta:
         ordering = ('pk',)
-        verbose_name = 'тег'
+        verbose_name = 'статус'
         verbose_name_plural = '2. Статусы заданий'
 
     def __str__(self):
         return f'{self.number} {self.summary} {self.is_done} {self.pass_date}'
 
 
-# class Recipe(models.Model):
-#     """Модель рецептов."""
+class Question(models.Model):
+    """Модель вопросов."""
 
-#     pub_date = models.DateTimeField(
-#         'Дата создания',
-#         auto_now_add=True,
-#         db_index=True
-#     )
-#     author = models.ForeignKey(
-#         User,
-#         on_delete=models.CASCADE,
-#         related_name='recipes',
-#         verbose_name='Автор',
-#         help_text='Укажите автора рецепта'
-#     )
-#     ingredients = models.ManyToManyField(
-#         Ingredient,
-#         through='RecipeIngredient',
-#         related_name='recipes',
-#         verbose_name='Ингридиенты',
-#         help_text='Введите используемые ингридиенты'
-#     )
-    
-#     name = models.CharField(
-#         'Наименование рецепта',
-#         max_length=settings.MAX_LENGTH_RECIPE_NAME,
-#         help_text='Введите наименование рецепта'
-#     )
-#     text = models.TextField(
-#         'Описание',
-#         help_text='Введите описание рецепта'
-#     )
-#     cooking_time = models.PositiveIntegerField(
-#         validators=[
-#             MinValueValidator(
-#                 settings.MIN_COOKING_TIME, settings.COOKING_TIME_MESSAGE
-#             ),
-#             MaxValueValidator(
-#                 settings.MAX_COOKING_TIME, settings.COOKING_TIME_MESSAGE
-#             )
-#         ],
-#         verbose_name='Время приготовления',
-#         help_text='Введите время приготовления (в минутах)'
-#     )
+    message = models.TextField(
+        'Содержание вопроса',
+        help_text='Введите вопрос'
+    )
+    answer = models.TextField(
+        'Варианты ответа',
+        help_text='Введите варианты ответа'
+    )
+    create_date = models.DateTimeField(
+        'Дата создания',
+        auto_now_add=True,
+        db_index=True
+    )
 
-#     class Meta:
-#         ordering = ('pub_date',)
-#         verbose_name = 'рецепт'
-#         verbose_name_plural = '3. Рецепты'
+    class Meta:
+        ordering = ('pk',)
+        verbose_name = 'вопрос'
+        verbose_name_plural = '4. Вопросы'
 
-#     def __str__(self):
-#         return self.name
+    def __str__(self):
+        return f'{self.message} {self.answer} {self.create_date}'
 
 
-class User(AbstractUser):
-    """Кастомная модель пользователя."""
+class UserFromTelegram(models.Model):
+    """Модель пользователя в Телеграме."""
 
     telegram_id = models.IntegerField(
         'Telegram ID',
-        max_length=settings.MAX_LENGTH_EMAIL,
         unique=True
     )
     name = models.CharField(
@@ -115,14 +105,14 @@ class User(AbstractUser):
     tasks = models.ForeignKey(
         TaskStatus,
         on_delete=models.CASCADE,
-        related_name='user',
-        verbose_name='Пользователь'
+        related_name='telegram_user',
+        verbose_name='Пройденные задания'
     )
     questions = models.ForeignKey(
         Question,
         on_delete=models.CASCADE,
-        related_name='user',
-        verbose_name='Пользователь'
+        related_name='telegram_user',
+        verbose_name='Ответы пользователя'
     )
     mentor = models.CharField(
         'Ментор',
@@ -132,19 +122,7 @@ class User(AbstractUser):
     class Meta:
         ordering = ('pk',)
         verbose_name = 'пользователя'
-        verbose_name_plural = '1. Пользователи'
-        # constraints = [
-        #     models.CheckConstraint(
-        #         check=~models.Q(user=models.F('author')),
-        #         name='user is not author',
-        #     ),
-        #     models.UniqueConstraint(
-        #         fields=['user', 'author'], name='unique_following')
-        # ]
-        # constraints = [
-        #     models.UniqueConstraint(
-        #         fields=['user', 'recipe'], name='unique_shopping_cart')
-        # ]
+        verbose_name_plural = '1. Пользователи из Телеграма'
 
     def __str__(self):
         return f'{self.telegram_id} {self.name} {self.surname}'
