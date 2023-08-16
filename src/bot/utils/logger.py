@@ -1,9 +1,17 @@
 import logging
 from logging.handlers import TimedRotatingFileHandler
 
-from bot.utils.configs import (LOG_DIR, LOG_FILE_PATH, LOG_WHEN, LOG_INTERVAL,
-                               LOG_BACKUP_COUNT, LOG_DT_FORMAT, LOG_FORMAT,
-                               LOG_LEVEL, LOG_ENCODING)
+from utils.configs import (
+    LOG_DIR,
+    LOG_FILE_PATH,
+    LOG_WHEN,
+    LOG_INTERVAL,
+    LOG_BACKUP_COUNT,
+    LOG_DT_FORMAT,
+    LOG_FORMAT,
+    LOG_LEVEL,
+    LOG_ENCODING,
+)
 
 
 def configure_logging() -> None:
@@ -18,12 +26,12 @@ def configure_logging() -> None:
         backupCount=LOG_BACKUP_COUNT,
         when=LOG_WHEN,
         interval=LOG_INTERVAL,
-        encoding=LOG_ENCODING
+        encoding=LOG_ENCODING,
     )
 
     logging.basicConfig(
         datefmt=LOG_DT_FORMAT,
         format=LOG_FORMAT,
         level=LOG_LEVEL,
-        handlers=(rotating_handler, logging.StreamHandler())
+        handlers=(rotating_handler, logging.StreamHandler()),
     )

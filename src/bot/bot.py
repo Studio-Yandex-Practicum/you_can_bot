@@ -1,6 +1,7 @@
 from telegram.ext import ApplicationBuilder
 
-from bot.utils.configs import TOKEN  # noqa
+from conversations.general.handlers import acquaintance_handler
+from utils.configs import TOKEN
 
 
 def create_bot():
@@ -9,6 +10,7 @@ def create_bot():
     :return: Created telegram bot application
     """
     bot_app = ApplicationBuilder().token(TOKEN).build()
+    bot_app.add_handlers((acquaintance_handler,))
     return bot_app
 
 
