@@ -11,9 +11,12 @@ from conversations.task_2.keyboards import (
     NEXT_PLACEHOLDER,
     REPLY_KEYBOARD,
 )
-from conversations.task_2.templates import (QUESTIONS, RESULT_MESSAGE,
-                                            TASK_2_CANCELLATION_TEXT,
-                                            TEXT_OF_START_OF_TASK_2)
+from conversations.task_2.templates import (
+    QUESTIONS,
+    RESULT_MESSAGE,
+    TASK_2_CANCELLATION_TEXT,
+    TEXT_OF_START_OF_TASK_2,
+)
 
 FIRST_QUESTION_MARKER = "Первый вопрос"
 OTHER_QUESTIONS_MARKER = "Следующий вопрос"

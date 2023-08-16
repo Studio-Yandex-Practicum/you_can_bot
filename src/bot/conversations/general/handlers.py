@@ -1,29 +1,27 @@
 import re
 
-from telegram import Update, ReplyKeyboardRemove
+from telegram import ReplyKeyboardRemove, Update
 from telegram.ext import (
-    ConversationHandler,
     CommandHandler,
+    ContextTypes,
+    ConversationHandler,
     MessageHandler,
     filters,
-    ContextTypes,
 )
 
+from .keyboards import FIRST_TASK_BUTTON, HELLO_BUTTON, START_BUTTON
 from .templates import (
-    YOUR_NAME_QUESTION,
-    SKILL_SET_INFORMATION,
-    FIRST_SKILL_SET_INFORMATION,
-    START_BUTTON_LABEL,
-    FIRST_TASK_BUTTON_LABEL,
     CANCEL_ACQUAINTANCE,
-    START_MESSAGE,
+    FIRST_SKILL_SET_INFORMATION,
+    FIRST_TASK_BUTTON_LABEL,
     HELLO_BUTTON_LABEL,
-    WRONG_NAME_SURNAME,
     ILLEGAL_CHARACTERS_NAME_SURNAME,
+    SKILL_SET_INFORMATION,
+    START_BUTTON_LABEL,
+    START_MESSAGE,
+    WRONG_NAME_SURNAME,
+    YOUR_NAME_QUESTION,
 )
-
-from .keyboards import HELLO_BUTTON, START_BUTTON, FIRST_TASK_BUTTON
-
 
 HELLO, NAME, START, FIRST_TASK = range(4)
 
@@ -88,11 +86,11 @@ async def first_task(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     На данный момент реализован 1 и 3 пункт.
     """
 
-    data = {
-        "name": context.user_data["user_name"],
-        "surname": context.user_data["user_surname"],
-        "telegram_id": update.effective_chat.id,
-    }
+    # data = {
+    #     "name": context.user_data["user_name"],
+    #     "surname": context.user_data["user_surname"],
+    #     "telegram_id": update.effective_chat.id,
+    # }
 
     return ConversationHandler.END
 

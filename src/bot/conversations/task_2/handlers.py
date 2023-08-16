@@ -9,7 +9,10 @@ from conversations.task_2.callback_funcs import (
     show_result,
     show_start_of_test_2,
 )
-from conversations.task_2.keyboards import CANCEL_COMMAND, TEXT_ENTRY_POINT_BUTTON_FOR_TASK_2
+from conversations.task_2.keyboards import (
+    CANCEL_COMMAND,
+    TEXT_ENTRY_POINT_BUTTON_FOR_TASK_2,
+)
 
 FILTER = filters.Regex("^(а|б)$")
 

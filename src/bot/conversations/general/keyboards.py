@@ -1,7 +1,6 @@
 from telegram import ReplyKeyboardMarkup
 
-from .templates import HELLO_BUTTON_LABEL, START_BUTTON_LABEL, FIRST_TASK_BUTTON_LABEL
-
+from .templates import FIRST_TASK_BUTTON_LABEL, HELLO_BUTTON_LABEL, START_BUTTON_LABEL
 
 HELLO_BUTTON = ReplyKeyboardMarkup([[HELLO_BUTTON_LABEL]], resize_keyboard=True)
 
