@@ -20,6 +20,7 @@ python-dotenv = "^1.0.0"
 
 [tool.isort]
 profile = "black"
+src_paths = ["src/bot", "src/backend"]
 
 [build-system]
 requires = ["poetry-core"]
