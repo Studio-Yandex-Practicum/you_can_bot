@@ -2,15 +2,15 @@ import logging
 from logging.handlers import TimedRotatingFileHandler
 
 from utils.configs import (
-    LOG_DIR,
-    LOG_FILE_PATH,
-    LOG_WHEN,
-    LOG_INTERVAL,
     LOG_BACKUP_COUNT,
+    LOG_DIR,
     LOG_DT_FORMAT,
-    LOG_FORMAT,
-    LOG_LEVEL,
     LOG_ENCODING,
+    LOG_FILE_PATH,
+    LOG_FORMAT,
+    LOG_INTERVAL,
+    LOG_LEVEL,
+    LOG_WHEN,
 )
 
 
@@ -35,3 +35,5 @@ def configure_logging() -> None:
         level=LOG_LEVEL,
         handlers=(rotating_handler, logging.StreamHandler()),
     )
+
+    logging.getLogger("httpx").setLevel(logging.WARNING)

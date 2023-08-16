@@ -107,7 +107,7 @@ async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     return ConversationHandler.END
 
 
-acquaintance_handler = ConversationHandler(
+acquaintance_handler: ConversationHandler = ConversationHandler(
     entry_points=[CommandHandler("start", start)],
     states={
         HELLO: [MessageHandler(filters.Regex(HELLO_BUTTON_LABEL), start_acquaintance)],
