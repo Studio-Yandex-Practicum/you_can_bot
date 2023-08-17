@@ -8,8 +8,6 @@ load_dotenv()
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-# Ниже приведено значение BASE_DIR из моих старых конфигов
-# BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = os.getenv('SECRET_KEY', default='secret_key')
 DEBUG = os.getenv('DEBUG', default=False)
 ALLOWED_HOSTS = [os.getenv('ALLOWED_HOSTS', default='*')]
@@ -48,8 +46,6 @@ TEMPLATES = [
     },
 ]
 WSGI_APPLICATION = "backend.wsgi.application"
-# Чтобы проект стартовал с sqlite необходимо задать в .env
-# NEED_SQLITE=True
 if os.getenv('NEED_SQLITE'):
     DATABASES = {
         'default': {
@@ -90,11 +86,12 @@ USE_L10N = True
 USE_TZ = True
 STATIC_URL = "static/"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-# Кастомизированная модель пользователя (на будущее может пригодиться)
-# AUTH_USER_MODEL = 'api.User'
-# Максимальная длина имени
 MAX_LENGTH_NAME = 150
-# Максимальная длина фамилии
 MAX_LENGTH_SURNAME = 150
-# Максимальная длина типа поля CharField
 MAX_LENGTH_COMMON_CHARFIELD = 10
+MIN_TASK_NUMBER = 1
+MAX_TASK_NUMBER = 8
+TASK_NUMBER_MESSAGE = (
+    'Номер задания может принимать значения от '
+    f'{MIN_TASK_NUMBER} до {MAX_TASK_NUMBER}.'
+)
