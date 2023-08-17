@@ -45,10 +45,11 @@ class ProblemAdmin(admin.ModelAdmin):
     list_display = (
         'pk',
         'message',
-        'answer'
+        'answer',
+        'create_date'
     )
     list_editable = ('message', 'answer')
-    search_fields = ('message', 'answer')
+    search_fields = ('message', 'answer', 'create_date')
     empty_value_display = '-пусто-'
     inlines = [ProblemInline]
 
@@ -73,9 +74,13 @@ class TaskStatusAdmin(admin.ModelAdmin):
         'number',
         'summary',
         'is_done',
-        'pass_date'
+        'pass_date',
+        'current_question',
+        'end_question'
     )
-    list_editable = ('number', 'summary', 'is_done')
+    list_editable = (
+        'number', 'summary', 'is_done', 'current_question', 'end_question'
+    )
     search_fields = ('number', 'summary', 'is_done', 'pass_date')
     inlines = [TaskStatusInline]
 

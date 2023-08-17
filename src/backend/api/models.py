@@ -63,6 +63,14 @@ class TaskStatus(models.Model):
         default=None,
         db_index=True
     )
+    current_question = models.PositiveIntegerField(
+        'Текущий номер задания',
+        help_text='Введите текущий номер задания'
+    )
+    end_question = models.PositiveIntegerField(
+        'Последний номер задания',
+        help_text='Введите последний номер задания'
+    )
 
     class Meta:
         ordering = ('pk',)
@@ -93,7 +101,7 @@ class TaskStatusAnswer(models.Model):
         verbose_name='Номер пула ответов',
         help_text='Введите ID пула ответов'
     )
-    
+
     class Meta:
         ordering = ('pk',)
         verbose_name = 'номер задания'
@@ -114,12 +122,11 @@ class Problem(models.Model):
         help_text='Введите ответ психолога',
         blank=True
     )
-    # Может есть смысл добавить дату создания?
-    # create_date = models.DateTimeField(
-    #     'Дата создания',
-    #     auto_now_add=True,
-    #     db_index=True
-    # )
+    create_date = models.DateTimeField(
+        'Дата создания',
+        auto_now_add=True,
+        db_index=True
+    )
 
     class Meta:
         ordering = ('pk',)
@@ -132,7 +139,7 @@ class Problem(models.Model):
 
 class UserFromTelegram(models.Model):
     """Модель пользователя в Телеграме."""
-    
+
     # Плохая идея исплользовать telegram_id в качестве pk.
     # Для базы лучше, чтобы pk постепенно (инкрементально) увеличивался.
     # Это избавит от проблем в дальнейшей при работе непосредственно с СУБД.
@@ -197,7 +204,7 @@ class UserFromTelegramProblem(models.Model):
         verbose_name='Проблемный вопрос',
         help_text='Введите ID проблемного вопроса'
     )
-    
+
     class Meta:
         ordering = ('pk',)
         verbose_name = 'пользователь, добавивший проблемный вопрос'
@@ -226,7 +233,7 @@ class UserFromTelegramTaskStatus(models.Model):
         verbose_name='Решенное задание',
         help_text='Введите ID решенного задания'
     )
-    
+
     class Meta:
         ordering = ('pk',)
         verbose_name = 'Пользователь, решивший задание'
