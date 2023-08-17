@@ -1,59 +1,50 @@
 from telegram import (
-    BotCommand, Bot, InlineKeyboardMarkup, InlineKeyboardButton)
+    BotCommand, ReplyKeyboardMarkup, KeyboardButton, WebAppInfo)
 
 from . templates import (
-    COMMANDS, TASKS_BUTTON_TEXT, TASKS_BUTTON_CALLBACK, TASKS_NUMBER,
-    MOVE_BACK_TEXT, MOVE_BACK_CALLBACK, EDIT_PROFILE_TEXT,
-    EDIT_PROFILE_CALLBACK, URL, URL_BUTTON_TEXT, CONFIRM, CANCEL,
-    CONFIRM_CALLBACK, CANCEL_CALLBACK
+    COMMANDS, TASKS_BUTTON_TEXT, TASKS_NUMBER,
+    MOVE_BACK_TEXT, EDIT_PROFILE_TEXT,
+    URL, URL_BUTTON_TEXT, CONFIRM, CANCEL
 )
 
 
 MOVE_BACK_BUTTON = [
-    [InlineKeyboardButton(
-        text=MOVE_BACK_TEXT,
-        callback_data=MOVE_BACK_CALLBACK
-    )]
+    [KeyboardButton(text=MOVE_BACK_TEXT)]
 ]
 
 PROFILE_MENU_BUTTONS = [
-    [InlineKeyboardButton(
-        text=EDIT_PROFILE_TEXT, callback_data=EDIT_PROFILE_CALLBACK
-    )]
+    [KeyboardButton(text=EDIT_PROFILE_TEXT)]
 ] + MOVE_BACK_BUTTON
 
 CONFIRMATION_BUTTONS = [
-    [InlineKeyboardButton(
-        text=CONFIRM, callback_data=CONFIRM_CALLBACK
-    )],
-    [InlineKeyboardButton(
-        text=CANCEL, callback_data=CANCEL_CALLBACK
-    )]
+    [KeyboardButton(text=CONFIRM)],
+    [KeyboardButton(text=CANCEL)]
 ]
 
 URL_BUTTON = [
-    [InlineKeyboardButton(
-        text=URL_BUTTON_TEXT, url=URL
+    [KeyboardButton(
+        text=URL_BUTTON_TEXT,
+        web_app=WebAppInfo(url=URL)
     )]
 ]
 
 
-async def create_main_menu(bot: Bot) -> None:
+def get_main_menu_commands() -> list[BotCommand]:
     """Создает кнопку с меню бота и добавляет в нее команды."""
-    commands = [
+    return [
         BotCommand(cmd, description) for cmd, description in COMMANDS.items()
     ]
-    await bot.set_my_commands(commands=commands)
 
 
-def create_tasks_keyboard(prefix: str) -> InlineKeyboardMarkup:
+def create_tasks_keyboard() -> ReplyKeyboardMarkup:
     """Формирует клавиатуру со списком заданий."""
     tasks_list_buttons = [
         [
-            InlineKeyboardButton(
-                text=f'{TASKS_BUTTON_TEXT} {i+1}',
-                callback_data=f'{prefix}_{TASKS_BUTTON_CALLBACK}_{i+1}'
-            )
+            KeyboardButton(text=f'{TASKS_BUTTON_TEXT} {i+1}')
         ] for i in range(TASKS_NUMBER)
     ] + MOVE_BACK_BUTTON
-    return InlineKeyboardMarkup(tasks_list_buttons)
+    return ReplyKeyboardMarkup(
+        keyboard=tasks_list_buttons,
+        resize_keyboard=True,
+        one_time_keyboard=True
+    )

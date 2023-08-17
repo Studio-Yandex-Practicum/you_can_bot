@@ -1,8 +1,8 @@
 # Main menu button commands
 COMMANDS = {
     'profile': 'Профиль',
-    'all_tasks': 'Посмотреть все задания',
-    'my_results': 'Посмотреть расшифровку моих заданий',
+    'tasks': 'Посмотреть все задания',
+    'results': 'Посмотреть расшифровку моих заданий',
     'ask': 'Задать вопрос',
     'info': 'Перейти на сайт/инфо',
 }
@@ -13,23 +13,22 @@ USER_PROFILE_TEXT = (
     'Пройдено заданий: {tasks_completed}\n'
 )
 EDIT_PROFILE_TEXT = 'Редактировать профиль'
-EDIT_PROFILE_CALLBACK = 'EDIT_PROFILE'
-EDIT_PROFILE, WAITING_FOR_NAME = range(2)
+EDIT_PROFILE, WAITING_FOR_NAME, WAITING_FOR_SURNAME = range(3)
 ENTER_NAME = ('Введи свое имя.\n'
               'Допустимы буквы русского и латинского алфавитов.')
-NEW_NAME = 'Новое имя - {user_name}. Сохранить изменения?'
-INCORRECT_NAME = ('Возникла ошибка. Введи имя заново. '
-                  'Оно должно состоять из букв '
-                  'русского или латинского алфавита')
-NAME_CHANGED = 'Изменения сохранены'
+ENTER_SURNAME = ('Отлично! А теперь введи свою фамилию.\n'
+                 'Допустимы буквы русского и латинского алфавитов.')
+CONFIRM_PROFILE_CHANGING = 'Сохранить изменения в профиле?'
+INCORRECT_NAME = ('Возникла ошибка. Повтори ввод. '
+                  'Допустимы только буквы русского '
+                  'или латинского алфавита')
+PROFILE_CHANGED = 'Изменения сохранены'
 
-# All tasks + My results
+# Show all tasks + show user results
 TASKS_LIST_TEXT = 'Выбери задание'
 TASKS_NUMBER = 8
 TASKS_BUTTON_TEXT = 'Задание'
-TASKS_BUTTON_CALLBACK = 'TASK'
 MOVE_BACK_TEXT = 'Назад'
-MOVE_BACK_CALLBACK = 'MOVE_BACK'
 MOVE_BACK_MSG = 'Нажми меню для начала работы'
 
 # Ask question
@@ -46,10 +45,8 @@ URL = 'https://youcan.by/'
 
 
 CONFIRM = 'Подтвердить'
-CONFIRM_CALLBACK = 'CONFIRM'
 CANCEL = 'Отменить'
-CANCEL_CALLBACK = 'CANCEL'
 CANCEL_TEXT = 'Изменения отменены'
 
 # Temporary (to be removed when get data from data base)
-GET_NUMBER_FROM_DB = 10
+GET_NUMBER_FROM_DB = 5
