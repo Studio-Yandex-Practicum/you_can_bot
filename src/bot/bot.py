@@ -6,7 +6,7 @@ from telegram.ext import Application
 from .conversations.menu.keyboards import get_main_menu_commands
 from .conversations.menu.handlers import (
     profile_handler, ask_question_handler, show_all_tasks_handler,
-    show_user_results_handler, info_handler, move_back_handler)
+    show_user_results_handler, info_handler)
 
 
 load_dotenv()
@@ -28,7 +28,6 @@ def create_bot():
     bot_app.add_handler(show_all_tasks_handler)
     bot_app.add_handler(show_user_results_handler)
     bot_app.add_handler(info_handler)
-    bot_app.add_handler(move_back_handler)
     return bot_app
 
 

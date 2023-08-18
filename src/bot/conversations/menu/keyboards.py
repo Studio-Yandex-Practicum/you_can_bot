@@ -3,22 +3,21 @@ from telegram import (
 
 from . templates import (
     COMMANDS, TASKS_BUTTON_TEXT, TASKS_NUMBER,
-    MOVE_BACK_TEXT, EDIT_PROFILE_TEXT,
-    URL, URL_BUTTON_TEXT, CONFIRM, CANCEL
+    EDIT_PROFILE_TEXT, CONFIRM, CANCEL,
+    URL, URL_BUTTON_TEXT
 )
 
 
-MOVE_BACK_BUTTON = [
-    [KeyboardButton(text=MOVE_BACK_TEXT)]
-]
+CANCEL_BUTTON = [KeyboardButton(text=CANCEL)]
 
 PROFILE_MENU_BUTTONS = [
-    [KeyboardButton(text=EDIT_PROFILE_TEXT)]
-] + MOVE_BACK_BUTTON
+    [KeyboardButton(text=EDIT_PROFILE_TEXT)],
+    CANCEL_BUTTON
+]
 
 CONFIRMATION_BUTTONS = [
     [KeyboardButton(text=CONFIRM)],
-    [KeyboardButton(text=CANCEL)]
+    CANCEL_BUTTON
 ]
 
 URL_BUTTON = [
@@ -42,7 +41,7 @@ def create_tasks_keyboard() -> ReplyKeyboardMarkup:
         [
             KeyboardButton(text=f'{TASKS_BUTTON_TEXT} {i+1}')
         ] for i in range(TASKS_NUMBER)
-    ] + MOVE_BACK_BUTTON
+    ] + [CANCEL_BUTTON]
     return ReplyKeyboardMarkup(
         keyboard=tasks_list_buttons,
         resize_keyboard=True,

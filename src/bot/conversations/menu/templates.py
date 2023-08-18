@@ -23,13 +23,12 @@ INCORRECT_NAME = ('Возникла ошибка. Повтори ввод. '
                   'Допустимы только буквы русского '
                   'или латинского алфавита')
 PROFILE_CHANGED = 'Изменения сохранены'
+NAME_PATTERN = '^[A-Za-zА-яЁё ]+$'
 
 # Show all tasks + show user results
 TASKS_LIST_TEXT = 'Выбери задание'
 TASKS_NUMBER = 8
 TASKS_BUTTON_TEXT = 'Задание'
-MOVE_BACK_TEXT = 'Назад'
-MOVE_BACK_MSG = 'Нажми меню для начала работы'
 
 # Ask question
 ASK_ME_QUESTION_TEXT = 'Задай вопрос, который тебя интересует'
@@ -46,7 +45,7 @@ URL = 'https://youcan.by/'
 
 CONFIRM = 'Подтвердить'
 CANCEL = 'Отменить'
-CANCEL_TEXT = 'Изменения отменены'
+CANCEL_TEXT = 'Действие отменено'
 
 # Temporary (to be removed when get data from data base)
 GET_NUMBER_FROM_DB = 5

@@ -10,7 +10,7 @@ from .templates import (
     ASK_ME_QUESTION_TEXT, GET_MORE_INFO_TEXT, EDIT_PROFILE, ENTER_NAME,
     WAITING_FOR_NAME, WAITING_FOR_SURNAME, ENTER_SURNAME, INCORRECT_NAME,
     WAITING_FOR_QUESTION, CONFIRM_PROFILE_CHANGING, PROFILE_CHANGED,
-    SEND_QUESTION_TEXT, QUESTION_CONFIRMATION_TEXT, MOVE_BACK_MSG)
+    SEND_QUESTION_TEXT, QUESTION_CONFIRMATION_TEXT, NAME_PATTERN)
 
 
 async def get_user_profile(
@@ -163,15 +163,15 @@ async def show_url(
     )
 
 
-async def move_back(
-    update: Update, context: ContextTypes.DEFAULT_TYPE
-) -> int:
-    """Возвращает к работе с главным меню."""
-    context.user_data.clear()
-    await update.message.reply_text(text=MOVE_BACK_MSG)
-    return ConversationHandler.END
+# async def move_back(
+#     update: Update, context: ContextTypes.DEFAULT_TYPE
+# ) -> int:
+#     """Возвращает к работе с главным меню."""
+#     context.user_data.clear()
+#     await update.message.reply_text(text=MOVE_BACK_MSG)
+#     return ConversationHandler.END
 
-
+cancel_handler = MessageHandler(filters.Regex('^Отменить$'), cancel)
 profile_handler = ConversationHandler(
     entry_points=[
         CommandHandler('profile', get_user_profile)
@@ -185,22 +185,22 @@ profile_handler = ConversationHandler(
         ],
         WAITING_FOR_NAME: [
             MessageHandler(
-                filters.Regex('^[A-Za-zА-яЁё ]+$') & ~filters.Regex(
+                filters.Regex(NAME_PATTERN) & ~filters.Regex(
                     '^(Подтвердить|Отменить)$'),
                 update_user_name
             ),
             MessageHandler(
-                ~filters.Regex('^[A-Za-zА-яЁё ]+$'), send_incorrect_data_alert
+                ~filters.Regex(NAME_PATTERN), send_incorrect_data_alert
             ),
         ],
         WAITING_FOR_SURNAME: [
             MessageHandler(
-                filters.Regex('^[A-Za-zА-яЁё ]+$') & ~filters.Regex(
+                filters.Regex(NAME_PATTERN) & ~filters.Regex(
                     '^(Подтвердить|Отменить)$'),
                 update_user_surname
             ),
             MessageHandler(
-                ~filters.Regex('^[A-Za-zА-яЁё ]+$'), send_incorrect_data_alert
+                ~filters.Regex(NAME_PATTERN), send_incorrect_data_alert
             ),
         ]
     },
@@ -208,8 +208,8 @@ profile_handler = ConversationHandler(
         MessageHandler(
             filters.Regex('^Подтвердить$'),
             save_user_profile_changings),
-        MessageHandler(filters.Regex('^Отменить$'), cancel),
-        MessageHandler(filters.Regex('^Назад$'), move_back),
+        # MessageHandler(filters.Regex('^Отменить$'), cancel)
+        cancel_handler
     ],
 )
 
@@ -228,12 +228,11 @@ ask_question_handler = ConversationHandler(
     fallbacks=[
         MessageHandler(
             filters.Regex('^Подтвердить$'), confirm_saving_question),
-        MessageHandler(filters.Regex('^Отменить$'), cancel),
-        MessageHandler(filters.Regex('^Назад$'), move_back),
+        # MessageHandler(filters.Regex('^Отменить$'), cancel)
+        cancel_handler
     ],
 )
 
 show_all_tasks_handler = CommandHandler('tasks', show_all_user_tasks)
 show_user_results_handler = CommandHandler('results', show_all_user_results)
 info_handler = CommandHandler('info', show_url)
-move_back_handler = MessageHandler(filters.Regex('^Назад$'), move_back)
