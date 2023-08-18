@@ -1,242 +1,175 @@
 from django.conf import settings
-from django.core.validators import MaxValueValidator, MinValueValidator
+from django.contrib.auth import get_user_model
 from django.db import models
 
+_MAX_LENGTH_OF_TELEGRAM_USERNAME = 32
 
-class Answer(models.Model):
-    """Модель ответов."""
+User = get_user_model()
 
-    number = models.PositiveIntegerField(
-        'Номер ответа',
-        help_text='Введите номер ответа'
+
+class MentorProfile(models.Model):
+    """Модель профиля психолога."""
+
+    user = models.OneToOneField(
+        to=User,
+        on_delete=models.CASCADE,
     )
-    content = models.CharField(
-        'Содержание ответа',
-        help_text='Введите содержание ответа',
-        max_length=settings.MAX_LENGTH_COMMON_CHARFIELD
+    telegram_username = models.CharField(
+        "Никнейм Telegram",
+        help_text="На этот никнейм в Telegram могут быть отправлены уведомления",
+        max_length=_MAX_LENGTH_OF_TELEGRAM_USERNAME,
+        unique=True,
     )
 
     class Meta:
-        ordering = ('pk',)
-        verbose_name = 'ответ'
-        verbose_name_plural = '3. Ответы на задания'
+        verbose_name = "Профиль"
 
     def __str__(self):
-        return f'{self.number} {self.content}'
+        return f"{self.user}"
+
+
+class UserFromTelegram(models.Model):
+    """Модель пользователя из Telegram."""
+
+    telegram_id = models.PositiveBigIntegerField(
+        "Telegram ID",
+        unique=True,
+    )
+    telegram_username = models.CharField(
+        "Никнейм Telegram",
+        max_length=_MAX_LENGTH_OF_TELEGRAM_USERNAME,
+        unique=True,
+    )
+    name = models.CharField(
+        "Имя",
+        max_length=settings.MAX_LENGTH_NAME,
+    )
+    surname = models.CharField(
+        "Фамилия",
+        max_length=settings.MAX_LENGTH_SURNAME,
+    )
+    mentor = models.ForeignKey(
+        verbose_name="Психолог",
+        to=MentorProfile,
+        on_delete=models.SET_NULL,
+        null=True,
+    )
+
+    class Meta:
+        ordering = ("pk",)
+        verbose_name = "пользователя"
+        verbose_name_plural = "Пользователи из Telegram"
+
+    def __str__(self):
+        return f"{self.name} {self.surname}"
 
 
 class TaskStatus(models.Model):
-    """Модель заданий."""
+    """Модель статуса выполнения задания пользователем."""
 
-    number = models.PositiveIntegerField(
-        'Номер задания',
-        help_text='Введите номер задания',
-        validators=[
-            MinValueValidator(
-                settings.MIN_TASK_NUMBER,
-                settings.TASK_NUMBER_MESSAGE
-            ),
-            MaxValueValidator(
-                settings.MAX_TASK_NUMBER,
-                settings.TASK_NUMBER_MESSAGE
-            )
-        ],
+    class TaskNumber(models.IntegerChoices):
+        FIRST = 1, "Задание 1"
+        SECOND = 2, "Задание 2"
+        THIRD = 3, "Задание 3"
+        FOURTH = 4, "Задание 4"
+        FIFTH = 5, "Задание 5"
+        SIXTH = 6, "Задание 6"
+        SEVENTH = 7, "Задание 7"
+        EIGHTH = 8, "Задание 8"
+
+    user = models.ForeignKey(
+        verbose_name="Пользователь",
+        to=UserFromTelegram,
+        on_delete=models.CASCADE,
+        related_name="tasks",
     )
-    answers = models.ManyToManyField(
-        Answer,
-        through='TaskStatusAnswer',
-        related_name='task_status',
-        verbose_name='Ответы пользователя',
-        help_text='Введите ответы'
+    number = models.PositiveSmallIntegerField(
+        "Номер задания",
+        choices=TaskNumber.choices,
     )
     summary = models.TextField(
-        'Расшифровка',
-        help_text='Введите расшифровку',
-        blank=True
+        "Расшифровка",
+        null=True,
     )
     is_done = models.BooleanField(
-        'Статус выполнения',
-        default=False
+        "Выполнено",
+        default=False,
     )
     pass_date = models.DateTimeField(
-        'Дата выполнения',
+        "Дата выполнения",
+        null=True,
         default=None,
-        db_index=True
+        db_index=True,
     )
-    current_question = models.PositiveIntegerField(
-        'Текущий номер задания',
-        help_text='Введите текущий номер задания'
+    current_question = models.PositiveSmallIntegerField(
+        "Текущий номер задания",
+        default=0,
     )
-    end_question = models.PositiveIntegerField(
-        'Последний номер задания',
-        help_text='Введите последний номер задания'
-    )
-
-    class Meta:
-        ordering = ('pk',)
-        verbose_name = 'статус'
-        verbose_name_plural = '2. Статусы заданий'
-
-    def __str__(self):
-        return f'{self.number} {self.summary} {self.is_done} {self.pass_date}'
-
-
-class TaskStatusAnswer(models.Model):
-    """
-    У задания может быть несколько попыток прохождения.
-    В этой модели будут связаны:
-    1) id заданий
-    2) id пула ответов.
-    """
-
-    task_status = models.ForeignKey(
-        TaskStatus,
-        on_delete=models.CASCADE,
-        verbose_name='Номер задания',
-        help_text='Введите номер задания'
-    )
-    answers = models.ForeignKey(
-        Answer,
-        on_delete=models.CASCADE,
-        verbose_name='Номер пула ответов',
-        help_text='Введите ID пула ответов'
+    end_question = models.PositiveSmallIntegerField(
+        "Последний номер задания",
     )
 
     class Meta:
-        ordering = ('pk',)
-        verbose_name = 'номер задания'
+        ordering = ("pk",)
+        verbose_name = "статус"
+        verbose_name_plural = "Статусы заданий"
+        unique_together = ("user", "number")
 
     def __str__(self):
-        return f'{self.task_status.pk} {self.answers.pk}'
+        return f"Задание {self.number}"
+
+
+class Answer(models.Model):
+    """Модель ответов на вопросы заданий."""
+
+    task = models.ForeignKey(
+        verbose_name="Задание",
+        to=TaskStatus,
+        on_delete=models.CASCADE,
+        related_name="answers",
+    )
+    number = models.PositiveSmallIntegerField(
+        "Номер вопроса",
+    )
+    content = models.TextField(
+        "Ответ",
+    )
+
+    class Meta:
+        ordering = ("pk",)
+        verbose_name = "ответ"
+        verbose_name_plural = "Ответы на задания"
+
+    def __str__(self):
+        return f"Ответ {self.number}"
 
 
 class Problem(models.Model):
     """Модель вопросов от пользователей телеграм."""
 
+    user = models.ForeignKey(
+        verbose_name="Пользователь",
+        to=UserFromTelegram,
+        on_delete=models.CASCADE,
+        related_name="problems",
+    )
     message = models.TextField(
-        'Содержание вопроса',
-        help_text='Введите вопрос'
+        "Вопрос",
     )
     answer = models.TextField(
-        'Ответ психолога',
-        help_text='Введите ответ психолога',
-        blank=True
+        "Ответ психолога",
+        null=True,
     )
     create_date = models.DateTimeField(
-        'Дата создания',
+        "Дата создания",
         auto_now_add=True,
-        db_index=True
+        db_index=True,
     )
 
     class Meta:
-        ordering = ('pk',)
-        verbose_name = 'вопрос'
-        verbose_name_plural = '4. Вопросы от пользователей'
+        ordering = ("pk",)
+        verbose_name = "вопрос"
+        verbose_name_plural = "Вопросы от пользователей"
 
     def __str__(self):
-        return f'{self.message} {self.answer}'
-
-
-class UserFromTelegram(models.Model):
-    """Модель пользователя в Телеграме."""
-
-    # Плохая идея исплользовать telegram_id в качестве pk.
-    # Для базы лучше, чтобы pk постепенно (инкрементально) увеличивался.
-    # Это избавит от проблем в дальнейшей при работе непосредственно с СУБД.
-    telegram_id = models.PositiveBigIntegerField(
-        'Telegram ID',
-        unique=True
-    )
-    name = models.CharField(
-        'Имя',
-        max_length=settings.MAX_LENGTH_NAME
-    )
-    surname = models.CharField(
-        'Фамилия',
-        max_length=settings.MAX_LENGTH_SURNAME
-    )
-    tasks = models.ManyToManyField(
-        TaskStatus,
-        through='UserFromTelegramTaskStatus',
-        related_name='telegram_user',
-        verbose_name='Задания, решенные пользователем',
-        help_text='Введите задания'
-    )
-    problems = models.ManyToManyField(
-        Problem,
-        through='UserFromTelegramProblem',
-        related_name='telegram_user',
-        verbose_name='Вопросы от пользователя',
-        help_text='Введите вопросы от пользователя'
-    )
-    mentor = models.CharField(
-        'Психолог',
-        max_length=settings.MAX_LENGTH_SURNAME,
-        blank=True
-    )
-
-    class Meta:
-        ordering = ('pk',)
-        verbose_name = 'пользователя'
-        verbose_name_plural = '1. Пользователи из Телеграма'
-
-    def __str__(self):
-        return f'{self.telegram_id} {self.name} {self.surname}'
-
-
-class UserFromTelegramProblem(models.Model):
-    """
-    У одного пользователя может быть несколько проблемных вопросов.
-    В этой модели будут связаны:
-    1) id пользователей из Телеграм
-    2) id проблемных вопросов.
-    """
-
-    user = models.ForeignKey(
-        UserFromTelegram,
-        on_delete=models.CASCADE,
-        verbose_name='Пользователь из Телеграма',
-        help_text='Введите ID пользователя'
-    )
-    problem = models.ForeignKey(
-        Problem,
-        on_delete=models.CASCADE,
-        verbose_name='Проблемный вопрос',
-        help_text='Введите ID проблемного вопроса'
-    )
-
-    class Meta:
-        ordering = ('pk',)
-        verbose_name = 'пользователь, добавивший проблемный вопрос'
-
-    def __str__(self):
-        return f'{self.user.name} {self.problem.message}'
-
-
-class UserFromTelegramTaskStatus(models.Model):
-    """
-    У одного пользователя может быть несколько решенных заданий.
-    В этой модели будут связаны:
-    1) id пользователей из Телеграм
-    2) id решенных заданий.
-    """
-
-    user = models.ForeignKey(
-        UserFromTelegram,
-        on_delete=models.CASCADE,
-        verbose_name='Пользователь из Телеграма',
-        help_text='Введите ID пользователя'
-    )
-    task = models.ForeignKey(
-        TaskStatus,
-        on_delete=models.CASCADE,
-        verbose_name='Решенное задание',
-        help_text='Введите ID решенного задания'
-    )
-
-    class Meta:
-        ordering = ('pk',)
-        verbose_name = 'Пользователь, решивший задание'
-
-    def __str__(self):
-        return f'{self.user.name} {self.task.number}'
+        return self.message
