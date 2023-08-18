@@ -117,7 +117,12 @@ _Примеры:_
  </summary>
 <br>
 
+1. Создать и заполнить `.env` по образцу `/.env.example`
+
+2. Запустить бота командой
+
+```BASH
+python src/bot/run_bot.py
 ```
-python src/run_bot.py
-```
+
 </details>
