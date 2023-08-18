@@ -160,3 +160,7 @@ cython_debug/
 
 # Exclude log dir
 logs/
+
+# Django #
+media/
+static/
