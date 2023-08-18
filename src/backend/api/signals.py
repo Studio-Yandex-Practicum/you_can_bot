@@ -2,7 +2,7 @@ from django.contrib.auth import get_user_model
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
-from api.models import UserFromTelegram, TaskStatus, MentorProfile
+from api.models import MentorProfile, TaskStatus, UserFromTelegram
 
 User = get_user_model()
 
