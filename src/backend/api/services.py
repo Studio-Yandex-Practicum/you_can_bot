@@ -13,7 +13,9 @@ def calculate_test_2_result(user_answers: list[Answer]) -> str:
 
     answers_groups = [[] for _ in range(ANSWERS_GROUPS_COUNT)]
     for answer in user_answers:
-        answers_groups[answer.number % 7 - 1].append(1 if answer.content == 'а' else 0)
+        answers_groups[answer.number % ANSWERS_GROUPS_COUNT - 1].append(
+            1 if answer.content == 'а' else 0
+        )
 
     user_letter_a_score_by_feature = (
         sum(answers_groups[0]),
@@ -21,6 +23,7 @@ def calculate_test_2_result(user_answers: list[Answer]) -> str:
         sum(answers_groups[3] + answers_groups[4]),
         sum(answers_groups[5] + answers_groups[6]),
     )
+
     user_psychotype = ''.join(
         [
             features[0 if a_result > max_score / 2 else 1]
