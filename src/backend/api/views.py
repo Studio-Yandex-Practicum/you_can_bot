@@ -3,6 +3,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .serializers import QuestionSerializer
 
+
 @api_view(['POST'])
 def create_question(request, telegram_id):
     data = {'telegram_id': telegram_id, 'message': request.data.get('message')}
