@@ -1,8 +1,7 @@
-from .constants import TEST_2_RESULTS
-from .models import Answer
+from api.models import Answer
 
 
-def calculate_test_2_result(user_answers: list[Answer]) -> str:
+def calculate_task_2_result(user_answers: list[Answer]) -> str:
     """
     Принимает список ответов пользователя на 2 задание,
     расчитывает результат и возвращает описание психотипа.
@@ -35,4 +34,4 @@ def calculate_test_2_result(user_answers: list[Answer]) -> str:
             )
         ]
     )
-    return TEST_2_RESULTS[user_psychotype]
+    return user_psychotype
