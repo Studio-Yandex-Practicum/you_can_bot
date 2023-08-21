@@ -11,3 +11,4 @@ class AnswerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Answer
         fields = '__all__'
+        extra_kwargs = {'task': {'write_only': True}}

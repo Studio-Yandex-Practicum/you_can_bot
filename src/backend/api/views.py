@@ -1,33 +1,34 @@
 
+from django.shortcuts import get_object_or_404
+from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from rest_framework import status
 
-from .models import Answer, UserFromTelegram, TaskStatus
+from .models import Answer, TaskStatus, UserFromTelegram
 from .serializers import AnswerSerializer
-from django.shortcuts import get_object_or_404
 
 
 @api_view(('POST',))
 def answer_create(request, telegram_id, task_number):
-    """Занесение ответа от пользователя в Answer."""
+    """
+    Создание записи в таблице Answer.
+    Изменение в таблице TaskStatus поля current_question для пользователя.
+    """
     user = get_object_or_404(UserFromTelegram, telegram_id=telegram_id)
-    task = get_object_or_404(TaskStatus, user=user)
-    serializer = AnswerSerializer(data=request.data, context={'task': task.pk})
+    if not TaskStatus.objects.filter(user=user, number=task_number).exists():
+        return Response(status=status.HTTP_404_NOT_FOUND)
+    number = int(request.data.get('number'))
+    request.data['task'] = task_number
+    answers = Answer.objects.filter(task=task_number, number=number)
+    if answers.exists():
+        serializer = AnswerSerializer(answers.first(), data=request.data, partial=True)
+    else:
+        serializer = AnswerSerializer(data=request.data)
     if serializer.is_valid():
         serializer.save()
+        task = TaskStatus.objects.get(user=user, number=task_number)
+        if task.current_question < number:
+            task.current_question = number
+            task.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response(status=status.HTTP_400_BAD_REQUEST)
-
-
-
-# POST http://127.0.0.1:8000/api/v1/users/12345/tasks/1/answers/
-# Content-Type: application/json
-
-# {
-#     "number": "1",
-#     "content": "a"
-# }
-
-# Примечание: должно также изменяться current_question объекта TaskStatus,
-# на который ссылается атрибут task объекта Answer
