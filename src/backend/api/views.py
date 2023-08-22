@@ -29,7 +29,9 @@ def answer_create(request, telegram_id, task_number):
     request.data['task'] = task_number
     answers = task.answers.filter(number=number)
     if answers.exists() and request.data.get('content'):
-        serializer = AnswerSerializer(answers.first(), data=request.data, partial=True)
+        serializer = AnswerSerializer(
+            answers.first(), data=request.data, partial=True
+        )
     else:
         serializer = AnswerSerializer(data=request.data)
     if serializer.is_valid():

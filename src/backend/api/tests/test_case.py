@@ -1,10 +1,6 @@
-from django.contrib.auth import get_user_model
 from django.test import Client, TestCase
 
 from api.models import UserFromTelegram
-
-
-User = get_user_model()
 
 
 class BaseCaseForTests(TestCase):
@@ -20,7 +16,7 @@ class BaseCaseForTests(TestCase):
     TASK_NUMBER_1 = 1
     TASK_NUMBER_99 = 99
     ANSWER_1 = {'number': '1', 'content': 'a'}
-    ANSWER_2 = {'number': 1, 'content': 'a'}
+    ANSWER_2 = {'number': 1, 'content': 'б'}
     ANSWER_3 = {'number': 1, 'content': 'б'}
     ANSWER_4 = {'number': 2, 'content': 'a'}
     ANSWER_5 = {'number': 1}

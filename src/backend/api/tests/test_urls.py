@@ -1,6 +1,7 @@
 import json
 
 from django.contrib.auth import get_user
+from rest_framework import status
 
 from api.tests.test_case import BaseCaseForTests
 
@@ -15,13 +16,13 @@ class UrlTests(BaseCaseForTests):
         )
         status_codes = [
             [
-                common_url, self.guest_client, 201
+                common_url, self.guest_client, status.HTTP_201_CREATED
             ],
             [
                 self.URL_ANSWER_CREATE.format(
                     telegram_id=self.TELEGRAM_ID,
                     task_number=self.TASK_NUMBER_99
-                ), self.guest_client, 404
+                ), self.guest_client, status.HTTP_404_NOT_FOUND
             ]
         ]
         for url, client, expected_status in status_codes:
@@ -38,36 +39,65 @@ class UrlTests(BaseCaseForTests):
                 common_url,
                 data=json.dumps(self.ANSWER_2),
                 content_type=self.CONTENT_TYPE_JSON
-            ).status_code, 201
+            ).status_code, status.HTTP_201_CREATED
         )
         self.assertEqual(
             self.guest_client.post(
                 common_url,
                 data=json.dumps(self.ANSWER_3),
                 content_type=self.CONTENT_TYPE_JSON
-            ).status_code, 201
+            ).status_code, status.HTTP_201_CREATED
         )
         self.assertEqual(
             self.guest_client.post(
                 common_url,
                 data=json.dumps(self.ANSWER_4),
                 content_type=self.CONTENT_TYPE_JSON
-            ).status_code, 201
+            ).status_code, status.HTTP_201_CREATED
         )
         self.assertEqual(
             self.guest_client.post(
                 common_url,
                 data=json.dumps(self.ANSWER_5),
                 content_type=self.CONTENT_TYPE_JSON
-            ).status_code, 400
+            ).status_code, status.HTTP_400_BAD_REQUEST
         )
 
     def test_answerbody_answer_create(self):
-        """Проверка кодов возврата: answer_create."""
+        """Проверка содержания возвращаемых ответов: answer_create."""
         common_url = self.URL_ANSWER_CREATE.format(
             telegram_id=self.TELEGRAM_ID, task_number=self.TASK_NUMBER_1
         )
+
         response = self.guest_client.post(
-            common_url, data=json.dumps(self.ANSWER_2), content_type=self.CONTENT_TYPE_JSON
+            common_url, data=json.dumps(self.ANSWER_1),
+            content_type=self.CONTENT_TYPE_JSON
         )
-        print(response.content)
+        self.assertEqual(response.data['number'], int(self.ANSWER_1['number']))
+        self.assertEqual(response.data['content'], self.ANSWER_1['content'])
+        self.assertEqual(response.get('task'), None)
+        answer_id = response.data['id']
+
+        response = self.guest_client.post(
+            common_url, data=json.dumps(self.ANSWER_2),
+            content_type=self.CONTENT_TYPE_JSON
+        )
+        self.assertEqual(response.data['number'], int(self.ANSWER_2['number']))
+        self.assertEqual(response.data['content'], self.ANSWER_2['content'])
+        self.assertEqual(response.data['id'], answer_id)
+
+        response = self.guest_client.post(
+            common_url, data=json.dumps(self.ANSWER_3),
+            content_type=self.CONTENT_TYPE_JSON
+        )
+        self.assertEqual(response.data['number'], int(self.ANSWER_3['number']))
+        self.assertEqual(response.data['content'], self.ANSWER_3['content'])
+        self.assertEqual(response.data['id'], answer_id)
+
+        response = self.guest_client.post(
+            common_url, data=json.dumps(self.ANSWER_4),
+            content_type=self.CONTENT_TYPE_JSON
+        )
+        self.assertEqual(response.data['number'], int(self.ANSWER_4['number']))
+        self.assertEqual(response.data['content'], self.ANSWER_4['content'])
+        self.assertNotEqual(response.data['id'], answer_id)
