@@ -3,32 +3,30 @@ import logging
 from telegram import ReplyKeyboardMarkup, ReplyKeyboardRemove, Update
 from telegram.ext import ContextTypes, ConversationHandler
 
-from keyboards import (
+from conversations.task_3.keyboards import (
     ANSWER,
     CANSEL,
     INPUT_PLACEHOLDER,
     NEXT_KEYBOARD,
     NEXT_PLACEHOLDER,
-    REPLY_KEYBOARD,
+    REPLY_KEYBOARD
 )
-from templates import (
+from conversations.task_3.templates import (
+    DELIMETER_TEXT_FROM_URL,
     QUESTIONS,
     RESULT_MESSAGE,
     TASK_3_CANCELLATION_TEXT,
-    TEXT_OF_START_OF_TASK_3,
+    TEXT_OF_START_OF_TASK_3
 )
+
 
 FIRST_QUESTION_MARKER = "Первый вопрос"
 OTHER_QUESTIONS_MARKER = "Следующий вопрос"
 DESCRIPTION_MARKER = "Последний вопрос"
 LAST_MESSAGE = len(QUESTIONS) - 1
-
-# _LOGGER = logging.getLogger(__name__)
-import logging
-logging.basicConfig(
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO
+ANSWER_ERROR = (
+    "Ошибка при обращении к вопросу №{number}:/n Url: {url}/n Ошибка: {error}."
 )
-logging.getLogger("httpx").setLevel(logging.WARNING)
 _LOGGER = logging.getLogger(__name__)
 
 
@@ -61,15 +59,28 @@ async def show_question(
             current_question - 1,
             update.message.text,
         )
-    await update.message.reply_text(
-        f"{current_question + 1}. {QUESTIONS[current_question]}",
-        reply_markup=ReplyKeyboardMarkup(
-            REPLY_KEYBOARD,
-            one_time_keyboard=True,
-            resize_keyboard=True,
-            input_field_placeholder=INPUT_PLACEHOLDER,
-        ),
-    )
+    parsed_answer = QUESTIONS[current_question].split(DELIMETER_TEXT_FROM_URL)
+    try:
+        await update.message.reply_text(
+            f"{current_question + 1}. {parsed_answer[0]}",
+            reply_markup=ReplyKeyboardMarkup(
+                REPLY_KEYBOARD,
+                one_time_keyboard=True,
+                resize_keyboard=True,
+                input_field_placeholder=INPUT_PLACEHOLDER,
+            )
+        )
+        await context.bot.send_photo(
+            chat_id=update.effective_chat.id,
+            photo=parsed_answer[1],
+            disable_notification=True
+        )
+    except ConnectionError as error:
+        _LOGGER.error(
+            ANSWER_ERROR.format(
+                number=current_question, url=parsed_answer[1], error=error
+            )
+        )
     if current_question == LAST_MESSAGE:
         context.user_data.clear()
         return DESCRIPTION_MARKER

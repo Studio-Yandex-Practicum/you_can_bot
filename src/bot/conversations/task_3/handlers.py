@@ -1,19 +1,19 @@
 from telegram.ext import CommandHandler, ConversationHandler, MessageHandler, filters
 
-#conversations.task_3.
-from callback_funcs import (
+from conversations.task_3.callback_funcs import (
     DESCRIPTION_MARKER,
     FIRST_QUESTION_MARKER,
     OTHER_QUESTIONS_MARKER,
     cancel,
     show_question,
     show_result,
-    show_start_of_test_3,
+    show_start_of_test_3
 )
-from keyboards import (
+from conversations.task_3.keyboards import (
     CANCEL_COMMAND,
-    TEXT_ENTRY_POINT_BUTTON_FOR_TASK_3,
+    TEXT_ENTRY_POINT_BUTTON_FOR_TASK_3
 )
+
 
 FILTER = filters.Regex("^(а|б)$")
 
@@ -32,20 +32,3 @@ task_3_handler: ConversationHandler = ConversationHandler(
     },
     fallbacks=[CommandHandler(CANCEL_COMMAND, cancel)],
 )
-
-
-if __name__ == "__main__":
-    import os
-
-    from dotenv import load_dotenv
-    from telegram.ext import Application
-    from telegram import Update
-
-
-    load_dotenv()
-    TOKEN = os.getenv('TOKEN')
-
-
-    application = Application.builder().token(TOKEN).build()
-    application.add_handler(task_3_handler)
-    application.run_polling(allowed_updates=Update.ALL_TYPES)
