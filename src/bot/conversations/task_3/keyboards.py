@@ -1,0 +1,9 @@
+TEXT_ENTRY_POINT_BUTTON_FOR_TASK_3 = "ЗАДАНИЕ 3"
+CANCEL_COMMAND = "cancel"
+NEXT = "ДАЛЕЕ"
+NEXT_PLACEHOLDER = f"Жми смело кнопку {NEXT}"
+NEXT_KEYBOARD = [[NEXT]]
+REPLY_KEYBOARD = [["а", "б"]]
+INPUT_PLACEHOLDER = "а или б ?"
+ANSWER = "Ответ пользователя %s на %s вопрос: %s"
+CANSEL = "Пользователь %s закончил диалог."
