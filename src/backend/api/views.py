@@ -19,12 +19,10 @@ class UserFromTelegramViewSet(
     Поле для detail-запросов: telegram_id.
     """
     queryset = UserFromTelegram.objects.all()
-    serializer_class = UserFromTelegramRetrieveCreateSerializer
     http_method_names = ['get', 'post', 'patch']
     lookup_field = 'telegram_id'
 
     def get_serializer_class(self):
-        print(self.action)
         if self.action == 'partial_update':
             return UserFromTelegramUpdateSerializer
         return UserFromTelegramRetrieveCreateSerializer

@@ -6,6 +6,9 @@ from api.models import UserFromTelegram
 
 
 class UserTests(APITestCase):
+
+    REQUEST_FORMAT = 'json'
+
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
@@ -41,7 +44,7 @@ class UserTests(APITestCase):
         response = self.client.post(
             reverse('api:users-list'),
             new_user_data,
-            format='json'
+            format=self.REQUEST_FORMAT
         )
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -116,7 +119,7 @@ class UserTests(APITestCase):
                 'id': new_object_id_try,
                 'telegram_username': new_tg_username_try
             },
-            format='json'
+            format=self.REQUEST_FORMAT
         )
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -157,7 +160,7 @@ class UserTests(APITestCase):
         response = self.client.post(
             reverse('api:users-list'),
             request_data,
-            format='json'
+            format=self.REQUEST_FORMAT
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(response.data, expected_response_data)
@@ -177,7 +180,7 @@ class UserTests(APITestCase):
         response = self.client.patch(
             new_user_url,
             {'name': new_name},
-            format='json'
+            format=self.REQUEST_FORMAT
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, expected_response_data)
