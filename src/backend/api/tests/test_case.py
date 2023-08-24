@@ -1,9 +1,9 @@
-from django.test import Client, TestCase
+from rest_framework.test import APITestCase
 
 from api.models import UserFromTelegram
 
 
-class BaseCaseForTests(TestCase):
+class BaseCaseForTests(APITestCase):
     """Базовый набор констант для тестов модуля api."""
 
     TELEGRAM_ID = 1234567
@@ -11,13 +11,11 @@ class BaseCaseForTests(TestCase):
     TELEGRAM_NAME = 'HasNoName'
     TELEGRAM_SURNAME = 'HasNoSurname'
     CONTENT_TYPE_JSON = 'application/json'
-
-    URL_ANSWER_CREATE = '/api/v1/users/{telegram_id}/tasks/{task_number}/answers/'
     TASK_NUMBER_1 = 1
     TASK_NUMBER_99 = 99
     ANSWER_1 = {'number': '1', 'content': 'a'}
     ANSWER_2 = {'number': 1, 'content': 'б'}
-    ANSWER_3 = {'number': 1, 'content': 'б'}
+    ANSWER_3 = {'number': 'first', 'content': 'б'}
     ANSWER_4 = {'number': 2, 'content': 'a'}
     ANSWER_5 = {'number': 1}
 
@@ -31,4 +29,3 @@ class BaseCaseForTests(TestCase):
             name=cls.TELEGRAM_NAME,
             surname=cls.TELEGRAM_SURNAME
         )
-        cls.guest_client = Client()
