@@ -1,10 +1,10 @@
 from rest_framework import mixins, viewsets
 
+from .models import UserFromTelegram
 from .serializers import (
     UserFromTelegramRetrieveCreateSerializer,
-    UserFromTelegramUpdateSerializer
+    UserFromTelegramUpdateSerializer,
 )
-from .models import UserFromTelegram
 
 
 class UserFromTelegramViewSet(
