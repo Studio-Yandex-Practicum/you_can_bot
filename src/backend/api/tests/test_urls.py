@@ -1,23 +1,23 @@
 from django.urls import reverse
 from rest_framework import status
 
-from api.tests.test_case import BaseCaseForTests
+from api.tests.test_case import BaseCaseForAnswerTests
 
 
-class UrlTests(BaseCaseForTests):
+class UrlAnswerTests(BaseCaseForAnswerTests):
     """Проверка url модуля api."""
 
     def test_status_codes_answer_create(self):
         """Проверка кодов возврата: answer_create."""
         common_url = reverse(
-            "answer_create",
+            "api:answer_create",
             kwargs={"telegram_id": self.TELEGRAM_ID, "task_number": self.TASK_NUMBER_1},
         )
         status_codes = [
             [common_url, status.HTTP_201_CREATED],
             [
                 reverse(
-                    "answer_create",
+                    "api:answer_create",
                     kwargs={
                         "telegram_id": self.TELEGRAM_ID,
                         "task_number": self.TASK_NUMBER_99,
@@ -46,7 +46,7 @@ class UrlTests(BaseCaseForTests):
     def test_answerbody_answer_create(self):
         """Проверка содержания возвращаемых ответов: answer_create."""
         common_url = reverse(
-            "answer_create",
+            "api:answer_create",
             kwargs={"telegram_id": self.TELEGRAM_ID, "task_number": self.TASK_NUMBER_1},
         )
 

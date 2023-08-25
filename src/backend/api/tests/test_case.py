@@ -3,7 +3,7 @@ from rest_framework.test import APITestCase
 from api.models import UserFromTelegram
 
 
-class BaseCaseForTests(APITestCase):
+class BaseCaseForAnswerTests(APITestCase):
     """Базовый набор констант для тестов модуля api."""
 
     TELEGRAM_ID = 1234567

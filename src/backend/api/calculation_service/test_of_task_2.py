@@ -29,7 +29,26 @@ class TestTask2(TestCase):
 
     def test_s_psycho_feature_is_defined_correctly(self):
         answers_for_s_feature = (
-            2, 3, 9, 10, 16, 17, 23, 24, 30, 31, 37, 38, 44, 45, 51, 52, 58, 59, 65, 66
+            2,
+            3,
+            9,
+            10,
+            16,
+            17,
+            23,
+            24,
+            30,
+            31,
+            37,
+            38,
+            44,
+            45,
+            51,
+            52,
+            58,
+            59,
+            65,
+            66,
         )
         for index, number_of_answer in enumerate(answers_for_s_feature):
             self.user_answers[number_of_answer - 1] = Answer(
@@ -48,7 +67,26 @@ class TestTask2(TestCase):
 
     def test_t_psycho_feature_is_defined_correctly(self):
         answers_for_t_feature = (
-            4, 5, 11, 12, 18, 19, 25, 26, 32, 33, 39, 40, 46, 47, 53, 54, 60, 61, 67, 68
+            4,
+            5,
+            11,
+            12,
+            18,
+            19,
+            25,
+            26,
+            32,
+            33,
+            39,
+            40,
+            46,
+            47,
+            53,
+            54,
+            60,
+            61,
+            67,
+            68,
         )
         for index, number_of_answer in enumerate(answers_for_t_feature):
             self.user_answers[number_of_answer - 1] = Answer(
@@ -67,7 +105,26 @@ class TestTask2(TestCase):
 
     def test_j_psycho_feature_is_defined_correctly(self):
         answers_for_j_feature = (
-            6, 7, 13, 14, 20, 21, 27, 28, 34, 35, 41, 42, 48, 49, 55, 56, 62, 63, 69, 70
+            6,
+            7,
+            13,
+            14,
+            20,
+            21,
+            27,
+            28,
+            34,
+            35,
+            41,
+            42,
+            48,
+            49,
+            55,
+            56,
+            62,
+            63,
+            69,
+            70,
         )
         for index, number_of_answer in enumerate(answers_for_j_feature):
             self.user_answers[number_of_answer - 1] = Answer(

@@ -1,10 +1,14 @@
 from django.shortcuts import get_object_or_404
-from rest_framework import status
+from rest_framework import mixins, status, viewsets
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
 from .models import TaskStatus, UserFromTelegram
-from .serializers import AnswerSerializer
+from .serializers import (
+    AnswerSerializer,
+    UserFromTelegramRetrieveCreateSerializer,
+    UserFromTelegramUpdateSerializer,
+)
 
 ANSWER_CREATE_ERROR = "Ошибка при обработке запроса: {error}"
 
@@ -36,3 +40,25 @@ def answer_create(request, telegram_id, task_number):
             task.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class UserFromTelegramViewSet(
+    mixins.CreateModelMixin,
+    mixins.RetrieveModelMixin,
+    mixins.UpdateModelMixin,
+    viewsets.GenericViewSet,
+):
+    """
+    Вьюсет для обработки запросов, связанных с пользователем telegram.
+    Доступные HTTP методы: GET, POST, PATCH.
+    Поле для detail-запросов: telegram_id.
+    """
+
+    queryset = UserFromTelegram.objects.all()
+    http_method_names = ["get", "post", "patch"]
+    lookup_field = "telegram_id"
+
+    def get_serializer_class(self):
+        if self.action == "partial_update":
+            return UserFromTelegramUpdateSerializer
+        return UserFromTelegramRetrieveCreateSerializer
