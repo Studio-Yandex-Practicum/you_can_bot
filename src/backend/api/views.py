@@ -1,17 +1,15 @@
-
 from django.shortcuts import get_object_or_404
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-from .models import Answer, TaskStatus, UserFromTelegram
+from .models import TaskStatus, UserFromTelegram
 from .serializers import AnswerSerializer
 
+ANSWER_CREATE_ERROR = "Ошибка при обработке запроса: {error}"
 
-ANSWER_CREATE_ERROR = 'Ошибка при обработке запроса: {error}'
 
-
-@api_view(('POST',))
+@api_view(("POST",))
 def answer_create(request, telegram_id, task_number):
     """
     Создание записи в таблице Answer.
@@ -20,18 +18,15 @@ def answer_create(request, telegram_id, task_number):
     user = get_object_or_404(UserFromTelegram, telegram_id=telegram_id)
     task = get_object_or_404(TaskStatus, user=user, number=task_number)
     try:
-        number = int(request.data.get('number'))
+        number = int(request.data.get("number"))
     except ValueError as error:
         return Response(
-            ANSWER_CREATE_ERROR.format(error=error),
-            status=status.HTTP_400_BAD_REQUEST
+            ANSWER_CREATE_ERROR.format(error=error), status=status.HTTP_400_BAD_REQUEST
         )
-    request.data['task'] = task_number
+    request.data["task"] = task_number
     answers = task.answers.filter(number=number)
-    if answers.exists() and request.data.get('content'):
-        serializer = AnswerSerializer(
-            answers.first(), data=request.data, partial=True
-        )
+    if answers.exists() and request.data.get("content"):
+        serializer = AnswerSerializer(answers.first(), data=request.data, partial=True)
     else:
         serializer = AnswerSerializer(data=request.data)
     if serializer.is_valid():
