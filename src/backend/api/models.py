@@ -139,6 +139,7 @@ class Answer(models.Model):
         ordering = ("pk",)
         verbose_name = "ответ"
         verbose_name_plural = "Ответы на задания"
+        unique_together = ("task", "number")
 
     def __str__(self):
         return f"Ответ {self.number}"
