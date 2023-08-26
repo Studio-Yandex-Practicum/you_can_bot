@@ -3,9 +3,8 @@ import logging
 from django.test import TestCase
 from rest_framework.serializers import ValidationError
 
+from api.calculation_service.task_1 import calculate_task_1_result
 from api.models import Answer
-
-from .task_1 import calculate_task_1_result
 
 
 class TestTask1(TestCase):
