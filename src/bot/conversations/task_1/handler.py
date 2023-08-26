@@ -1,52 +1,139 @@
+import re
+
 from telegram import (
     InlineKeyboardButton,
     InlineKeyboardMarkup,
+    ReplyKeyboardMarkup,
     Update
 )
 from telegram.ext import (
     BaseHandler,
     CommandHandler,
     ContextTypes,
+    CallbackQueryHandler,
     ConversationHandler,
-    CallbackQueryHandler
+    filters,
+    MessageHandler
 )
 
-from templates import MESSAGES
+from conversations.task_1.templates import MESSAGES, SCORE, RESULT
 
-STARTING_RANGE = 5  # Номер первого сообщения, относящегося к этому заданию
-MAX_CHOICES = 6  # Количество вариантов ответа в вопросе
-MESSAGE_KEY_TEMPLATE = 'message_{}'  # Шаблон ключа для получения информации
-NUMBER_OF_QUESTIONS = 10  # Количество вопросов в задании
+INITIAL_MESSAGE_NUMBER = 5
+CHOICES = 'АБВГДЕ'  
+MESSAGE_KEY_TEMPLATE = 'message_{}'
+NUMBER_OF_QUESTIONS = 10
 CHOOSING = 1
+PARSE_MODE = 'MarkdownV2'
+CANCEL_TEXT = 'Выполнение задания 1 было пропущено'
 
 
-def save_answer(user, question_number, answer):
+def save_answer(user, context):  # Временная, хранит ответы в контексте
     """Сохраняет ответ пользователя."""
-    pass
+    choices = context.user_data.get('picked_choices')
+    for choice in CHOICES:
+        context.user_data['answer'][
+            choice
+        ] += len(CHOICES) - choices.index(choice) - 1
 
 
-def make_me_a_keyboard(
+def get_result(user, context):  # Временная, расшифровывает из контекста
+    """Получает расшифровку"""
+    result = {
+        '1': None,
+        '2': None,
+        '3': None
+        }
+    for choice, score in context.user_data['answer'].items():
+        if result['1'] is None or result['1'][0] < score:
+            result['3'] = result['2']
+            result['2'] = result['1']
+            result['1'] = (score, choice)
+        elif result['2'] is None or result['2'][0] < score:
+            result['3'] = result['2']
+            result['2'] = (score, choice)
+        elif result['3'] is None or result['3'][0] < score:
+            result['3'] = (score, choice)
+        else:
+            pass
+    return result['1'][1], result['2'][1], result['3'][1]
+
+
+def inline_keyboard(
         buttons_dict: dict[str, str],
-        picked_answers: dict[str, str] = {}
-) -> list[InlineKeyboardButton]:
-    """Создаёт клавиатуру для текущего сообщения
-    с учетом уже выбранных ответов."""
+        picked_choices: str = ''
+) -> InlineKeyboardMarkup:
+    """Добавляет кнопки в сообщении с учетом уже выбранных ответов."""
     keyboard = []
-    for pos, text in buttons_dict.items():
-        if pos not in picked_answers.keys():
+    for label, text in buttons_dict.items():
+        if label not in picked_choices:
             keyboard.append(
-                [InlineKeyboardButton(text, callback_data=pos)]
+                InlineKeyboardButton(label, callback_data=label)
             )
-    return keyboard
+    return InlineKeyboardMarkup([keyboard])
 
 
-def question_start(
+def reply_keyboard(
+        buttons_dict: dict[str, str],
+) -> ReplyKeyboardMarkup:
+    """Создаёт клавиатуру для текущего сообщения."""
+    return ReplyKeyboardMarkup(
+        [[label for label in buttons_dict]],
+        resize_keyboard=True,
+        one_time_keyboard=True,
+    )
+
+
+def question_text(template: dict, picked_choices: str = '') -> str:
+    text = f'*{re.escape(template["text"])}*\n'
+    for label, choice in template['buttons'].items():
+        text += f'*\[{label}\]* {re.escape(choice)}' # noqa 
+        if label in picked_choices:
+            text += SCORE[len(CHOICES)-picked_choices.index(label)-1]
+        text += '\n'
+    return text
+
+
+def question_template(
+        context: ContextTypes.DEFAULT_TYPE,
+        start: bool = False,
+        result: bool = False,
+) -> dict:
+    if start:
+        message_number = INITIAL_MESSAGE_NUMBER
+    elif result:
+        message_number = INITIAL_MESSAGE_NUMBER + NUMBER_OF_QUESTIONS + 1
+    else:
+        message_number = INITIAL_MESSAGE_NUMBER + context.user_data[
+            'current_question'
+        ]
+    return MESSAGES[MESSAGE_KEY_TEMPLATE.format(message_number)]
+
+
+async def question_start(
+        update: Update,
         context: ContextTypes.DEFAULT_TYPE,
         question_number: int = 1
 ) -> None:
-    """Задаёт стартовые значения параметров для вопроса."""
+    """Начинает новый вопрос."""
     context.user_data['current_question'] = question_number
-    context.user_data['picked_answers'] = {}
+    context.user_data['picked_choices'] = ''
+    template = question_template(context)
+    if update.message:
+        await update.message.reply_text(
+            question_text(template),
+            reply_markup=inline_keyboard(
+                template['buttons'],
+            ),
+            parse_mode=PARSE_MODE
+        )
+    else:
+        await update.callback_query.message.reply_text(
+            question_text(template),
+            reply_markup=inline_keyboard(
+                template['buttons'],
+            ),
+            parse_mode=PARSE_MODE
+        )
 
 
 async def start_task_1(
@@ -54,61 +141,76 @@ async def start_task_1(
         context: ContextTypes.DEFAULT_TYPE
 ) -> int:
     """Начальное соостояние задания."""
-    start_message_info = MESSAGES[
-        MESSAGE_KEY_TEMPLATE.format(STARTING_RANGE)
-    ]
+    context.user_data['answer'] = {
+        'А': 0,
+        'Б': 0,
+        'В': 0,
+        'Г': 0,
+        'Д': 0,
+        'Е': 0,
+    }  # временное хранение ответа
+    template = question_template(context, start=True)
     await update.message.reply_text(
-        start_message_info['text'],
-        reply_markup=InlineKeyboardMarkup(
-            make_me_a_keyboard(start_message_info['buttons']),
-        ),
+        template['text'],
+        reply_markup=reply_keyboard(template['buttons']),
     )
-
     return CHOOSING
 
 
-async def button(update, context):
-    """Запрос информации о выбранном предопределенном выборе."""
-    choice = update.callback_query.data
-    if choice == 'Начало':
-        question_start(context)
+async def button(
+    update: Update,
+    context: ContextTypes.DEFAULT_TYPE
+):
+    """Обработчик кнопок."""
+    if update.message:
+        await question_start(update, context)
     else:
-        context.user_data['picked_answers'][
-            choice
-        ] = MAX_CHOICES-len(context.user_data['picked_answers'])
-    if len(context.user_data['picked_answers']) == MAX_CHOICES:
+        choice = update.callback_query.data
+        context.user_data['picked_choices'] += choice
+        template = question_template(context)
+        await update.callback_query.edit_message_text(
+            question_text(template, context.user_data.get('picked_choices')),
+            reply_markup=inline_keyboard(
+                template['buttons'],
+                context.user_data.get('picked_choices')
+            ),
+            parse_mode=PARSE_MODE
+        )
+
+    if len(context.user_data.get('picked_choices')) == len(CHOICES):
         save_answer(
             update.callback_query.from_user,
-            context.user_data['current_question'],
-            context.user_data['picked_answers']
+            context
         )
-        question_start(context, context.user_data['current_question'] + 1)
-    query = update.callback_query
-    await query.answer()
-    current_qestion_key = MESSAGES[
-        MESSAGE_KEY_TEMPLATE.format(5+context.user_data['current_question'])
-    ]
-    if context.user_data['current_question'] == NUMBER_OF_QUESTIONS + 1:
-        await query.edit_message_text(
-            current_qestion_key['text'],
-        )
-        return ConversationHandler.END
-    await query.edit_message_text(
-        current_qestion_key['text'],
-        reply_markup=InlineKeyboardMarkup(
-            make_me_a_keyboard(
-                current_qestion_key['buttons'],
-                context.user_data['picked_answers']
-            ),
-        ),
-    )
+        if context.user_data.get('current_question') == NUMBER_OF_QUESTIONS:
+            query = update.callback_query
+            template = question_template(context, result=True)
+            first, second, third = get_result(query.from_user, context)
+            await query.message.reply_text(
+                f'*{template["text"]}*',
+                reply_markup=reply_keyboard(
+                    template['buttons'],
+                ),
+                parse_mode=PARSE_MODE
+            )
+            for result in get_result(query.from_user, context):
+                await query.message.reply_text(
+                    (f'*{re.escape(RESULT[result][0])}*\n'
+                     f'{re.escape(RESULT[result][1])}'),
+                    parse_mode=PARSE_MODE
+                )
+            return ConversationHandler.END
+        else:
+            await question_start(
+                update,
+                context,
+                context.user_data.get('current_question') + 1
+            )
 
 
 async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     """Прерывает выполнение задания."""
-    await update.message.reply_text(
-        'Выполнение задания 1 было пропущено',
-    )
+    await update.message.reply_text(CANCEL_TEXT)
     return ConversationHandler.END
 
 
@@ -121,9 +223,13 @@ def task_1_handler(
         entry_points=[entrypoint],
         states={
             CHOOSING: [
+                MessageHandler(
+                    filters.Regex('^(Далее)$'),
+                    button
+                ),
                 CallbackQueryHandler(
                     button,
-                    pattern=f'^([1-{MAX_CHOICES}]|Начало)$'
+                    pattern=f'^([{CHOICES}])$'
                 ),
             ],
         },
