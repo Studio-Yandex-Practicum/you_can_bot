@@ -174,11 +174,3 @@ class Problem(models.Model):
     def __str__(self):
         return self.message
 
-
-class Question(models.Model):
-    telegram_id = models.CharField(max_length=100)
-    message = models.TextField()
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return self.message
