@@ -89,3 +89,44 @@ STATIC_URL = "static/"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 MAX_LENGTH_NAME = 150
 MAX_LENGTH_SURNAME = 150
+
+LOG_FILENAME = "backend.log"
+LOG_PATH = BASE_DIR.parent / ".data" / os.getenv("LOG_DIR", "logs")
+LOG_PATH.mkdir(parents=True, exist_ok=True)
+LOG_PATH = LOG_PATH / LOG_FILENAME
+LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO")
+LOG_FORMAT = "[%(asctime)s,%(msecs)d] %(levelname)s [%(name)s:%(lineno)s] %(message)s"
+LOG_DT_FORMAT = "%d.%m.%y %H:%M:%S"
+
+LOGGING = {
+    "version": 1,
+    "disable_exising_loggers": False,
+    "formatters": {
+        "general": {
+            "format": LOG_FORMAT,
+            "datefmt": LOG_DT_FORMAT,
+        }
+    },
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "level": LOG_LEVEL,
+            "formatter": "general",
+        },
+        "file": {
+            "class": "logging.handlers.TimedRotatingFileHandler",
+            "filename": LOG_PATH,
+            "when": "midnight",
+            "interval": 1,
+            "backupCount": 14,
+            "level": LOG_LEVEL,
+            "formatter": "general",
+        },
+    },
+    "loggers": {
+        "": {
+            "handlers": ["console", "file"],
+            "propagate": True,
+        },
+    },
+}
