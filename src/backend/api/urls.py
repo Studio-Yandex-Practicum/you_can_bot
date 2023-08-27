@@ -8,12 +8,7 @@ app_name = "api"
 router = DefaultRouter()
 
 router.register(
-    r"users/(?P<telegram_id>d+)/tasks", TasksViewSet, basename="tasks"
-)
-router.register(
-    r"users/(?P<telegram_id>d+)/tasks/(?P<task_number>d+)",
-    viewset=TasksViewSet,
-    basename="task",
+    r"users/(?P<telegram_id>\d+)/tasks", TasksViewSet, basename="tasks"
 )
 
 urlpatterns = [path("", include(router.urls))]
