@@ -16,11 +16,15 @@ QUESTIONS = [
         "б) инженер-технолог"
         f"{DELIMETER_TEXT_FROM_URL}"
         "https://www.rtl-sdr.com/wp-content/uploads/2023/08/V4_promo-1024x807.jpg"
+        f"{DELIMETER_TEXT_FROM_URL}"
+        "https://www.rtl-sdr.com/wp-content/uploads/2023/08/V4_promo-1024x807.jpg"
     ),
     (
         "\n"
         "а) терапевт\n"
         "б) радиотехник"
+        f"{DELIMETER_TEXT_FROM_URL}"
+        "https://www.rtl-sdr.com/wp-content/uploads/2023/08/V4_promo-1024x807.jpg"
         f"{DELIMETER_TEXT_FROM_URL}"
         "https://www.rtl-sdr.com/wp-content/uploads/2023/08/V4_promo-1024x807.jpg"
     ),
@@ -30,11 +34,15 @@ QUESTIONS = [
         "б) оператор станков с программным управлением"
         f"{DELIMETER_TEXT_FROM_URL}"
         "https://www.rtl-sdr.com/wp-content/uploads/2023/08/V4_promo-1024x807.jpg"
+        f"{DELIMETER_TEXT_FROM_URL}"
+        "https://www.rtl-sdr.com/wp-content/uploads/2023/08/V4_promo-1024x807.jpg"
     ),
     (
         "\n"
         "а) бизнесмен\n"
         "б) фотограф"
+        f"{DELIMETER_TEXT_FROM_URL}"
+        "https://www.rtl-sdr.com/wp-content/uploads/2023/08/V4_promo-1024x807.jpg"
         f"{DELIMETER_TEXT_FROM_URL}"
         "https://www.rtl-sdr.com/wp-content/uploads/2023/08/V4_promo-1024x807.jpg"
     ),
@@ -44,11 +52,15 @@ QUESTIONS = [
         "б) спасатель МЧС"
         f"{DELIMETER_TEXT_FROM_URL}"
         "https://www.rtl-sdr.com/wp-content/uploads/2023/08/V4_promo-1024x807.jpg"
+        f"{DELIMETER_TEXT_FROM_URL}"
+        "https://www.rtl-sdr.com/wp-content/uploads/2023/08/V4_promo-1024x807.jpg"
     ),
     (
         "\n"
         "а) психиатр\n"
         "б) политолог"
+        f"{DELIMETER_TEXT_FROM_URL}"
+        "https://www.rtl-sdr.com/wp-content/uploads/2023/08/V4_promo-1024x807.jpg"
         f"{DELIMETER_TEXT_FROM_URL}"
         "https://www.rtl-sdr.com/wp-content/uploads/2023/08/V4_promo-1024x807.jpg"
     ),
@@ -58,11 +70,15 @@ QUESTIONS = [
         "б) ученый-химик"
         f"{DELIMETER_TEXT_FROM_URL}"
         "https://www.rtl-sdr.com/wp-content/uploads/2023/08/V4_promo-1024x807.jpg"
+        f"{DELIMETER_TEXT_FROM_URL}"
+        "https://www.rtl-sdr.com/wp-content/uploads/2023/08/V4_promo-1024x807.jpg"
     ),
     (
         "\n"
         "а) частный предприниматель\n"
         "б) философ"
+        f"{DELIMETER_TEXT_FROM_URL}"
+        "https://www.rtl-sdr.com/wp-content/uploads/2023/08/V4_promo-1024x807.jpg"
         f"{DELIMETER_TEXT_FROM_URL}"
         "https://www.rtl-sdr.com/wp-content/uploads/2023/08/V4_promo-1024x807.jpg"
     ),
@@ -72,11 +88,15 @@ QUESTIONS = [
         "б) лингвист"
         f"{DELIMETER_TEXT_FROM_URL}"
         "https://www.rtl-sdr.com/wp-content/uploads/2023/08/V4_promo-1024x807.jpg"
+        f"{DELIMETER_TEXT_FROM_URL}"
+        "https://www.rtl-sdr.com/wp-content/uploads/2023/08/V4_promo-1024x807.jpg"
     ),
     (
         "\n"
         "а) статист\n"
         "б) инспектор службы занятости населения"
+        f"{DELIMETER_TEXT_FROM_URL}"
+        "https://www.rtl-sdr.com/wp-content/uploads/2023/08/V4_promo-1024x807.jpg"
         f"{DELIMETER_TEXT_FROM_URL}"
         "https://www.rtl-sdr.com/wp-content/uploads/2023/08/V4_promo-1024x807.jpg"
     ),
@@ -86,11 +106,15 @@ QUESTIONS = [
         "б) социальный педагог"
         f"{DELIMETER_TEXT_FROM_URL}"
         "https://www.rtl-sdr.com/wp-content/uploads/2023/08/V4_promo-1024x807.jpg"
+        f"{DELIMETER_TEXT_FROM_URL}"
+        "https://www.rtl-sdr.com/wp-content/uploads/2023/08/V4_promo-1024x807.jpg"
     ),
     (
         "\n"
         "а) искусствовед\n"
         "б) тренер"
+        f"{DELIMETER_TEXT_FROM_URL}"
+        "https://www.rtl-sdr.com/wp-content/uploads/2023/08/V4_promo-1024x807.jpg"
         f"{DELIMETER_TEXT_FROM_URL}"
         "https://www.rtl-sdr.com/wp-content/uploads/2023/08/V4_promo-1024x807.jpg"
     ),
@@ -100,11 +124,15 @@ QUESTIONS = [
         "б) нотариус"
         f"{DELIMETER_TEXT_FROM_URL}"
         "https://www.rtl-sdr.com/wp-content/uploads/2023/08/V4_promo-1024x807.jpg"
+        f"{DELIMETER_TEXT_FROM_URL}"
+        "https://www.rtl-sdr.com/wp-content/uploads/2023/08/V4_promo-1024x807.jpg"
     ),
     (
         "\n"
         "а) художник\n"
         "б) печатник"
+        f"{DELIMETER_TEXT_FROM_URL}"
+        "https://www.rtl-sdr.com/wp-content/uploads/2023/08/V4_promo-1024x807.jpg"
         f"{DELIMETER_TEXT_FROM_URL}"
         "https://www.rtl-sdr.com/wp-content/uploads/2023/08/V4_promo-1024x807.jpg"
     ),
@@ -114,11 +142,15 @@ QUESTIONS = [
         "б) лидер общественного движения"
         f"{DELIMETER_TEXT_FROM_URL}"
         "https://www.rtl-sdr.com/wp-content/uploads/2023/08/V4_promo-1024x807.jpg"
+        f"{DELIMETER_TEXT_FROM_URL}"
+        "https://www.rtl-sdr.com/wp-content/uploads/2023/08/V4_promo-1024x807.jpg"
     ),
     (
         "\n"
         "а) метеоролог\n"
         "б) модельер"
+        f"{DELIMETER_TEXT_FROM_URL}"
+        "https://www.rtl-sdr.com/wp-content/uploads/2023/08/V4_promo-1024x807.jpg"
         f"{DELIMETER_TEXT_FROM_URL}"
         "https://www.rtl-sdr.com/wp-content/uploads/2023/08/V4_promo-1024x807.jpg"
     ),
@@ -128,11 +160,15 @@ QUESTIONS = [
         "б) водитель"
         f"{DELIMETER_TEXT_FROM_URL}"
         "https://www.rtl-sdr.com/wp-content/uploads/2023/08/V4_promo-1024x807.jpg"
+        f"{DELIMETER_TEXT_FROM_URL}"
+        "https://www.rtl-sdr.com/wp-content/uploads/2023/08/V4_promo-1024x807.jpg"
     ),
     (
         "\n"
         "а) чертежник\n"
         "б) риелтор"
+        f"{DELIMETER_TEXT_FROM_URL}"
+        "https://www.rtl-sdr.com/wp-content/uploads/2023/08/V4_promo-1024x807.jpg"
         f"{DELIMETER_TEXT_FROM_URL}"
         "https://www.rtl-sdr.com/wp-content/uploads/2023/08/V4_promo-1024x807.jpg"
     ),
@@ -142,11 +178,15 @@ QUESTIONS = [
         "б) секретарь-референт"
         f"{DELIMETER_TEXT_FROM_URL}"
         "https://www.rtl-sdr.com/wp-content/uploads/2023/08/V4_promo-1024x807.jpg"
+        f"{DELIMETER_TEXT_FROM_URL}"
+        "https://www.rtl-sdr.com/wp-content/uploads/2023/08/V4_promo-1024x807.jpg"
     ),
     (
         "\n"
         "а) микробиолог\n"
         "б) психолог"
+        f"{DELIMETER_TEXT_FROM_URL}"
+        "https://www.rtl-sdr.com/wp-content/uploads/2023/08/V4_promo-1024x807.jpg"
         f"{DELIMETER_TEXT_FROM_URL}"
         "https://www.rtl-sdr.com/wp-content/uploads/2023/08/V4_promo-1024x807.jpg"
     ),
@@ -156,11 +196,15 @@ QUESTIONS = [
         "б) режиссер"
         f"{DELIMETER_TEXT_FROM_URL}"
         "https://www.rtl-sdr.com/wp-content/uploads/2023/08/V4_promo-1024x807.jpg"
+        f"{DELIMETER_TEXT_FROM_URL}"
+        "https://www.rtl-sdr.com/wp-content/uploads/2023/08/V4_promo-1024x807.jpg"
     ),
     (
         "\n"
         "а) экономист\n"
         "б) провизор"
+        f"{DELIMETER_TEXT_FROM_URL}"
+        "https://www.rtl-sdr.com/wp-content/uploads/2023/08/V4_promo-1024x807.jpg"
         f"{DELIMETER_TEXT_FROM_URL}"
         "https://www.rtl-sdr.com/wp-content/uploads/2023/08/V4_promo-1024x807.jpg"
     ),
@@ -170,11 +214,15 @@ QUESTIONS = [
         "б) главный инженер"
         f"{DELIMETER_TEXT_FROM_URL}"
         "https://www.rtl-sdr.com/wp-content/uploads/2023/08/V4_promo-1024x807.jpg"
+        f"{DELIMETER_TEXT_FROM_URL}"
+        "https://www.rtl-sdr.com/wp-content/uploads/2023/08/V4_promo-1024x807.jpg"
     ),
     (
         "\n"
         "а) программист\n"
         "б) архитектор"
+        f"{DELIMETER_TEXT_FROM_URL}"
+        "https://www.rtl-sdr.com/wp-content/uploads/2023/08/V4_promo-1024x807.jpg"
         f"{DELIMETER_TEXT_FROM_URL}"
         "https://www.rtl-sdr.com/wp-content/uploads/2023/08/V4_promo-1024x807.jpg"
     ),
@@ -184,11 +232,15 @@ QUESTIONS = [
         "б) маркетолог"
         f"{DELIMETER_TEXT_FROM_URL}"
         "https://www.rtl-sdr.com/wp-content/uploads/2023/08/V4_promo-1024x807.jpg"
+        f"{DELIMETER_TEXT_FROM_URL}"
+        "https://www.rtl-sdr.com/wp-content/uploads/2023/08/V4_promo-1024x807.jpg"
     ),
     (
         "\n"
         "а) преподаватель\n"
         "б) трейдер"
+        f"{DELIMETER_TEXT_FROM_URL}"
+        "https://www.rtl-sdr.com/wp-content/uploads/2023/08/V4_promo-1024x807.jpg"
         f"{DELIMETER_TEXT_FROM_URL}"
         "https://www.rtl-sdr.com/wp-content/uploads/2023/08/V4_promo-1024x807.jpg"
     ),
@@ -198,11 +250,15 @@ QUESTIONS = [
         "б) декоратор"
         f"{DELIMETER_TEXT_FROM_URL}"
         "https://www.rtl-sdr.com/wp-content/uploads/2023/08/V4_promo-1024x807.jpg"
+        f"{DELIMETER_TEXT_FROM_URL}"
+        "https://www.rtl-sdr.com/wp-content/uploads/2023/08/V4_promo-1024x807.jpg"
     ),
     (
         "\n"
         "а) реставратор\n"
         "б) заведующий отделом предприятия"
+        f"{DELIMETER_TEXT_FROM_URL}"
+        "https://www.rtl-sdr.com/wp-content/uploads/2023/08/V4_promo-1024x807.jpg"
         f"{DELIMETER_TEXT_FROM_URL}"
         "https://www.rtl-sdr.com/wp-content/uploads/2023/08/V4_promo-1024x807.jpg"
     ),
@@ -212,11 +268,15 @@ QUESTIONS = [
         "б) литератор и кинокритик"
         f"{DELIMETER_TEXT_FROM_URL}"
         "https://www.rtl-sdr.com/wp-content/uploads/2023/08/V4_promo-1024x807.jpg"
+        f"{DELIMETER_TEXT_FROM_URL}"
+        "https://www.rtl-sdr.com/wp-content/uploads/2023/08/V4_promo-1024x807.jpg"
     ),
     (
         "\n"
         "а) фермер\n"
         "б) визажист"
+        f"{DELIMETER_TEXT_FROM_URL}"
+        "https://www.rtl-sdr.com/wp-content/uploads/2023/08/V4_promo-1024x807.jpg"
         f"{DELIMETER_TEXT_FROM_URL}"
         "https://www.rtl-sdr.com/wp-content/uploads/2023/08/V4_promo-1024x807.jpg"
     ),
@@ -226,11 +286,15 @@ QUESTIONS = [
         "б) социолог"
         f"{DELIMETER_TEXT_FROM_URL}"
         "https://www.rtl-sdr.com/wp-content/uploads/2023/08/V4_promo-1024x807.jpg"
+        f"{DELIMETER_TEXT_FROM_URL}"
+        "https://www.rtl-sdr.com/wp-content/uploads/2023/08/V4_promo-1024x807.jpg"
     ),
     (
         "\n"
         "а) экспедитор\n"
         "б) редактор"
+        f"{DELIMETER_TEXT_FROM_URL}"
+        "https://www.rtl-sdr.com/wp-content/uploads/2023/08/V4_promo-1024x807.jpg"
         f"{DELIMETER_TEXT_FROM_URL}"
         "https://www.rtl-sdr.com/wp-content/uploads/2023/08/V4_promo-1024x807.jpg"
     ),
@@ -240,11 +304,15 @@ QUESTIONS = [
         "б) финансовый директор"
         f"{DELIMETER_TEXT_FROM_URL}"
         "https://www.rtl-sdr.com/wp-content/uploads/2023/08/V4_promo-1024x807.jpg"
+        f"{DELIMETER_TEXT_FROM_URL}"
+        "https://www.rtl-sdr.com/wp-content/uploads/2023/08/V4_promo-1024x807.jpg"
     ),
     (
         "\n"
         "а) автомеханик\n"
         "б) стилист"
+        f"{DELIMETER_TEXT_FROM_URL}"
+        "https://www.rtl-sdr.com/wp-content/uploads/2023/08/V4_promo-1024x807.jpg"
         f"{DELIMETER_TEXT_FROM_URL}"
         "https://www.rtl-sdr.com/wp-content/uploads/2023/08/V4_promo-1024x807.jpg"
     ),
@@ -254,11 +322,15 @@ QUESTIONS = [
         "б) эксперт"
         f"{DELIMETER_TEXT_FROM_URL}"
         "https://www.rtl-sdr.com/wp-content/uploads/2023/08/V4_promo-1024x807.jpg"
+        f"{DELIMETER_TEXT_FROM_URL}"
+        "https://www.rtl-sdr.com/wp-content/uploads/2023/08/V4_promo-1024x807.jpg"
     ),
     (
         "\n"
         "а) библиограф\n"
         "б) корреспондент"
+        f"{DELIMETER_TEXT_FROM_URL}"
+        "https://www.rtl-sdr.com/wp-content/uploads/2023/08/V4_promo-1024x807.jpg"
         f"{DELIMETER_TEXT_FROM_URL}"
         "https://www.rtl-sdr.com/wp-content/uploads/2023/08/V4_promo-1024x807.jpg"
     ),
@@ -268,11 +340,15 @@ QUESTIONS = [
         "б) актер"
         f"{DELIMETER_TEXT_FROM_URL}"
         "https://www.rtl-sdr.com/wp-content/uploads/2023/08/V4_promo-1024x807.jpg"
+        f"{DELIMETER_TEXT_FROM_URL}"
+        "https://www.rtl-sdr.com/wp-content/uploads/2023/08/V4_promo-1024x807.jpg"
     ),
     (
         "\n"
         "а) логопед\n"
         "б) контролер"
+        f"{DELIMETER_TEXT_FROM_URL}"
+        "https://www.rtl-sdr.com/wp-content/uploads/2023/08/V4_promo-1024x807.jpg"
         f"{DELIMETER_TEXT_FROM_URL}"
         "https://www.rtl-sdr.com/wp-content/uploads/2023/08/V4_promo-1024x807.jpg"
     ),
@@ -282,11 +358,15 @@ QUESTIONS = [
         "б) директор организации"
         f"{DELIMETER_TEXT_FROM_URL}"
         "https://www.rtl-sdr.com/wp-content/uploads/2023/08/V4_promo-1024x807.jpg"
+        f"{DELIMETER_TEXT_FROM_URL}"
+        "https://www.rtl-sdr.com/wp-content/uploads/2023/08/V4_promo-1024x807.jpg"
     ),
     (
         "\n"
         "а) кассир\n"
         "б) продюсер"
+        f"{DELIMETER_TEXT_FROM_URL}"
+        "https://www.rtl-sdr.com/wp-content/uploads/2023/08/V4_promo-1024x807.jpg"
         f"{DELIMETER_TEXT_FROM_URL}"
         "https://www.rtl-sdr.com/wp-content/uploads/2023/08/V4_promo-1024x807.jpg"
     ),
@@ -296,11 +376,15 @@ QUESTIONS = [
         "б) продавец"
         f"{DELIMETER_TEXT_FROM_URL}"
         "https://www.rtl-sdr.com/wp-content/uploads/2023/08/V4_promo-1024x807.jpg"
+        f"{DELIMETER_TEXT_FROM_URL}"
+        "https://www.rtl-sdr.com/wp-content/uploads/2023/08/V4_promo-1024x807.jpg"
     ),
     (
         "\n"
         "а) криминалист\n"
         "б) композитор"
+        f"{DELIMETER_TEXT_FROM_URL}"
+        "https://www.rtl-sdr.com/wp-content/uploads/2023/08/V4_promo-1024x807.jpg"
         f"{DELIMETER_TEXT_FROM_URL}"
         "https://www.rtl-sdr.com/wp-content/uploads/2023/08/V4_promo-1024x807.jpg"
     ),

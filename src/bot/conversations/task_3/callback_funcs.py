@@ -61,6 +61,16 @@ async def show_question(
         )
     parsed_answer = QUESTIONS[current_question].split(DELIMETER_TEXT_FROM_URL)
     try:
+        await context.bot.send_photo(
+            chat_id=update.effective_chat.id,
+            photo=parsed_answer[1],
+            disable_notification=True
+        )
+        await context.bot.send_photo(
+            chat_id=update.effective_chat.id,
+            photo=parsed_answer[2],
+            disable_notification=True
+        )
         await update.message.reply_text(
             f"{current_question + 1}. {parsed_answer[0]}",
             reply_markup=ReplyKeyboardMarkup(
@@ -69,11 +79,6 @@ async def show_question(
                 resize_keyboard=True,
                 input_field_placeholder=INPUT_PLACEHOLDER,
             )
-        )
-        await context.bot.send_photo(
-            chat_id=update.effective_chat.id,
-            photo=parsed_answer[1],
-            disable_notification=True
         )
     except ConnectionError as error:
         _LOGGER.error(
