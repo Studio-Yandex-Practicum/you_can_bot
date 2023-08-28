@@ -45,36 +45,69 @@ SCALES = {
     '41а': 'scale_6', '41б': 'scale_3',
     '42а': 'scale_4', '42б': 'scale_6',
 }
+TOP_RESULTS_NUMBER = 3
 
 
-def calculate_task_3_result(user_answers: list[Answer]) -> list[tuple[str, int]]:
+def calculate_task_3_result(user_answers: list[Answer]) -> str:
     """
     Принимает список ответов пользователя на 3 задание,
     расчитывает результат и возвращает топ 3 характеристики,
     наиболее подходящие пользователю.
     """
-    TOP_RESULTS_NUMBER = 3
+    scale_scores_counter = _distribute_answers_by_scales(user_answers)
+    scale_scores_sorted = _sorted_scales_in_non_growing_order(scale_scores_counter)
+    user_top_features = _make_top_scales_by_scores(scale_scores_sorted)
+    summary = _write_result_to_string(user_top_features)
+    return summary
 
+
+def _distribute_answers_by_scales(
+    user_answers: list[Answer]
+) -> dict[str: int]:
+    """
+    Считает кол-во ответов пользователя, относящихся к каждой из шкал.
+    """
     scale_scores_counter = {}
     for answer in user_answers:
         scale = SCALES[str(answer.number) + answer.content]
         scale_scores_counter[scale] = scale_scores_counter.get(scale, 0) + 1
+    return scale_scores_counter
 
-    scale_scores_sorted = sorted(
+
+def _sorted_scales_in_non_growing_order(
+    scale_scores_counter: dict[str: int]
+) -> list[tuple[str, int]]:
+    """
+    Сортирует шкалы и кол-во ответов, относящихся к ним, по невозрастанию.
+    """
+    return sorted(
         scale_scores_counter.items(),
         key=lambda scale_item: (-scale_item[1], scale_item[0])
     )
+
+
+def _make_top_scales_by_scores(
+    scale_scores_sorted: list[tuple[str, int]]
+) -> list[tuple[str, int]]:
+    """
+    Выбирает шкалы (топ-3), набравшие максимальное кол-во баллов.
+    В случае, если шкалы, не вошедшие в топ-3, набрали столько же баллов,
+    что и шкала на 3 месте, добавляет их в выборку.
+    """
     user_top_features = scale_scores_sorted[:TOP_RESULTS_NUMBER]
     for scale, score in scale_scores_sorted[TOP_RESULTS_NUMBER:]:
-        if score == user_top_features[-1][-1]:
-            user_top_features.append((scale, score))
-        else:
-            break
+        if score != user_top_features[-1][-1]:
+            return user_top_features
+        user_top_features.append((scale, score))
+    return user_top_features
 
-    summary = ' '.join(
+
+def _write_result_to_string(
+    user_top_features: list[tuple[str, int]]
+) -> str:
+    """Формирует результат в виде текстовой строки."""
+    return ' '.join(
         [':'.join([scale, str(score)])
          for scale, score
          in user_top_features]
     )
-
-    return summary
