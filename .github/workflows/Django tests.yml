@@ -31,4 +31,4 @@ jobs:
     -
       name: Django tests
       run: |
-        poetry run python src/backend/manage.py
+        poetry run python src/backend/manage.py test api
