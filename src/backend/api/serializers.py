@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Answer, UserFromTelegram
+from api.models import Answer, TaskStatus, UserFromTelegram
 
 
 class AnswerSerializer(serializers.ModelSerializer):
@@ -39,3 +39,26 @@ class UserFromTelegramUpdateSerializer(serializers.ModelSerializer):
         model = UserFromTelegram
         fields = ("telegram_id", "name", "surname")
         read_only_fields = ("telegram_id",)
+
+
+class TaskStatusListSerializer(serializers.ModelSerializer):
+    """
+    Сериализватор модели 'TaskStatus'.
+    Используется для получения списка заданий по telegram_id
+    """
+
+    class Meta:
+        model = TaskStatus
+        fields = ["number", "is_done"]
+
+
+class TaskStatusRetriveSerializer(serializers.ModelSerializer):
+    """
+    Сериализватор модели 'TaskStatus'.
+    Используется для:
+    - Получения информации о статусе выполнения конкретного задания
+    """
+
+    class Meta:
+        model = TaskStatus
+        fields = ["number", "current_question", "summary", "is_done"]

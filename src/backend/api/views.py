@@ -3,9 +3,11 @@ from rest_framework import mixins, status, viewsets
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-from .models import TaskStatus, UserFromTelegram
-from .serializers import (
+from api.models import TaskStatus, UserFromTelegram
+from api.serializers import (
     AnswerSerializer,
+    TaskStatusListSerializer,
+    TaskStatusRetriveSerializer,
     UserFromTelegramRetrieveCreateSerializer,
     UserFromTelegramUpdateSerializer,
 )
@@ -62,3 +64,27 @@ class UserFromTelegramViewSet(
         if self.action == "partial_update":
             return UserFromTelegramUpdateSerializer
         return UserFromTelegramRetrieveCreateSerializer
+
+
+class TasksViewSet(
+    mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet
+):
+    """
+    Вьюсет для получения информации о всех заданиях пользователя и
+    получения информации о статусе выполнения конкретного задания.
+    Доступные HTTP методы: GET
+    """
+
+    http_method_names = ["get"]
+    lookup_field = "number"
+
+    def get_queryset(self):
+        user = get_object_or_404(
+            UserFromTelegram, telegram_id=self.kwargs.get("telegram_id")
+        )
+        return user.tasks.all()
+
+    def get_serializer_class(self):
+        if self.action == "list":
+            return TaskStatusListSerializer
+        return TaskStatusRetriveSerializer
