@@ -21,11 +21,9 @@ class TasksViewSet(
         user = get_object_or_404(
             UserFromTelegram, telegram_id=self.kwargs.get("telegram_id")
         )
-        if not self.kwargs.get("number"):
-            return user.tasks.objects.all()
-        return user.tasks.objects.filter(user=self.kwargs.get("number"))
+        return user.tasks.objects.all()
 
     def get_serializer_class(self):
         if self.action == "list":
-            return TaskStatusRetriveSerializer
-        return TaskStatusListSerializer
+            return TaskStatusListSerializer
+        return TaskStatusRetriveSerializer
