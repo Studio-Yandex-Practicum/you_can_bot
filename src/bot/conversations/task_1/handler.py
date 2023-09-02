@@ -6,6 +6,7 @@ from telegram import (
     ReplyKeyboardMarkup,
     Update
 )
+from telegram.constants import ParseMode
 from telegram.ext import (
     BaseHandler,
     CommandHandler,
@@ -23,7 +24,6 @@ CHOICES = 'АБВГДЕ'
 MESSAGE_KEY_TEMPLATE = 'message_{}'
 NUMBER_OF_QUESTIONS = 10
 CHOOSING = 1
-PARSE_MODE = 'MarkdownV2'
 CANCEL_TEXT = 'Выполнение задания 1 было пропущено'
 
 
@@ -58,7 +58,7 @@ def get_result(user, context):  # Временная, расшифровывае
     return result['1'][1], result['2'][1], result['3'][1]
 
 
-def inline_keyboard(
+def get_inline_keyboard(
         buttons_dict: dict[str, str],
         picked_choices: str = ''
 ) -> InlineKeyboardMarkup:
@@ -72,7 +72,7 @@ def inline_keyboard(
     return InlineKeyboardMarkup([keyboard])
 
 
-def reply_keyboard(
+def get_reply_keyboard(
         buttons_dict: dict[str, str],
 ) -> ReplyKeyboardMarkup:
     """Создаёт клавиатуру для текущего сообщения."""
@@ -83,7 +83,7 @@ def reply_keyboard(
     )
 
 
-def question_text(template: dict, picked_choices: str = '') -> str:
+def get_question_text(template: dict, picked_choices: str = '') -> str:
     text = f'*{re.escape(template["text"])}*\n'
     for label, choice in template['buttons'].items():
         text += f'*\[{label}\]* {re.escape(choice)}' # noqa 
@@ -93,7 +93,7 @@ def question_text(template: dict, picked_choices: str = '') -> str:
     return text
 
 
-def question_template(
+def get_question_template(
         context: ContextTypes.DEFAULT_TYPE,
         start: bool = False,
         result: bool = False,
@@ -117,22 +117,24 @@ async def question_start(
     """Начинает новый вопрос."""
     context.user_data['current_question'] = question_number
     context.user_data['picked_choices'] = ''
-    template = question_template(context)
+    template = get_question_template(context)
     if update.message:
         await update.message.reply_text(
-            question_text(template),
-            reply_markup=inline_keyboard(
+            get_question_text(template),
+            reply_markup=get_inline_keyboard(
                 template['buttons'],
             ),
-            parse_mode=PARSE_MODE
+            parse_mode=ParseMode.MARKDOWN_V2
+
         )
     else:
         await update.callback_query.message.reply_text(
-            question_text(template),
-            reply_markup=inline_keyboard(
+            get_question_text(template),
+            reply_markup=get_inline_keyboard(
                 template['buttons'],
             ),
-            parse_mode=PARSE_MODE
+            parse_mode=ParseMode.MARKDOWN_V2
+
         )
 
 
@@ -149,10 +151,10 @@ async def start_task_1(
         'Д': 0,
         'Е': 0,
     }  # временное хранение ответа
-    template = question_template(context, start=True)
+    template = get_question_template(context, start=True)
     await update.message.reply_text(
         template['text'],
-        reply_markup=reply_keyboard(template['buttons']),
+        reply_markup=get_reply_keyboard(template['buttons']),
     )
     return CHOOSING
 
@@ -167,14 +169,15 @@ async def button(
     else:
         choice = update.callback_query.data
         context.user_data['picked_choices'] += choice
-        template = question_template(context)
+        template = get_question_template(context)
         await update.callback_query.edit_message_text(
-            question_text(template, context.user_data.get('picked_choices')),
-            reply_markup=inline_keyboard(
+            get_question_text(template, context.user_data.get('picked_choices')),
+            reply_markup=get_inline_keyboard(
                 template['buttons'],
                 context.user_data.get('picked_choices')
             ),
-            parse_mode=PARSE_MODE
+            parse_mode=ParseMode.MARKDOWN_V2
+
         )
 
     if len(context.user_data.get('picked_choices')) == len(CHOICES):
@@ -184,20 +187,21 @@ async def button(
         )
         if context.user_data.get('current_question') == NUMBER_OF_QUESTIONS:
             query = update.callback_query
-            template = question_template(context, result=True)
-            first, second, third = get_result(query.from_user, context)
+            template = get_question_template(context, result=True)
             await query.message.reply_text(
                 f'*{template["text"]}*',
-                reply_markup=reply_keyboard(
+                reply_markup=get_reply_keyboard(
                     template['buttons'],
                 ),
-                parse_mode=PARSE_MODE
+                parse_mode=ParseMode.MARKDOWN_V2
+
             )
             for result in get_result(query.from_user, context):
                 await query.message.reply_text(
                     (f'*{re.escape(RESULT[result][0])}*\n'
                      f'{re.escape(RESULT[result][1])}'),
-                    parse_mode=PARSE_MODE
+                    parse_mode=ParseMode.MARKDOWN_V2
+
                 )
             return ConversationHandler.END
         else:
