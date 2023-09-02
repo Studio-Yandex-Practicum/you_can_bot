@@ -9,16 +9,16 @@ jobs:
   setup:
     runs-on: ubuntu-latest
     env:
-      MY_POSTGRES_USER: someuser
-      MY_POSTGRES_PASSWORD: somepassword
-      MY_POSTGRES_DB: somedbname
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
     services:
       postgres_main:
         image: postgres:12
         env:
-          POSTGRES_USER: ${{ env.MY_POSTGRES_USER }}
-          POSTGRES_PASSWORD: ${{ env.MY_POSTGRES_PASSWORD }}
-          POSTGRES_DB: ${{ env.MY_POSTGRES_DB }}
+          POSTGRES_USER: ${{ env.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ env.POSTGRES_PASSWORD }}
+          POSTGRES_DB: ${{ env.POSTGRES_DB }}
         ports:
           - 5432:5432
         options: >-
@@ -45,7 +45,7 @@ jobs:
       name: Install dependencies
       run: |
         poetry install
-        poetry run pip install psycopg
+        poetry run pip install psycopg2-binary
     -
       name: Django tests
       run: |
