@@ -6,29 +6,8 @@ on:
     branches: [develop]
 
 jobs:
-  setup:
+  testing:
     runs-on: ubuntu-latest
-    env:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: postgres
-      SECRET_KEY: test-key-not-good
-      DB_PORT: 5432
-      DB_HOST: localhost
-    services:
-      postgres_main:
-        image: postgres:12
-        env:
-          POSTGRES_USER: ${{ env.POSTGRES_USER }}
-          POSTGRES_PASSWORD: ${{ env.POSTGRES_PASSWORD }}
-          POSTGRES_DB: ${{ env.POSTGRES_DB }}
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd pg_isready 
-          --health-interval 10s 
-          --health-timeout 5s 
-          --health-retries 5
 
     steps:
     -
@@ -52,12 +31,6 @@ jobs:
     -
       name: Django tests
       env:
-        DEBUG: "0"
-        SECRET_KEY: ${{ env.SECRET_KEY }}
-        POSTGRES_USER: ${{ env.POSTGRES_USER }}
-        POSTGRES_PASSWORD: ${{ env.POSTGRES_PASSWORD }}
-        DB_HOST: ${{ env.DB_HOST }}
-        POSTGRES_DB: ${{ env.POSTGRES_DB }}
-        DB_PORT: ${{ env.DB_PORT }}
+        NEED_SQLITE: True
       run: |
         poetry run python src/backend/manage.py test src/backend
