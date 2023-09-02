@@ -27,6 +27,7 @@ jobs:
       name: Install dependencies
       run: |
         poetry install
+        poetry run pip install psycopg-binary
     -
       name: Django tests
       run: |
