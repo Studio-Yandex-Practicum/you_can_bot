@@ -10,17 +10,20 @@ User = get_user_model()
 class AnswerInline(admin.StackedInline):
     model = Answer
     extra = 0
+    can_delete = False
 
 
 class ProblemInline(admin.StackedInline):
     model = Problem
     extra = 0
+    can_delete = False
 
 
 class TaskStatusInline(admin.TabularInline):
     model = TaskStatus
     extra = 0
     show_change_link = True
+    can_delete = False
 
 
 @admin.register(Problem)
@@ -41,42 +44,13 @@ class ProblemAdmin(admin.ModelAdmin):
     empty_value_display = "-пусто-"
 
 
-@admin.register(Answer)
-class AnswerAdmin(admin.ModelAdmin):
-    list_display = (
-        "number",
-        "content",
-        "task",
-        "user",
-    )
-    list_display_links = (
-        "number",
-        "content",
-    )
-    search_fields = (
-        "task__user__name",
-        "task__user__surname",
-        "task__user__telegram_username",
-    )
-    list_filter = (
-        "number",
-        "task__number",
-    )
-    empty_value_display = "-пусто-"
-
-    @staticmethod
-    def user(obj):
-        return obj.task.user
-
-
 @admin.register(TaskStatus)
 class TaskStatusAdmin(admin.ModelAdmin):
     list_display = (
-        "number",
+        "task",
         "summary",
         "user",
         "current_question",
-        "end_question",
         "is_done",
         "pass_date",
     )
@@ -87,7 +61,7 @@ class TaskStatusAdmin(admin.ModelAdmin):
     )
     inlines = (AnswerInline,)
     list_filter = (
-        "number",
+        "task",
         "is_done",
     )
     date_hierarchy = "pass_date"

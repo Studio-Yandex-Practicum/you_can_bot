@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.core.validators import MinValueValidator
 from django.db import models
 
 _MAX_LENGTH_OF_TELEGRAM_USERNAME = 32
@@ -38,7 +39,6 @@ class UserFromTelegram(models.Model):
     telegram_username = models.CharField(
         "Никнейм Telegram",
         max_length=_MAX_LENGTH_OF_TELEGRAM_USERNAME,
-        unique=True,
     )
     name = models.CharField(
         "Имя",
@@ -64,9 +64,7 @@ class UserFromTelegram(models.Model):
         return f"{self.name} {self.surname}"
 
 
-class TaskStatus(models.Model):
-    """Модель статуса выполнения задания пользователем."""
-
+class Task(models.Model):
     class TaskNumber(models.IntegerChoices):
         FIRST = 1, "Задание 1"
         SECOND = 2, "Задание 2"
@@ -77,19 +75,65 @@ class TaskStatus(models.Model):
         SEVENTH = 7, "Задание 7"
         EIGHTH = 8, "Задание 8"
 
+    number = models.PositiveSmallIntegerField(
+        "Номер задания",
+        choices=TaskNumber.choices,
+        primary_key=True,
+    )
+    end_question = models.PositiveSmallIntegerField(
+        "Последний номер задания",
+    )
+
+    def __str__(self):
+        return f"Задание {self.number}"
+
+
+class Question(models.Model):
+    task = models.ForeignKey(
+        verbose_name="Задание",
+        to=Task,
+        on_delete=models.CASCADE,
+        related_name="questions",
+    )
+    number = models.PositiveSmallIntegerField(
+        "Номер вопроса",
+        validators=(MinValueValidator(limit_value=1),),
+    )
+    content = models.TextField()
+    example = models.TextField(default="")
+
+    def __str__(self):
+        return str(self.number)
+
+
+class Choice(models.Model):
+    question = models.ForeignKey(
+        verbose_name="Вопрос",
+        to=Question,
+        on_delete=models.CASCADE,
+        related_name="choices",
+    )
+    title = models.TextField()
+    description = models.TextField(default="")
+
+
+class TaskStatus(models.Model):
+    """Модель статуса выполнения задания пользователем."""
+
     user = models.ForeignKey(
         verbose_name="Пользователь",
         to=UserFromTelegram,
         on_delete=models.CASCADE,
         related_name="tasks",
     )
-    number = models.PositiveSmallIntegerField(
-        "Номер задания",
-        choices=TaskNumber.choices,
+    task = models.ForeignKey(
+        verbose_name="Задание",
+        to=Task,
+        on_delete=models.PROTECT,
     )
     summary = models.TextField(
         "Расшифровка",
-        null=True,
+        default="",
     )
     is_done = models.BooleanField(
         "Выполнено",
@@ -105,44 +149,37 @@ class TaskStatus(models.Model):
         "Текущий номер задания",
         default=0,
     )
-    end_question = models.PositiveSmallIntegerField(
-        "Последний номер задания",
-    )
 
     class Meta:
         ordering = ("pk",)
         verbose_name = "статус"
         verbose_name_plural = "Статусы заданий"
-        unique_together = ("user", "number")
-
-    def __str__(self):
-        return f"Задание {self.number}"
+        unique_together = ("user", "task")
 
 
 class Answer(models.Model):
     """Модель ответов на вопросы заданий."""
 
-    task = models.ForeignKey(
+    task_status = models.ForeignKey(
         verbose_name="Задание",
         to=TaskStatus,
         on_delete=models.CASCADE,
         related_name="answers",
     )
-    number = models.PositiveSmallIntegerField(
-        "Номер вопроса",
+    question = models.ForeignKey(
+        verbose_name="Вопрос",
+        to=Question,
+        on_delete=models.PROTECT,
     )
-    content = models.TextField(
-        "Ответ",
-    )
+    content = models.TextField("Ответ")
 
     class Meta:
         ordering = ("pk",)
         verbose_name = "ответ"
         verbose_name_plural = "Ответы на задания"
-        unique_together = ("task", "number")
 
     def __str__(self):
-        return f"Ответ {self.number}"
+        return f"Ответ {self.question}"
 
 
 class Problem(models.Model):
@@ -159,7 +196,7 @@ class Problem(models.Model):
     )
     answer = models.TextField(
         "Ответ психолога",
-        null=True,
+        default="",
     )
     create_date = models.DateTimeField(
         "Дата создания",
