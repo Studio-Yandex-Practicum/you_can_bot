@@ -1,6 +1,6 @@
 from rest_framework.test import APITestCase
 
-from api.models import UserFromTelegram
+from api.models import Question, Task, UserFromTelegram
 
 
 class BaseCaseForAnswerTests(APITestCase):
@@ -28,3 +28,9 @@ class BaseCaseForAnswerTests(APITestCase):
             name=cls.TELEGRAM_NAME,
             surname=cls.TELEGRAM_SURNAME,
         )
+        task_1 = Task.objects.get(number=1)
+        questions = (
+            Question(task=task_1, number=1, content="", example=""),
+            Question(task=task_1, number=2, content="", example=""),
+        )
+        Question.objects.bulk_create(questions)

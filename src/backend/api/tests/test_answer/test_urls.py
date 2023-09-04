@@ -1,7 +1,7 @@
 from django.urls import reverse
 from rest_framework import status
 
-from api.tests.test_case import BaseCaseForAnswerTests
+from api.tests.test_answer.fixtures import BaseCaseForAnswerTests
 
 
 class UrlAnswerTests(BaseCaseForAnswerTests):

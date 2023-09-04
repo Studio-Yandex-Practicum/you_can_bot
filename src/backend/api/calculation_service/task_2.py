@@ -1,18 +1,19 @@
 from api.models import Answer
 
+ANSWERS_GROUPS_COUNT = 7
+PSYCHO_FEATURES = ("EI", "SN", "TF", "JP")
+MAX_SCORE_BY_FEATURE = (10, 20, 20, 20)
+
 
 def calculate_task_2_result(user_answers: list[Answer]) -> str:
     """
     Принимает список ответов пользователя на 2 задание,
     расчитывает результат и возвращает описание психотипа.
     """
-    ANSWERS_GROUPS_COUNT = 7
-    PSYCHO_FEATURES = ("EI", "SN", "TF", "JP")
-    MAX_SCORE_BY_FEATURE = (10, 20, 20, 20)
 
     answers_groups = [[] for _ in range(ANSWERS_GROUPS_COUNT)]
     for answer in user_answers:
-        answers_groups[answer.number % ANSWERS_GROUPS_COUNT - 1].append(
+        answers_groups[answer.question.number % ANSWERS_GROUPS_COUNT - 1].append(
             1 if answer.content == "а" else 0
         )
 

@@ -1,25 +1,46 @@
 from django.test import TestCase
 
 from api.calculation_service.task_2 import calculate_task_2_result
-from api.models import Answer
+from api.models import Answer, Question, Task, TaskStatus, UserFromTelegram
 
 
 class TestTask2(TestCase):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        test_string = "test_string"
+        cls.user = UserFromTelegram.objects.create(
+            telegram_id=88294221,
+            telegram_username=test_string,
+            name=test_string,
+            surname=test_string,
+        )
+        cls.task_status = TaskStatus.objects.get(
+            user=cls.user,
+            task__number=2,
+        )
+
     def setUp(self) -> None:
-        self.user_answers = [
-            Answer(content="б", number=number) for number in range(1, 71)
+        questions = [
+            Question(task=Task.objects.get(number=2), number=question_number)
+            for question_number in range(1, 71)
         ]
+        Question.objects.bulk_create(questions)
+        answers = [
+            Answer(task_status=self.task_status, question=question, content="б")
+            for question in questions
+        ]
+        Answer.objects.bulk_create(answers)
+        self.user_answers = Answer.objects.filter(task_status=self.task_status)
 
     def test_e_psycho_feature_is_defined_correctly(self):
         answers_for_e_feature = (1, 8, 15, 22, 29, 36, 43, 50, 57, 64)
         for index, number_of_answer in enumerate(answers_for_e_feature):
-            self.user_answers[number_of_answer - 1] = Answer(
-                content="а", number=number_of_answer
-            )
+            self._change_answer_content(number_of_answer)
             answers_with_letter_a = index + 1
             with self.subTest(anwers_with_letter_a=answers_with_letter_a):
                 received_response = calculate_task_2_result(
-                    user_answers=self.user_answers
+                    user_answers=self.user_answers.all()
                 )[0]
                 if answers_with_letter_a >= 6:
                     expected_response = "E"
@@ -51,13 +72,11 @@ class TestTask2(TestCase):
             66,
         )
         for index, number_of_answer in enumerate(answers_for_s_feature):
-            self.user_answers[number_of_answer - 1] = Answer(
-                content="а", number=number_of_answer
-            )
+            self._change_answer_content(number_of_answer)
             answers_with_letter_a = index + 1
             with self.subTest(anwers_with_letter_a=answers_with_letter_a):
                 received_response = calculate_task_2_result(
-                    user_answers=self.user_answers
+                    user_answers=self.user_answers.all()
                 )[1]
                 if answers_with_letter_a >= 11:
                     expected_response = "S"
@@ -89,13 +108,11 @@ class TestTask2(TestCase):
             68,
         )
         for index, number_of_answer in enumerate(answers_for_t_feature):
-            self.user_answers[number_of_answer - 1] = Answer(
-                content="а", number=number_of_answer
-            )
+            self._change_answer_content(number_of_answer)
             answers_with_letter_a = index + 1
             with self.subTest(anwers_with_letter_a=answers_with_letter_a):
                 received_response = calculate_task_2_result(
-                    user_answers=self.user_answers
+                    user_answers=self.user_answers.all()
                 )[2]
                 if answers_with_letter_a >= 11:
                     expected_response = "T"
@@ -127,16 +144,19 @@ class TestTask2(TestCase):
             70,
         )
         for index, number_of_answer in enumerate(answers_for_j_feature):
-            self.user_answers[number_of_answer - 1] = Answer(
-                content="а", number=number_of_answer
-            )
+            self._change_answer_content(number_of_answer)
             answers_with_letter_a = index + 1
             with self.subTest(anwers_with_letter_a=answers_with_letter_a):
                 received_response = calculate_task_2_result(
-                    user_answers=self.user_answers
+                    user_answers=self.user_answers.all()
                 )[3]
                 if answers_with_letter_a >= 11:
                     expected_response = "J"
                 else:
                     expected_response = "P"
                 self.assertEquals(received_response, expected_response)
+
+    def _change_answer_content(self, number_of_answer, new_content="а"):
+        answer = self.user_answers.get(question__number=number_of_answer)
+        answer.content = new_content
+        answer.save()
