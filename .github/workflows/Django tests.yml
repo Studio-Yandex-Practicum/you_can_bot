@@ -30,7 +30,5 @@ jobs:
         poetry install
     -
       name: Django tests
-      env:
-        NEED_SQLITE: True
       run: |
         poetry run python src/backend/manage.py test src/backend
