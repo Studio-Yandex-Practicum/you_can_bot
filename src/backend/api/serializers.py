@@ -8,10 +8,11 @@ class AnswerSerializer(serializers.ModelSerializer):
     Сериализатор модели Answer.
     """
 
+    number = serializers.IntegerField(source="question.number", read_only=True)
+
     class Meta:
         model = Answer
-        fields = "__all__"
-        extra_kwargs = {"task": {"write_only": True}}
+        fields = ("id", "number", "content")
 
 
 class UserFromTelegramRetrieveCreateSerializer(serializers.ModelSerializer):
@@ -41,18 +42,19 @@ class UserFromTelegramUpdateSerializer(serializers.ModelSerializer):
         read_only_fields = ("telegram_id",)
 
 
-class TaskStatusListSerializer(serializers.ModelSerializer):
+class TaskStatusSerializer(serializers.ModelSerializer):
     """
     Сериализватор модели 'TaskStatus'.
     Используется для получения списка заданий по telegram_id
     """
+    number = serializers.IntegerField(source="task.number", read_only=True)
 
     class Meta:
         model = TaskStatus
         fields = ["number", "is_done"]
 
 
-class TaskStatusRetriveSerializer(serializers.ModelSerializer):
+class TaskStatusRetrieveSerializer(TaskStatusSerializer):
     """
     Сериализватор модели 'TaskStatus'.
     Используется для:
