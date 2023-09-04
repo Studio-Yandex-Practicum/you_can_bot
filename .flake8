@@ -1,0 +1,6 @@
+[flake8]
+max-line-length = 88
+extend-ignore = E203
+per-file-ignores =
+    src/backend/backend/settings.py: E501
+    **/migrations/*.py: E501

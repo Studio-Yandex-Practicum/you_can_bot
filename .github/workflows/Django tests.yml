@@ -1,0 +1,36 @@
+name: Django tests
+
+on:
+  push:
+    branches: [develop]
+  pull_request:
+    branches: [develop]
+
+jobs:
+  testing:
+    runs-on: ubuntu-latest
+
+    steps:
+    -
+      name: Check out the repo
+      uses: actions/checkout@v3
+    -
+      name: Setup Poetry
+      uses: Gr1N/setup-poetry@v8
+      with:
+        poetry-version: "1.5.1"
+    -
+      name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.11"
+    -
+      name: Install dependencies
+      run: |
+        poetry install
+    -
+      name: Django tests
+      env:
+        NEED_SQLITE: True
+      run: |
+        poetry run python src/backend/manage.py test src/backend

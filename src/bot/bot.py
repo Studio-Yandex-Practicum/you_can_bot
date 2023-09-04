@@ -1,9 +1,9 @@
-import os
-
-from dotenv import load_dotenv
 from telegram.ext import ApplicationBuilder
 
-load_dotenv()
+from conversations.general.handlers import acquaintance_handler
+from conversations.task_1.handlers import task_1_handler
+from conversations.task_2.handlers import task_2_handler
+from utils.configs import TOKEN
 
 
 def create_bot():
@@ -11,7 +11,10 @@ def create_bot():
     Create telegram bot application
     :return: Created telegram bot application
     """
-    bot_app = ApplicationBuilder().token(os.getenv("TOKEN")).build()
+    bot_app = ApplicationBuilder().token(TOKEN).build()
+    bot_app.add_handler(handler=acquaintance_handler)
+    bot_app.add_handler(handler=task_1_handler)
+    bot_app.add_handler(handler=task_2_handler)
     return bot_app
 
 
