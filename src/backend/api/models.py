@@ -88,6 +88,22 @@ class Task(models.Model):
         return f"Задание {self.number}"
 
 
+class Photo(models.Model):
+    file_id = models.TextField(
+        "ID для telegram",
+        help_text=(
+            "После загрузки в telegram файлу будет"
+            " присвоен file_id для повторной отправки."
+        ),
+        default="",
+        blank=True,
+    )
+    image = models.ImageField(
+        "Картинка",
+        upload_to="questions/",
+    )
+
+
 class Question(models.Model):
     task = models.ForeignKey(
         verbose_name="Задание",
@@ -99,8 +115,19 @@ class Question(models.Model):
         "Номер вопроса",
         validators=(MinValueValidator(limit_value=1),),
     )
-    content = models.TextField()
-    example = models.TextField(default="")
+    content = models.TextField("Текст вопроса")
+    example = models.TextField(
+        "Пример ответа",
+        default="",
+        blank=True,
+    )
+    photo = models.OneToOneField(
+        verbose_name="Картинка",
+        to=Photo,
+        on_delete=models.SET_NULL,
+        related_name="question",
+        null=True,
+    )
 
     def __str__(self):
         return str(self.number)
@@ -113,8 +140,30 @@ class Choice(models.Model):
         on_delete=models.CASCADE,
         related_name="choices",
     )
-    title = models.TextField()
-    description = models.TextField(default="")
+    title = models.TextField("Заголовок")
+    description = models.TextField("Описание", default="")
+
+
+class Result(models.Model):
+    task = models.ForeignKey(
+        verbose_name="Задание",
+        to=Task,
+        on_delete=models.CASCADE,
+        related_name="results",
+    )
+    key = models.CharField(
+        "Ключ",
+        max_length=6,
+        help_text=(
+            "Значение, полученное в ходе расшифровки, которое используется"
+            " как краткая запись результата. Например, ISTP."
+        ),
+    )
+    title = models.TextField("Заголовок")
+    description = models.TextField(
+        "Описание",
+        default="",
+    )
 
 
 class TaskStatus(models.Model):
@@ -131,10 +180,6 @@ class TaskStatus(models.Model):
         to=Task,
         on_delete=models.PROTECT,
     )
-    summary = models.TextField(
-        "Расшифровка",
-        default="",
-    )
     is_done = models.BooleanField(
         "Выполнено",
         default=False,
@@ -146,7 +191,7 @@ class TaskStatus(models.Model):
         db_index=True,
     )
     current_question = models.PositiveSmallIntegerField(
-        "Текущий номер задания",
+        "Текущий номер вопроса",
         default=0,
     )
 
@@ -158,7 +203,7 @@ class TaskStatus(models.Model):
 
 
 class Answer(models.Model):
-    """Модель ответов на вопросы заданий."""
+    """Модель ответов на вопросы."""
 
     task_status = models.ForeignKey(
         verbose_name="Задание",
@@ -180,6 +225,29 @@ class Answer(models.Model):
 
     def __str__(self):
         return f"Ответ {self.question}"
+
+
+class ResultStatus(models.Model):
+    task_status = models.ForeignKey(
+        verbose_name="Сводка",
+        to=TaskStatus,
+        on_delete=models.CASCADE,
+        related_name="result",
+    )
+    top = models.PositiveSmallIntegerField(
+        "Место в топе",
+        validators=(MinValueValidator(limit_value=1),),
+        default=1,
+    )
+    result = models.ForeignKey(
+        verbose_name="Результат",
+        to=Result,
+        on_delete=models.PROTECT,
+    )
+    score = models.PositiveSmallIntegerField(
+        "Баллы",
+        default=0,
+    )
 
 
 class Problem(models.Model):

@@ -2,13 +2,42 @@ from django.contrib import admin
 from django.contrib.auth import get_user_model
 from django.contrib.auth.admin import UserAdmin
 
-from api.models import Answer, MentorProfile, Problem, TaskStatus, UserFromTelegram
+from api.models import (
+    Answer,
+    MentorProfile,
+    Photo,
+    Problem,
+    Question,
+    Result,
+    ResultStatus,
+    Task,
+    TaskStatus,
+    UserFromTelegram,
+)
 
 User = get_user_model()
 
 
 class AnswerInline(admin.StackedInline):
     model = Answer
+    extra = 0
+    can_delete = False
+
+
+class QuestionInline(admin.StackedInline):
+    model = Question
+    extra = 0
+    can_delete = False
+
+
+class ResultsInline(admin.StackedInline):
+    model = Result
+    extra = 0
+    can_delete = False
+
+
+class ResultStatusInline(admin.StackedInline):
+    model = ResultStatus
     extra = 0
     can_delete = False
 
@@ -44,11 +73,19 @@ class ProblemAdmin(admin.ModelAdmin):
     empty_value_display = "-пусто-"
 
 
+@admin.register(Task)
+class TaskAdmin(admin.ModelAdmin):
+    list_display = (
+        "number",
+        "end_question",
+    )
+    inlines = (QuestionInline, ResultsInline)
+
+
 @admin.register(TaskStatus)
 class TaskStatusAdmin(admin.ModelAdmin):
     list_display = (
         "task",
-        "summary",
         "user",
         "current_question",
         "is_done",
@@ -59,7 +96,7 @@ class TaskStatusAdmin(admin.ModelAdmin):
         "user__surname",
         "user__telegram_username",
     )
-    inlines = (AnswerInline,)
+    inlines = (AnswerInline, ResultStatusInline)
     list_filter = (
         "task",
         "is_done",
@@ -96,3 +133,4 @@ class ExtendedUserAdmin(UserAdmin):
 
 admin.site.unregister(User)
 admin.site.register(User, ExtendedUserAdmin)
+admin.site.register(Photo)
