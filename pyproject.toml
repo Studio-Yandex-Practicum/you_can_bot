@@ -20,6 +20,7 @@ python-dotenv = "^1.0.0"
 
 [tool.isort]
 profile = "black"
+skip_glob = ["**/migrations/*.py"]
 src_paths = ["src/bot", "src/backend"]
 
 [build-system]

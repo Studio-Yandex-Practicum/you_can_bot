@@ -47,6 +47,7 @@ class TaskStatusSerializer(serializers.ModelSerializer):
     Сериализватор модели 'TaskStatus'.
     Используется для получения списка заданий по telegram_id
     """
+
     number = serializers.IntegerField(source="task.number", read_only=True)
 
     class Meta:

@@ -19,14 +19,18 @@ class ViewAnswerTests(BaseCaseForAnswerTests):
         ANSWER_1_CONTENT = self.ANSWER_1["content"]
         self.assertEqual(
             Answer.objects.filter(
-                task_status=task_status, question__number=ANSWER_1_NUMBER, content=ANSWER_1_CONTENT
+                task_status=task_status,
+                question__number=ANSWER_1_NUMBER,
+                content=ANSWER_1_CONTENT,
             ).exists(),
             False,
         )
         self.client.post(url, data=self.ANSWER_1)
         self.assertEqual(
             Answer.objects.filter(
-                task_status=task_status, question__number=ANSWER_1_NUMBER, content=ANSWER_1_CONTENT
+                task_status=task_status,
+                question__number=ANSWER_1_NUMBER,
+                content=ANSWER_1_CONTENT,
             ).exists(),
             True,
         )

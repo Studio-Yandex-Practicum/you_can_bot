@@ -2,7 +2,7 @@ from django.shortcuts import get_object_or_404
 from rest_framework import mixins, viewsets
 
 from api.models import UserFromTelegram
-from api.serializers import TaskStatusSerializer, TaskStatusRetrieveSerializer
+from api.serializers import TaskStatusRetrieveSerializer, TaskStatusSerializer
 
 
 class TasksViewSet(
