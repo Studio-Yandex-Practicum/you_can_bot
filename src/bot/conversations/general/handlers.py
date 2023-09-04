@@ -1,9 +1,4 @@
-from telegram.ext import (
-    CommandHandler,
-    ConversationHandler,
-    MessageHandler,
-    filters,
-)
+from telegram.ext import CommandHandler, ConversationHandler, MessageHandler, filters
 
 from conversations.general.callback_funcs import (
     HELLO,

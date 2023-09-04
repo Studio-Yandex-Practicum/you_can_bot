@@ -88,10 +88,7 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
             )
             for result in _get_result(query.from_user, context):
                 await query.message.reply_text(
-                    (
-                        f"*{re.escape(RESULT[result][0])}*\n"
-                        f"{re.escape(RESULT[result][1])}"
-                    ),
+                    text=RESULT[result],
                     parse_mode=ParseMode.MARKDOWN_V2,
                 )
             return ConversationHandler.END
