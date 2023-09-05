@@ -4,7 +4,8 @@ from django.contrib.auth.admin import UserAdmin
 
 from api.models import (
     Answer,
-    Choice, MentorProfile,
+    Choice,
+    MentorProfile,
     Photo,
     Problem,
     Question,
