@@ -1,10 +1,13 @@
-# .github/workflows/**main.yml**
-name: Test flake8 and isort workflow
+name: Django tests
 
-on: [pull_request]
+on:
+  push:
+    branches: [develop]
+  pull_request:
+    branches: [develop]
 
 jobs:
-  setup:
+  testing:
     runs-on: ubuntu-latest
 
     steps:
@@ -26,10 +29,8 @@ jobs:
       run: |
         poetry install
     -
-      name: Test with flake8
+      name: Django tests
+      env:
+        NEED_SQLITE: True
       run: |
-        poetry run flake8 .
-    -
-      name: Test with isort
-      run: |
-        poetry run isort . --check --diff
+        poetry run python src/backend/manage.py test src/backend
