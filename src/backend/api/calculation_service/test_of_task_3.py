@@ -27,8 +27,8 @@ class TestTask3(TestCase):
             'scale_1': 6, 'scale_4': 9, 'scale_6': 7,
             'scale_2': 9, 'scale_3': 5, 'scale_5': 6
         }
-        recieved = task_3._distribute_answers_by_scales(test_user_answers_objs)
-        self.assertEquals(recieved, expected)
+        received = task_3._distribute_answers_by_scales(test_user_answers_objs)
+        self.assertEquals(received, expected)
 
     def test_sorted_scales_in_non_growing_order(self):
         """
@@ -58,9 +58,9 @@ class TestTask3(TestCase):
         ]
         for test_name, expected in zip(test_scale_scores_counters, expected):
             with self.subTest(test_name=test_name):
-                recieved = task_3._sorted_scales_in_non_growing_order(
+                received = task_3._sorted_scales_in_non_growing_order(
                     test_scale_scores_counters[test_name])
-                self.assertEquals(recieved, expected)
+                self.assertEquals(received, expected)
 
     def test_make_top_scales_by_scores(self):
         """
@@ -95,13 +95,13 @@ class TestTask3(TestCase):
         ]
         for test_name, expected in zip(test_scale_scores_counters, expected):
             with self.subTest(test_name=test_name):
-                recieved = task_3._make_top_scales_by_scores(
+                received = task_3._make_top_scales_by_scores(
                     test_scale_scores_counters[test_name])
-                self.assertEquals(recieved, expected)
+                self.assertEquals(received, expected)
 
     def test_write_result_to_string(self):
         """Проверяет корректность формирования результирующей строки."""
         top_scores_scale = [('scale_3', 10), ('scale_1', 9), ('scale_5', 8)]
         expected = 'scale_3:10 scale_1:9 scale_5:8'
-        recieved = task_3._write_result_to_string(top_scores_scale)
-        self.assertEquals(recieved, expected)
+        received = task_3._write_result_to_string(top_scores_scale)
+        self.assertEquals(received, expected)
