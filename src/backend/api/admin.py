@@ -4,7 +4,7 @@ from django.contrib.auth.admin import UserAdmin
 
 from api.models import (
     Answer,
-    MentorProfile,
+    Choice, MentorProfile,
     Photo,
     Problem,
     Question,
@@ -24,8 +24,15 @@ class AnswerInline(admin.StackedInline):
     can_delete = False
 
 
-class QuestionInline(admin.StackedInline):
+class QuestionInline(admin.TabularInline):
     model = Question
+    extra = 0
+    show_change_link = True
+    can_delete = False
+
+
+class ChoiceInline(admin.TabularInline):
+    model = Choice
     extra = 0
     can_delete = False
 
@@ -120,6 +127,11 @@ class UserFromTelegramAdmin(admin.ModelAdmin):
     list_filter = ("mentor",)
     empty_value_display = "-пусто-"
     inlines = (ProblemInline, TaskStatusInline)
+
+
+@admin.register(Question)
+class QuestionAdmin(admin.ModelAdmin):
+    inlines = (ChoiceInline,)
 
 
 class MentorProfileInline(admin.StackedInline):

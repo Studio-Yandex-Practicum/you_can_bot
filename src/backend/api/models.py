@@ -127,6 +127,7 @@ class Question(models.Model):
         on_delete=models.SET_NULL,
         related_name="question",
         null=True,
+        blank=True,
     )
 
     def __str__(self):
@@ -141,7 +142,11 @@ class Choice(models.Model):
         related_name="choices",
     )
     title = models.TextField("Заголовок")
-    description = models.TextField("Описание", default="")
+    description = models.TextField(
+        "Описание",
+        default="",
+        blank=True,
+    )
 
 
 class Result(models.Model):
@@ -163,6 +168,7 @@ class Result(models.Model):
     description = models.TextField(
         "Описание",
         default="",
+        blank=True,
     )
 
 
@@ -187,6 +193,7 @@ class TaskStatus(models.Model):
     pass_date = models.DateTimeField(
         "Дата выполнения",
         null=True,
+        blank=True,
         default=None,
         db_index=True,
     )
@@ -265,6 +272,7 @@ class Problem(models.Model):
     answer = models.TextField(
         "Ответ психолога",
         default="",
+        blank=True,
     )
     create_date = models.DateTimeField(
         "Дата создания",
