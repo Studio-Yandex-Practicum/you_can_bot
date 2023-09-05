@@ -68,7 +68,7 @@ def _distribute_answers_by_scales(user_answers: list[Answer]) -> dict[str:int]:
     """
     scale_scores_counter = {}
     for answer in user_answers:
-        scale = SCALES[str(answer.number) + answer.content]
+        scale = SCALES[str(answer.question.number) + answer.content]
         scale_scores_counter[scale] = scale_scores_counter.get(scale, 0) + 1
     return scale_scores_counter
 

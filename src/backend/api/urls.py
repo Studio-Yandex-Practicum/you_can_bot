@@ -1,7 +1,9 @@
 from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
-from api.views import TasksViewSet, UserFromTelegramViewSet, answer_create
+from api.views.answer import answer_create
+from api.views.tasks import TasksViewSet
+from api.views.users import UserFromTelegramViewSet
 
 app_name = "api"
 

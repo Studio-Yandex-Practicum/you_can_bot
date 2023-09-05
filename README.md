@@ -132,7 +132,7 @@ _Примеры:_
 
 Порядок работы в оболочке не меняется. Пример команды для Win:
 
-> python src\run_bot.py
+> python src/run_bot.py
 
 Доступен стандартный метод работы с активацией окружения в терминале с помощью команд:
 
@@ -167,7 +167,13 @@ nano .env
 4. Подготавливаем бэкенд к работе:
 
 ```shell
-python src/backend/manage.py migrate
+cd src/backend/
+python manage.py migrate
+```
+Наполняем БД данными заданий:
+
+```shell
+python manage.py loaddata fixtures/tasks.json fixtures/task_1_data.json
 ```
 
 ### Запуск проекта локально (без docker)
@@ -175,18 +181,19 @@ python src/backend/manage.py migrate
 Если нужен доступ в админскую часть для управления данными, создаем администратора:
 
 ```shell
-python src/backend/manage.py createsuperuser
+python manage.py createsuperuser
 ```
 
 Для запуска REST API бэкенда используем команду:
 
 ```shell
-python src/backend/manage.py runserver
+python manage.py runserver
 ```
 
-Для запуска телеграм-бота используем команду:
+Для запуска телеграм-бота используем команду (в отдельном терминале):
 ```shell
-python src/bot/run_bot.py
+cd src/bot/
+python run_bot.py
 ```
 
 ### Запуск тестов

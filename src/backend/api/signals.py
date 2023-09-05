@@ -2,7 +2,7 @@ from django.contrib.auth import get_user_model
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
-from api.models import MentorProfile, TaskStatus, UserFromTelegram
+from api.models import MentorProfile, Task, TaskStatus, UserFromTelegram
 
 User = get_user_model()
 
@@ -11,20 +11,23 @@ User = get_user_model()
 def create_task_statuses(sender, instance, created, **kwargs):
     if created is True:
         numbers_of_end_questions_in_tasks = {
-            TaskStatus.TaskNumber.FIRST: 10,
-            TaskStatus.TaskNumber.SECOND: 70,
-            TaskStatus.TaskNumber.THIRD: 42,
-            TaskStatus.TaskNumber.FOURTH: 41,
-            TaskStatus.TaskNumber.FIFTH: 1,
-            TaskStatus.TaskNumber.SIXTH: 3,
-            TaskStatus.TaskNumber.SEVENTH: 1,
-            TaskStatus.TaskNumber.EIGHTH: 20,
+            Task.TaskNumber.FIRST: 10,
+            Task.TaskNumber.SECOND: 70,
+            Task.TaskNumber.THIRD: 42,
+            Task.TaskNumber.FOURTH: 41,
+            Task.TaskNumber.FIFTH: 1,
+            Task.TaskNumber.SIXTH: 3,
+            Task.TaskNumber.SEVENTH: 1,
+            Task.TaskNumber.EIGHTH: 20,
         }
-        for task_number in TaskStatus.TaskNumber.values:
-            TaskStatus.objects.create(
-                user=instance,
+        for task_number in Task.TaskNumber.values:
+            task, created = Task.objects.get_or_create(
                 number=task_number,
                 end_question=numbers_of_end_questions_in_tasks[task_number],
+            )
+            TaskStatus.objects.create(
+                user=instance,
+                task=task,
             )
 
 

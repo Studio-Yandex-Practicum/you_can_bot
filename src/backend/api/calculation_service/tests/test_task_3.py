@@ -1,15 +1,24 @@
 from django.test import TestCase
 
 from api.calculation_service import task_3
-from api.models import Answer
+from api.models import Answer, Question, Task, TaskStatus, UserFromTelegram
 
 
 class TestTask3(TestCase):
-    def test_distribute_answers_by_scales(self):
-        """
-        Тестирует распределение ответов пользователя
-        по шкалам и подсчет кол-ва баллов.
-        """
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        test_string = "test_string"
+        cls.user = UserFromTelegram.objects.create(
+            telegram_id=88294221,
+            telegram_username=test_string,
+            name=test_string,
+            surname=test_string,
+        )
+        cls.task_status = TaskStatus.objects.get(
+            user=cls.user,
+            task__number=3,
+        )
         # fmt: off
         test_user_answers = {
             1: 'а', 2: 'а', 3: 'б', 4: 'а', 5: 'б', 6: 'а', 7: 'б',
@@ -20,10 +29,24 @@ class TestTask3(TestCase):
             36: 'а', 37: 'а', 38: 'б', 39: 'а', 40: 'б', 41: 'а', 42: 'б',
         }
         # fmt: on
-        test_user_answers_objs = [
-            Answer(number=number, content=content)
-            for number, content in test_user_answers.items()
+        questions = [
+            Question(task=Task.objects.get(number=2), number=question_number)
+            for question_number in test_user_answers.keys()
         ]
+        Question.objects.bulk_create(questions)
+        answers = [
+            Answer(task_status=cls.task_status, question=question, content=choice)
+            for question, choice in zip(questions, test_user_answers.values())
+        ]
+        Answer.objects.bulk_create(answers)
+        cls.user_answers = Answer.objects.filter(task_status=cls.task_status)
+
+    def test_distribute_answers_by_scales(self):
+        """
+        Тестирует распределение ответов пользователя
+        по шкалам и подсчет кол-ва баллов.
+        """
+
         expected = {
             "scale_1": 6,
             "scale_4": 9,
@@ -32,7 +55,7 @@ class TestTask3(TestCase):
             "scale_3": 5,
             "scale_5": 6,
         }
-        received = task_3._distribute_answers_by_scales(test_user_answers_objs)
+        received = task_3._distribute_answers_by_scales(self.user_answers.all())
         self.assertEquals(received, expected)
 
     def test_sorted_scales_in_non_growing_order(self):
