@@ -132,10 +132,8 @@ LOGGING = {
     "loggers": {
         "django": {
             "handlers": ["console", "file"],
-            "level": LOG_LEVEL,
         },
         "api": {
-            "level": LOG_LEVEL,
             "handlers": ["console", "file"],
         },
     },
