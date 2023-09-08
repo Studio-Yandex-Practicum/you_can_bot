@@ -130,9 +130,11 @@ LOGGING = {
         },
     },
     "loggers": {
-        "": {
+        "django": {
             "handlers": ["console", "file"],
-            "propagate": True,
+        },
+        "api": {
+            "handlers": ["console", "file"],
         },
     },
 }
