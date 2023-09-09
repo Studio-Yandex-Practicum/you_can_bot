@@ -2,7 +2,7 @@ from http import HTTPStatus
 
 from rest_framework import status
 
-from tests.test_question.fixtures import BaseCaseForQuestionTests
+from api.tests.test_question.fixtures import BaseCaseForQuestionTests
 
 
 class QuestionURLTests(BaseCaseForQuestionTests):

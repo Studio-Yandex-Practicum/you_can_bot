@@ -1,6 +1,6 @@
 from django.conf import settings
 
-from tests.test_question.fixtures import BaseCaseForQuestionTests
+from api.tests.test_question.fixtures import BaseCaseForQuestionTests
 
 
 class QuestionViewTests(BaseCaseForQuestionTests):
