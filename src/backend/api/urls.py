@@ -4,13 +4,15 @@ from rest_framework.routers import DefaultRouter
 from api.views.answer import answer_create
 from api.views.tasks import TasksViewSet
 from api.views.users import UserFromTelegramViewSet
+from api.views.questions import get_question
 
 app_name = "api"
 
 router = DefaultRouter()
 
 router.register(r"users", UserFromTelegramViewSet, basename="users")
-router.register(r"users/(?P<telegram_id>\d+)/tasks", TasksViewSet, basename="tasks")
+router.register(r"users/(?P<telegram_id>\d+)/tasks", TasksViewSet,
+                basename="tasks")
 
 urlpatterns = [
     path("v1/", include(router.urls)),
@@ -19,4 +21,8 @@ urlpatterns = [
         answer_create,
         name="answer_create",
     ),
+    path(
+        "v1/task/<int:task_number>/question/<int:question_number>/",
+        get_question, name="get_question"
+    )
 ]

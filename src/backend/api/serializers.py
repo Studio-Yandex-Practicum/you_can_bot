@@ -1,6 +1,36 @@
+from django.shortcuts import render
 from rest_framework import serializers
 
-from api.models import Answer, TaskStatus, UserFromTelegram
+from api.models import Answer, Question, TaskStatus, UserFromTelegram
+
+
+class QuestionSerializer(serializers.ModelSerializer):
+    """Сериализатор получения вопроса задания."""
+
+    class Meta:
+        model = Question
+        fields = ("content",)
+
+    def _get_result(self, obj):
+        result = []
+        for question in obj:
+            result.append(
+                {
+                    'content':
+                        render(
+                            self.context["request"],
+                            "questions/standard_question_format.html",
+                            {'question': question}
+                        ).content
+                }
+            )
+        return result
+
+    def to_representation(self, obj):
+        return {
+            "count": obj.count(),
+            "result": self._get_result(obj)
+        }
 
 
 class AnswerSerializer(serializers.ModelSerializer):

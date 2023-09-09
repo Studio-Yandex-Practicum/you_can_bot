@@ -96,6 +96,9 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 MAX_LENGTH_NAME = 150
 MAX_LENGTH_SURNAME = 150
 
+NOT_FOUND_QUESTION_ERROR_MESSAGE = "Не найден вопрос с таким номером."
+NOT_FOUND_TASK_ERROR_MESSAGE = "Не найдено задание с таким номером."
+
 LOG_FILENAME = "backend.log"
 LOG_PATH = BASE_DIR.parent / ".data" / os.getenv("LOG_DIR", "logs")
 LOG_PATH.mkdir(parents=True, exist_ok=True)
@@ -130,9 +133,11 @@ LOGGING = {
         },
     },
     "loggers": {
-        "": {
+        "django": {
             "handlers": ["console", "file"],
-            "propagate": True,
+        },
+        "api": {
+            "handlers": ["console", "file"],
         },
     },
 }
