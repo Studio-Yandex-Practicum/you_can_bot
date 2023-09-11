@@ -200,15 +200,16 @@ python run_bot.py
 
 ### Запуск тестов<a name="tests"></a>
 
-Чтобы запустить unittest тестирование работы функционала проекта, нужно перейти в каталог со скриптом **manage.py**:
-```shell
-cd src/backend
+Чтобы запустить `unittest` тестирование работы функционала проекта, нужно:
+1. Для тестирования Django приложения
+```SHELL
+cd src/backend/
+python manage.py test
 ```
-
-И выполнить команду:
-
-```shell
-python manage.py test -v 2
+2. Для тестирования бота
+```SHELL
+cd src/bot/
+python -m unittest
 ```
 
 ## Рекомендации для разработчиков<a name="development"></a>
