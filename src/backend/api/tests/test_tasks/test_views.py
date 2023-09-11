@@ -1,7 +1,7 @@
 from django.urls import reverse
 
 from api.models import TaskStatus, UserFromTelegram
-from api.serializers import TaskStatusSerializer
+from api.serializers import TaskStatusSerializer, TaskStatusRetrieveSerializer
 from api.tests.test_answer.fixtures import BaseCaseForAnswerTests
 
 
@@ -21,14 +21,14 @@ class ViewTasksTests(BaseCaseForAnswerTests):
         )
         user = UserFromTelegram.objects.get(telegram_id=self.TELEGRAM_ID)
         all_user_tasks = TaskStatus.objects.filter(user=user)
-        data = [TaskStatusSerializer(task).data for task in all_user_tasks]
         task_status = TaskStatus.objects.get(
             user=user,
             task__number=self.TASK_NUMBER_1
         )
         expected_responses_data = [
-            [common_url, data],
-            [first_task_url, task_status]
+            [common_url, [
+                TaskStatusSerializer(task).data for task in all_user_tasks]],
+            [first_task_url, TaskStatusRetrieveSerializer(task_status).data]
         ]
         for url, expected_data in expected_responses_data:
             with self.subTest(url=url):
