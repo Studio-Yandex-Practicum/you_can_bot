@@ -33,14 +33,15 @@ class QuestionURLTests(BaseCaseForQuestionTests):
             (self.url["incorrect_question"], status.HTTP_404_NOT_FOUND,),
         ]
         for url, expected_status in status_codes:
-            error_message = (
-                f"Статус код URL {url} не соответствует ожидаемому."
-            )
-            self.assertEqual(
-                self.client.get(url).status_code,
-                expected_status,
-                error_message
-            )
+            with self.subTest(url=url):
+                error_message = (
+                    f"Статус код URL {url} не соответствует ожидаемому."
+                )
+                self.assertEqual(
+                    self.client.get(url).status_code,
+                    expected_status,
+                    error_message
+                )
 
     def test_question_url_uses_correct_template(self):
         """Проверка ожидаемого шаблона."""

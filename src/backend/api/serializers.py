@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.template.loader import render_to_string
 from rest_framework import serializers
 
 from api.models import Answer, Question, TaskStatus, UserFromTelegram
@@ -11,26 +12,26 @@ class QuestionSerializer(serializers.ModelSerializer):
         model = Question
         fields = ("content",)
 
+    def to_representation(self, obj):
+        return {
+            "count": obj.count(),
+            "result": self._get_result(obj)
+        }
+
     def _get_result(self, obj):
         result = []
         for question in obj:
             result.append(
                 {
                     'content':
-                        render(
-                            self.context["request"],
+                        render_to_string(
                             "questions/standard_question_format.html",
-                            {'question': question}
-                        ).content
+                            {'question': question},
+                            self.context["request"],
+                        )
                 }
             )
         return result
-
-    def to_representation(self, obj):
-        return {
-            "count": obj.count(),
-            "result": self._get_result(obj)
-        }
 
 
 class AnswerSerializer(serializers.ModelSerializer):

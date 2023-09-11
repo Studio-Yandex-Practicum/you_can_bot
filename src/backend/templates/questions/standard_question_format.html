@@ -1,10 +1,8 @@
-<b>{{ question.number }}. {{ question.content }}</b><br>
-<br>
+<b>{{ question.number }}. {{ question.content }}</b>
 {% for choice in question.choices.all %}
-<b>[{{ forloop.counter | add:"1039" | stringformat:"c" }}]</b> {{ choice.title }}<br>
+<b>[{{ forloop.counter | add:"1039" | stringformat:"c" }}]</b> {{ choice.title }}
 {% if choice.description %}
-{{ choice.description }}<br>
+{{ choice.description }}
 {% endif %}
-<br>
 {% empty %}
 {% endfor %}

@@ -7,7 +7,7 @@ class QuestionViewTests(BaseCaseForQuestionTests):
     """Тесты view получения оформленного сообщения."""
     QUESTION_ERROR_MESSAGE = "Не найден вопрос с таким номером."
     TASK_ERROR_MESSAGE = "Не найдено задание с таким номером."
-    CONTENT = "<b>2. вопрос№2</b><br>\n<br>\n\n\n"
+    CONTENT = "<b>2. вопрос№2</b>\n\n\n"
 
     def test_question_get_correct_json_data(self):
         """Проверка response на формирование правильного json данных."""
@@ -31,7 +31,7 @@ class QuestionViewTests(BaseCaseForQuestionTests):
 
     def test_question_get_correct_context(self):
         """Проверка response на формирование правильного контекста."""
-        question = QuestionViewTests.question
+        question = self.question
 
         response = self.client.get(self.url["correct"])
         context_question = response.context.get("question")

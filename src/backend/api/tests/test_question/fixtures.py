@@ -7,7 +7,6 @@ from api.models import Choice, Question, Task
 class BaseCaseForQuestionTests(APITestCase):
     """Базовый набор констант для тестов модуля api."""
 
-    CONTENT_TYPE_JSON = "application/json"
     TASK_CORRECT = 1
     END_QUESTION = 10
     TASK_INCORRECT = 99
