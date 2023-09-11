@@ -1,7 +1,7 @@
 from django.urls import reverse
 
 from api.models import TaskStatus, UserFromTelegram
-from api.serializers import TaskStatusSerializer, TaskStatusRetrieveSerializer
+from api.serializers import TaskStatusRetrieveSerializer, TaskStatusSerializer
 from api.tests.test_answer.fixtures import BaseCaseForAnswerTests
 
 
