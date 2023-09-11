@@ -12,18 +12,18 @@ class UrlTasksTests(BaseCaseForAnswerTests):
     def test_status_codes_tasks(self):
         """Проверка кодов возврата: tasks."""
         common_url = reverse(
-            "api:tasks",
+            "api:tasks-list",
             kwargs={"telegram_id": self.TELEGRAM_ID},
         )
         first_task_url = reverse(
-            "api:tasks",
+            "api:tasks-detail",
             kwargs={"telegram_id": self.TELEGRAM_ID,
-                    "task_number": self.TASK_NUMBER_1},
+                    "task__number": self.TASK_NUMBER_1},
         )
         nonexistent_url = reverse(
-            "api:tasks",
+            "api:tasks-detail",
             kwargs={"telegram_id": self.TELEGRAM_ID,
-                    "task_number": self.TASK_NUMBER_99},
+                    "task__number": self.TASK_NUMBER_99},
         )
         status_codes = [
             [common_url, status.HTTP_200_OK],
@@ -38,7 +38,7 @@ class UrlTasksTests(BaseCaseForAnswerTests):
 
         # Проверяем статус для несуществующего пользователя
         common_url = reverse(
-            "api:tasks",
+            "api:tasks-list",
             kwargs={"telegram_id": self.WRONG_TELEGRAM_ID},
         )
         self.assertEqual(
