@@ -13,7 +13,7 @@ def get_question(request, task_number, question_number):
     """Получение оформленного сообщения Question."""
     task = _get_task_or_404(task_number)
     questions = _get_questions_or_404(question_number, task)
-    serializer = QuestionSerializer(questions, context={'request': request})
+    serializer = QuestionSerializer(questions, context={"request": request})
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 

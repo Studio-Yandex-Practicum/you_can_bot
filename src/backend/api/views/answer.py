@@ -21,12 +21,10 @@ def answer_create(request, telegram_id, task_number):
     question = _get_question_or_404(number, task_number)
     answer = task_status.answers.filter(question=question)
     if answer.exists() and request.data.get("content"):
-        serializer = AnswerSerializer(answer.first(), data=request.data,
-                                      partial=True)
+        serializer = AnswerSerializer(answer.first(), data=request.data, partial=True)
     else:
         serializer = AnswerSerializer(
-            Answer(task_status=task_status, question=question),
-            data=request.data
+            Answer(task_status=task_status, question=question), data=request.data
         )
     if serializer.is_valid():
         serializer.save()
@@ -39,8 +37,7 @@ def answer_create(request, telegram_id, task_number):
 
 def _get_question_or_404(number, task_number):
     try:
-        question = Question.objects.get(task__number=task_number,
-                                        number=number)
+        question = Question.objects.get(task__number=task_number, number=number)
     except Question.DoesNotExist:
         raise NotFound(detail=settings.NOT_FOUND_QUESTION_ERROR_MESSAGE)
     return question
@@ -62,6 +59,6 @@ def _get_task_status_or_404(task_number, telegram_id):
     except TaskStatus.DoesNotExist:
         raise NotFound(
             detail="Не найдена связка задания и пользователя."
-                   " Возможно неверно указаны telegram_id и task_number."
+            " Возможно неверно указаны telegram_id и task_number."
         )
     return task_status

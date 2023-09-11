@@ -12,22 +12,18 @@ class QuestionSerializer(serializers.ModelSerializer):
         fields = ("content",)
 
     def to_representation(self, obj):
-        return {
-            "count": obj.count(),
-            "result": self._get_result(obj)
-        }
+        return {"count": obj.count(), "result": self._get_result(obj)}
 
     def _get_result(self, obj):
         result = []
         for question in obj:
             result.append(
                 {
-                    'content':
-                        render_to_string(
-                            "questions/standard_question_format.html",
-                            {'question': question},
-                            self.context["request"],
-                        )
+                    "content": render_to_string(
+                        "questions/standard_question_format.html",
+                        {"question": question},
+                        self.context["request"],
+                    )
                 }
             )
         return result
