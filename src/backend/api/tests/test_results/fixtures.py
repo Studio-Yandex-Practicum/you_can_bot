@@ -1,6 +1,7 @@
 from rest_framework.test import APITestCase
 from django.urls import reverse
-from api.models import UserFromTelegram, ResultStatus, Result
+
+from api.models import UserFromTelegram, ResultStatus, Result, TaskStatus
 
 
 class BaseCaseForResultsTests(APITestCase):
@@ -16,12 +17,11 @@ class BaseCaseForResultsTests(APITestCase):
     RESULT_TITLE = "test_title"
     RESULT_DESCRIPTION = "test_description"
     TASK_STATUS_IS_DONE = False
-    TASK_STATUS_CURRENT_QUESTION = 1
     RESULT_STATUS_TOP = 1
     RESULT_STATUS_SCORE = 10
     TASK_NUMBER_1 = 1
     TASK_NUMBER_99 = 99
-    RESULT_STATUS_TASK_STATUS_ID = 1
+    TASK_STATUS_ID = 1
     URL_NAME = "api:get_results_for_user_by_task"
 
     @classmethod
@@ -39,12 +39,13 @@ class BaseCaseForResultsTests(APITestCase):
             title=cls.RESULT_TITLE,
             description=cls.RESULT_DESCRIPTION,
         )
-        ResultStatus.objects.create(
-            task_status_id=cls.RESULT_STATUS_TASK_STATUS_ID,
+        cls.result_status = ResultStatus.objects.create(
+            task_status_id=cls.TASK_STATUS_ID,
             top=cls.RESULT_STATUS_TOP,
             result_id=cls.result.id,
             score=cls.RESULT_STATUS_SCORE,
         )
+        # cls.result_status.task_status.is_done = True
         cls.data = {
             "correct": reverse(
                 cls.URL_NAME,
