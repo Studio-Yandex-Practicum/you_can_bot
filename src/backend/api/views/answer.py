@@ -1,3 +1,4 @@
+from django.conf import settings
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.exceptions import NotFound, ValidationError
@@ -38,7 +39,7 @@ def _get_question_or_404(number, task_number):
     try:
         question = Question.objects.get(task__number=task_number, number=number)
     except Question.DoesNotExist:
-        raise NotFound(detail="Не найден вопрос с таким номером.")
+        raise NotFound(detail=settings.NOT_FOUND_QUESTION_ERROR_MESSAGE)
     return question
 
 

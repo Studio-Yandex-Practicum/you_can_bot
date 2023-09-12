@@ -130,6 +130,15 @@ class Question(models.Model):
         blank=True,
     )
 
+    class Meta:
+        verbose_name = "Вопрос"
+        verbose_name_plural = "Вопросы"
+        constraints = [
+            models.UniqueConstraint(
+                fields=("task", "number"), name="unique_task_question_number"
+            ),
+        ]
+
     def __str__(self):
         return str(self.number)
 
