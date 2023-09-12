@@ -67,11 +67,4 @@ class BaseCaseForResultsTests(APITestCase):
                     "task_number": cls.TASK_NUMBER_99
                 },
             ),
-            # "correct_2": reverse(
-            #     "api:get_question",
-            #     kwargs={
-            #         "telegram_id": cls.QUESTION_NUMBER_2,
-            #         "task_number": cls.TASK_CORRECT
-            #     },
-            # ),
         }

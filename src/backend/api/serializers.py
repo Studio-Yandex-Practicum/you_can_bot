@@ -1,9 +1,8 @@
 from django.template.loader import render_to_string
-from api.models import Answer, TaskStatus, UserFromTelegram, ResultStatus
-from django.template.loader import render_to_string
 from rest_framework import serializers
 
-from api.models import Answer, Question, TaskStatus, UserFromTelegram
+from api.models import (Answer, Question, TaskStatus,
+                        UserFromTelegram, ResultStatus)
 
 
 class QuestionSerializer(serializers.ModelSerializer):
