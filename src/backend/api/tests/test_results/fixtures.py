@@ -33,6 +33,13 @@ class BaseCaseForResultsTests(APITestCase):
             name=cls.TELEGRAM_NAME,
             surname=cls.TELEGRAM_SURNAME,
         )
+        cls.task_status = TaskStatus.objects.get(
+            user_id=cls.user_from_telegram.id,
+            task_id=cls.TASK_NUMBER_1
+        )
+        cls.task_status.is_done = True
+        cls.task_status.save()
+
         cls.result = Result.objects.create(
             task_id=cls.TASK_NUMBER_1,
             key=cls.RESULT_KEY,
@@ -45,7 +52,6 @@ class BaseCaseForResultsTests(APITestCase):
             result_id=cls.result.id,
             score=cls.RESULT_STATUS_SCORE,
         )
-        # cls.result_status.task_status.is_done = True
         cls.data = {
             "correct": reverse(
                 cls.URL_NAME,

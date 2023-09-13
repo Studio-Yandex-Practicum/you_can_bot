@@ -25,8 +25,8 @@ def get_results_for_user_by_task(request, telegram_id, task_number):
         task = Task.objects.get(number=task_number)
     except Task.DoesNotExist:
         raise NotFound(TASK_404)
-    # if not TaskStatus.objects.get(user=user, task=task).is_done:
-    #     raise NotAcceptable(TASK_NOT_COMPLETED)
+    if not TaskStatus.objects.get(user=user, task=task).is_done:
+        raise NotAcceptable(TASK_NOT_COMPLETED)
 
     results = ResultStatus.objects.filter(
         task_status__task=task,

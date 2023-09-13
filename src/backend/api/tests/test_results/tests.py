@@ -3,15 +3,6 @@ from api.views.results import USER_404, TASK_404, TASK_NOT_COMPLETED
 from rest_framework import status
 
 
-# Доступность +
-# Идемпотентность +
-# Верный код ответа при валидном запросе +
-# Использование ожидаемого HTML-шаблона +
-# В шаблон передан правильный контекст +
-# Верный код ответа при отсутствии задания или пользователя +
-# Верное сообщение об ошибке для задания/пользователя +
-# Верный код ответа для невалидного запроса, когда задание ещё не пройдено, а также сообщение об ошибке
-
 class ResultsURLTests(BaseCaseForResultsTests):
     """Тесты api."""
 
@@ -57,8 +48,15 @@ class ResultsURLTests(BaseCaseForResultsTests):
         self.assertEqual(response_incorrect_task.data.get('detail'), TASK_404)
         self.assertEqual(response_incorrect_user.data.get('detail'), USER_404)
 
+
+class ResultsURLTaskNotCompletedTests(BaseCaseForResultsTests):
+
+    def setUp(self):
+        self.task_status.is_done = False
+        self.task_status.save()
+
     def test_task_not_completed(self):
         """Проверка завершенности выполнения конкретного
          задания пользователем."""
-        pass
-        # self.assertEqual()
+        response = self.client.get(self.data['correct'])
+        self.assertEqual(response.data.get('detail'), TASK_NOT_COMPLETED)
