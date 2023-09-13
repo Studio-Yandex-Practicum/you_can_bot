@@ -20,28 +20,23 @@ class UrlTasksTests(BaseCaseForAnswerTests):
             kwargs={"telegram_id": self.TELEGRAM_ID,
                     "task__number": self.TASK_NUMBER_1},
         )
-        nonexistent_url = reverse(
+        nonexistent_task_url = reverse(
             "api:tasks-detail",
             kwargs={"telegram_id": self.TELEGRAM_ID,
                     "task__number": self.TASK_NUMBER_99},
         )
+        nonexistent_user_url = reverse(
+            "api:tasks-list",
+            kwargs={"telegram_id": self.WRONG_TELEGRAM_ID},
+        )
         status_codes = [
             [common_url, status.HTTP_200_OK],
             [first_task_url, status.HTTP_200_OK],
-            [nonexistent_url, status.HTTP_404_NOT_FOUND],
+            [nonexistent_task_url, status.HTTP_404_NOT_FOUND],
+            [nonexistent_user_url, status.HTTP_404_NOT_FOUND]
         ]
         for url, expected_status in status_codes:
             with self.subTest(url=url):
                 self.assertEqual(
                     self.client.get(url).status_code, expected_status
                 )
-
-        # Проверяем статус для несуществующего пользователя
-        common_url = reverse(
-            "api:tasks-list",
-            kwargs={"telegram_id": self.WRONG_TELEGRAM_ID},
-        )
-        self.assertEqual(
-            self.client.get(common_url).status_code,
-            status.HTTP_404_NOT_FOUND
-            )
