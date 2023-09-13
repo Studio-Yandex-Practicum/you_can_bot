@@ -1,6 +1,7 @@
+from rest_framework import status
+
 from api.tests.test_results.fixtures import BaseCaseForResultsTests
 from api.views.results import USER_404, TASK_404, TASK_NOT_COMPLETED
-from rest_framework import status
 
 
 class ResultsURLTests(BaseCaseForResultsTests):
