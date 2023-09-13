@@ -1,11 +1,12 @@
 import logging
 from typing import Optional, Union
 
-from httpx import AsyncClient, codes, HTTPStatusError, RequestError
+from httpx import AsyncClient, HTTPStatusError, RequestError, codes
 
-from .exceptions import APIForbiddenError, PostAPIError, UserNotFound
 from utils.configs import YOUCANBY_TOKEN, YOUCANBY_URL
 from utils.logger import configure_logging
+
+from .exceptions import APIForbiddenError, PostAPIError, UserNotFound
 
 API_JSON_ERROR = '{key}: Отказ сервера {failure} на запрос к {url}.'
 COMMON_ERROR = 'Сбой при получении ответа от сервера: {error}'
