@@ -1,9 +1,9 @@
 from rest_framework import status
 from rest_framework.decorators import api_view
-from rest_framework.exceptions import NotFound, NotAcceptable
+from rest_framework.exceptions import NotAcceptable, NotFound
 from rest_framework.response import Response
 
-from api.models import UserFromTelegram, Task, ResultStatus, TaskStatus
+from api.models import ResultStatus, Task, TaskStatus, UserFromTelegram
 from api.serializers import TaskResultsForUserSerializer
 
 USER_404 = "Пользователь не найден."

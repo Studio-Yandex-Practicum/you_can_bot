@@ -2,8 +2,8 @@ from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
 from api.views.answer import answer_create
-from api.views.results import get_results_for_user_by_task
 from api.views.questions import get_question
+from api.views.results import get_results_for_user_by_task
 from api.views.tasks import TasksViewSet
 from api.views.users import UserFromTelegramViewSet
 

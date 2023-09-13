@@ -1,7 +1,7 @@
 from django.urls import reverse
 from rest_framework.test import APITestCase
 
-from api.models import UserFromTelegram, ResultStatus, Result, TaskStatus
+from api.models import Result, ResultStatus, TaskStatus, UserFromTelegram
 
 
 class BaseCaseForResultsTests(APITestCase):
