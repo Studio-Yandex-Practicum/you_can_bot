@@ -13,10 +13,7 @@ class Answer:
 @dataclass
 class Problem:
     telegram_id: int
-    user: str
     message: str
-    answer: str
-    create_date: int
 
 
 @dataclass
@@ -35,7 +32,6 @@ class TaskStatus:
     user: str
     task: str
     is_done: bool
-    pass_date: int
     current_question: int
     question_number: int
 

@@ -1,20 +1,42 @@
 import logging
+import os
 from dataclasses import asdict
+from typing import List
 from urllib.parse import urljoin
 
 from httpx import AsyncClient, Response
 
-from internal_requests.entities import Answer, Problem, TaskStatus, UserFromTelegram
-from utils.configs import INTERNAL_API_URL
+from internal_requests.entities import (
+    Answer,
+    Message,
+    Problem,
+    TaskStatus,
+    UserFromTelegram,
+)
 
 _LOGGER = logging.getLogger(__name__)
 
+INTERNAL_API_URL = os.getenv("INTERNAL_API_URL", "http://127.0.0.1:8000/api/v1/")
 
-async def get_message_with_question(task: TaskStatus) -> Response:
+
+async def get_message_with_question(task: TaskStatus) -> List[Message]:
     """Получение сообщения с содержанием вопроса"""
     endpoint_urn = f"task/{task.task_number}/question/{task.question_number}/"
     response = await _get_request(endpoint_urn)
-    return response
+    messages = await _parse_api_response_to_messages(response)
+    return messages
+
+
+async def _parse_api_response_to_messages(response: Response) -> List[Message]:
+    json_response = response.json()
+    result = json_response.get("result", [])
+    messages = []
+    for item in result:
+        content = item.get("content", "")
+        photo = item.get("photo")
+        message = Message(content=content, photo=photo)
+        messages.append(message)
+    return messages
 
 
 async def get_result(result: TaskStatus) -> Response:
@@ -71,9 +93,9 @@ async def create_answer(answer: Answer) -> Response:
     return response
 
 
-async def _get_request(endpoint_urn: str) -> Response:
+async def _get_request(endpoint_urn: str) -> List:
     async with AsyncClient() as client:
-        response = client.get(
+        response = await client.get(
             url=urljoin(
                 base=INTERNAL_API_URL,
                 url=endpoint_urn,
@@ -92,7 +114,7 @@ async def _log_get_response(response: Response) -> None:
 
 async def _post_request(data: dict, endpoint_urn: str) -> Response:
     async with AsyncClient() as client:
-        response = client.post(
+        response = await client.post(
             url=urljoin(
                 base=INTERNAL_API_URL,
                 url=endpoint_urn,
