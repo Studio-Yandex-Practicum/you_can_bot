@@ -19,33 +19,22 @@ _LOGGER = logging.getLogger(__name__)
 INTERNAL_API_URL = os.getenv("INTERNAL_API_URL", "http://127.0.0.1:8000/api/v1/")
 
 
-async def get_message_with_question(task: TaskStatus) -> List[Message]:
+async def get_message_with_question(
+    task_number: int, question_number: int
+) -> List[Message]:
     """Получение сообщения с содержанием вопроса"""
-    endpoint_urn = f"task/{task.task_number}/question/{task.question_number}/"
+    endpoint_urn = f"task/{task_number}/question/{question_number}/"
     response = await _get_request(endpoint_urn)
     messages = await _parse_api_response_to_messages(response)
     return messages
 
 
-async def _parse_api_response_to_messages(response: Response) -> List[Message]:
-    json_response = response.json()
-    result = json_response.get("result", [])
-    messages = []
-    for item in result:
-        content = item.get("content", "")
-        photo = item.get("photo")
-        message = Message(content=content, photo=photo)
-        messages.append(message)
-    return messages
-
-
-async def get_result(result: TaskStatus) -> Response:
+async def get_result(telegram_id: int, task_number: int) -> Response:
     """Получение сообщения с расшифровкой."""
-    endpoint_urn = (
-        f"api/v1/users/{result.telegram_id}/tasks/{result.task_number}/results/"
-    )
+    endpoint_urn = f"api/v1/users/{telegram_id}/tasks/{task_number}/results/"
     response = await _get_request(endpoint_urn)
-    return response
+    messages = await _parse_api_response_to_messages(response)
+    return messages
 
 
 async def create_user(user: UserFromTelegram) -> Response:
@@ -60,21 +49,26 @@ async def get_info_about_user(user: UserFromTelegram) -> Response:
     """Получения информации о пользователе."""
     endpoint_urn = "users/"
     response = await _get_request(endpoint_urn)
-    return response
+    messages = await _parse_api_response_to_messages(response)
+    return messages
 
 
-async def get_list_task_status() -> Response:
-    """Получение списка статусов заданий."""
-    endpoint_urn = "task/"
-    response = await _get_request(endpoint_urn)
-    return response
-
-
-async def get_concretre_task_status(task: TaskStatus) -> Response:
+async def get_concretre_task_status(
+    task_number: int, telegram_id: int
+) -> List[TaskStatus]:
     """Получение информации о конкретном статусе задания."""
-    endpoint_urn = f"task/{task.task_number}/"
+    endpoint_urn = f"users/{telegram_id}/tasks/{task_number}/"
     response = await _get_request(endpoint_urn)
-    return response
+    messages = await _parse_api_response_to_messages(response)
+    return messages
+
+
+async def get_list_task_status(telegram_id: int) -> List[TaskStatus]:
+    """Получение списка статусов заданий."""
+    endpoint_urn = f"users/{telegram_id}/tasks/"
+    response = await _get_request(endpoint_urn)
+    messages = await _parse_api_response_to_messages(response)
+    return messages
 
 
 async def create_question_from_user(problem: Problem) -> Response:
@@ -102,6 +96,7 @@ async def _get_request(endpoint_urn: str) -> List:
             )
         )
     await _log_get_response(response)
+    response.raise_for_status()
     return response.json()
 
 
@@ -133,3 +128,15 @@ async def _log_post_response(data: dict, response: Response) -> None:
             f"Запрос неудачен. Входные данные: {data}"
             f" Ответ сервера: {response.status_code} {response.text}"
         )
+
+
+async def _parse_api_response_to_messages(response: Response) -> List[Message]:
+    json_response = response.json()
+    result = json_response.get("result", [])
+    messages = []
+    for item in result:
+        content = item.get("content", "")
+        photo = item.get("photo")
+        message = Message(content=content, photo=photo)
+        messages.append(message)
+    return messages

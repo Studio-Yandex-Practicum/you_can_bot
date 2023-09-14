@@ -5,8 +5,8 @@ from typing import Optional
 @dataclass
 class Answer:
     telegram_id: int
-    task_status: str
-    question: str
+    task_number: int
+    number: int
     content: str
 
 
@@ -22,18 +22,13 @@ class UserFromTelegram:
     telegram_username: str
     name: str
     surname: str
-    mentor: str
 
 
 @dataclass
 class TaskStatus:
-    telegram_id: int
-    task_number: int
-    user: str
-    task: str
+    number: int
+    current_question: Optional[int]
     is_done: bool
-    current_question: int
-    question_number: int
 
 
 @dataclass
