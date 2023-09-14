@@ -29,7 +29,7 @@ async def get_message_with_question(
     return messages
 
 
-async def get_result(telegram_id: int, task_number: int) -> Response:
+async def get_result(telegram_id: int, task_number: int) -> List[TaskStatus]:
     """Получение сообщения с расшифровкой."""
     endpoint_urn = f"api/v1/users/{telegram_id}/tasks/{task_number}/results/"
     response = await _get_request(endpoint_urn)
@@ -37,7 +37,7 @@ async def get_result(telegram_id: int, task_number: int) -> Response:
     return messages
 
 
-async def create_user(user: UserFromTelegram) -> Response:
+async def create_user(user: UserFromTelegram) -> list[UserFromTelegram]:
     """Создания пользователя."""
     data = asdict(user)
     endpoint_urn = "users/"
@@ -45,7 +45,7 @@ async def create_user(user: UserFromTelegram) -> Response:
     return response
 
 
-async def get_info_about_user(user: UserFromTelegram) -> Response:
+async def get_info_about_user() -> List[UserFromTelegram]:
     """Получения информации о пользователе."""
     endpoint_urn = "users/"
     response = await _get_request(endpoint_urn)
