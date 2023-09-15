@@ -10,16 +10,16 @@ class ResultsURLTests(BaseCaseForResultsTests):
     def test_status_code(self):
         """Проверка доступности и правильности кодов при валидных
          и не валидных запросах."""
-        response_correct = self.client.get(self.data['correct'])
-        response_incorrect_user = self.client.get(self.data['incorrect_user'])
-        response_incorrect_task = self.client.get(self.data['incorrect_task'])
-        self.assertEqual(response_correct.status_code, status.HTTP_200_OK)
-        self.assertEqual(
-            response_incorrect_user.status_code, status.HTTP_404_NOT_FOUND
-        )
-        self.assertEqual(
-            response_incorrect_task.status_code, status.HTTP_404_NOT_FOUND
-        )
+
+        param_and_status = {
+            'correct': status.HTTP_200_OK,
+            'incorrect_user': status.HTTP_404_NOT_FOUND,
+            'incorrect_task': status.HTTP_404_NOT_FOUND
+        }
+        for param, expected_status in param_and_status.items():
+            with self.subTest():
+                response = self.client.get(self.data[param])
+                self.assertEqual(response.status_code, expected_status)
 
     def test_idempotency(self):
         """Проверка идемпотентности."""
@@ -37,17 +37,27 @@ class ResultsURLTests(BaseCaseForResultsTests):
         """Проверка правильности передаваемого контекста."""
         response = self.client.get(self.data['correct'])
         obj = response.context['result']
-        obj_title = obj.title
-        obj_description = obj.description
-        self.assertEqual(obj_title, self.result.title)
-        self.assertEqual(obj_description, self.result.description)
+        fields = {
+            1: 'title',
+            2: 'description'
+        }
+        for field in fields.values():
+            with self.subTest():
+                self.assertEqual(
+                    getattr(obj, field),
+                    getattr(self.result, field)
+                )
 
     def test_error_message(self):
         """Проверка правильности сообщений об ошибках."""
-        response_incorrect_user = self.client.get(self.data["incorrect_user"])
-        response_incorrect_task = self.client.get(self.data["incorrect_task"])
-        self.assertEqual(response_incorrect_task.data.get('detail'), TASK_404)
-        self.assertEqual(response_incorrect_user.data.get('detail'), USER_404)
+        param_and_message = {
+            'incorrect_user': USER_404,
+            'incorrect_task': TASK_404,
+        }
+        for param, message in param_and_message.items():
+            with self.subTest():
+                response = self.client.get(self.data[param])
+                self.assertEqual(response.data.get('detail'), message)
 
 
 class ResultsURLTaskNotCompletedTests(BaseCaseForResultsTests):

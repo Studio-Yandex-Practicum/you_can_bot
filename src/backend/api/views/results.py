@@ -3,7 +3,7 @@ from rest_framework.decorators import api_view
 from rest_framework.exceptions import NotAcceptable, NotFound
 from rest_framework.response import Response
 
-from api.models import ResultStatus, Task, TaskStatus, UserFromTelegram
+from api.models import TaskStatus, UserFromTelegram
 from api.serializers import TaskResultsForUserSerializer
 
 USER_404 = "Пользователь не найден."
@@ -22,16 +22,13 @@ def get_results_for_user_by_task(request, telegram_id, task_number):
     except UserFromTelegram.DoesNotExist:
         raise NotFound(USER_404)
     try:
-        task = Task.objects.get(number=task_number)
-    except Task.DoesNotExist:
+        task_status = user.tasks.get(task__number=task_number)
+        if not task_status.is_done:
+            raise NotAcceptable(TASK_NOT_COMPLETED)
+    except TaskStatus.DoesNotExist:
         raise NotFound(TASK_404)
-    if not TaskStatus.objects.get(user=user, task=task).is_done:
-        raise NotAcceptable(TASK_NOT_COMPLETED)
 
-    results = ResultStatus.objects.filter(
-        task_status__task=task,
-        task_status__user=user
-    )
+    results = task_status.result.all()
 
     serializer = TaskResultsForUserSerializer(
         results,
