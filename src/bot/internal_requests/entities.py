@@ -27,12 +27,12 @@ class UserFromTelegram:
 @dataclass
 class TaskStatus:
     number: int
-    current_question: Optional[int]
     is_done: bool
+    current_question: Optional[int] = None
 
 
 @dataclass
 class Message:
-    telegram_id: int
     content: str
-    photo: Optional[str]
+    photo: str
+    telegram_id: Optional[int] = None

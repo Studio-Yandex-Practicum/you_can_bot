@@ -1,7 +1,7 @@
 import logging
 import os
 from dataclasses import asdict
-from typing import List
+from typing import List, Union
 from urllib.parse import urljoin
 
 from httpx import AsyncClient, Response
@@ -19,17 +19,19 @@ _LOGGER = logging.getLogger(__name__)
 INTERNAL_API_URL = os.getenv("INTERNAL_API_URL", "http://127.0.0.1:8000/api/v1/")
 
 
-async def get_message_with_question(
+async def get_messages_with_question(
     task_number: int, question_number: int
 ) -> List[Message]:
-    """Получение сообщения с содержанием вопроса"""
+    """Получение сообщения с содержанием вопроса."""
     endpoint_urn = f"task/{task_number}/question/{question_number}/"
     response = await _get_request(endpoint_urn)
     messages = await _parse_api_response_to_messages(response)
     return messages
 
 
-async def get_result(telegram_id: int, task_number: int) -> List[TaskStatus]:
+async def get_messages_with_results(
+    telegram_id: int, task_number: int
+) -> List[Message]:
     """Получение сообщения с расшифровкой."""
     endpoint_urn = f"api/v1/users/{telegram_id}/tasks/{task_number}/results/"
     response = await _get_request(endpoint_urn)
@@ -37,42 +39,42 @@ async def get_result(telegram_id: int, task_number: int) -> List[TaskStatus]:
     return messages
 
 
-async def create_user(user: UserFromTelegram) -> list[UserFromTelegram]:
-    """Создания пользователя."""
+async def get_info_about_user() -> UserFromTelegram:
+    """Получения информации о пользователе из БД."""
+    endpoint_urn = "users/"
+    response = await _get_request(endpoint_urn)
+    user_info = await _parse_api_response_to_user_info(response)
+    return user_info
+
+
+async def get_user_task_status_by_number(
+    task_number: int, telegram_id: int
+) -> TaskStatus:
+    """Получение информации о конкретном статусе задания пользователя."""
+    endpoint_urn = f"users/{telegram_id}/tasks/{task_number}/"
+    response = await _get_request(endpoint_urn)
+    result = await _parse_api_response_to_task_status(response)
+    return result
+
+
+async def get_user_task_status_list(telegram_id: int) -> List[TaskStatus]:
+    """Получение списка статусов заданий пользователя."""
+    endpoint_urn = f"users/{telegram_id}/tasks/"
+    response = await _get_request(endpoint_urn)
+    task_statuses = await _parse_api_response_to_task_status(response)
+    return task_statuses
+
+
+async def create_user(user: UserFromTelegram) -> Response:
+    """Запрос на занесение пользователя в БД."""
     data = asdict(user)
     endpoint_urn = "users/"
     response = await _post_request(data, endpoint_urn)
     return response
 
 
-async def get_info_about_user() -> List[UserFromTelegram]:
-    """Получения информации о пользователе."""
-    endpoint_urn = "users/"
-    response = await _get_request(endpoint_urn)
-    messages = await _parse_api_response_to_messages(response)
-    return messages
-
-
-async def get_concretre_task_status(
-    task_number: int, telegram_id: int
-) -> List[TaskStatus]:
-    """Получение информации о конкретном статусе задания."""
-    endpoint_urn = f"users/{telegram_id}/tasks/{task_number}/"
-    response = await _get_request(endpoint_urn)
-    messages = await _parse_api_response_to_messages(response)
-    return messages
-
-
-async def get_list_task_status(telegram_id: int) -> List[TaskStatus]:
-    """Получение списка статусов заданий."""
-    endpoint_urn = f"users/{telegram_id}/tasks/"
-    response = await _get_request(endpoint_urn)
-    messages = await _parse_api_response_to_messages(response)
-    return messages
-
-
 async def create_question_from_user(problem: Problem) -> Response:
-    """Создания вопроса от пользователя"""
+    """Запрос на занесение вопроса от пользователя в БД."""
     data = asdict(problem)
     endpoint_urn = f"users/{problem.telegram_id}/problems/"
     response = await _post_request(data, endpoint_urn)
@@ -80,14 +82,14 @@ async def create_question_from_user(problem: Problem) -> Response:
 
 
 async def create_answer(answer: Answer) -> Response:
-    """Создания вопроса от пользователя"""
+    """Запрос на занесение ответа от пользователя на вопрос задания."""
     data = asdict(answer)
     endpoint_urn = f"users/{answer.telegram_id}/problems/"
     response = await _post_request(data, endpoint_urn)
     return response
 
 
-async def _get_request(endpoint_urn: str) -> List:
+async def _get_request(endpoint_urn: str) -> Response:
     async with AsyncClient() as client:
         response = await client.get(
             url=urljoin(
@@ -97,7 +99,7 @@ async def _get_request(endpoint_urn: str) -> List:
         )
     await _log_get_response(response)
     response.raise_for_status()
-    return response.json()
+    return response
 
 
 async def _log_get_response(response: Response) -> None:
@@ -117,6 +119,7 @@ async def _post_request(data: dict, endpoint_urn: str) -> Response:
             json=data,
         )
     await _log_post_response(data, response)
+    response.raise_for_status()
     return response
 
 
@@ -136,7 +139,19 @@ async def _parse_api_response_to_messages(response: Response) -> List[Message]:
     messages = []
     for item in result:
         content = item.get("content", "")
-        photo = item.get("photo")
+        photo = item.get("photo", "")
         message = Message(content=content, photo=photo)
         messages.append(message)
     return messages
+
+
+async def _parse_api_response_to_user_info(response: Response) -> UserFromTelegram:
+    """Парсит полученный json из Response в датакласс UserFromTelegram."""
+    pass
+
+
+async def _parse_api_response_to_task_status(
+    response: Response,
+) -> Union[TaskStatus, List[TaskStatus]]:
+    """Парсит полученный json из Response в экземпляр(ы) TaskStatus."""
+    pass
