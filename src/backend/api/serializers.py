@@ -90,7 +90,7 @@ class TaskStatusRetrieveSerializer(TaskStatusSerializer):
 
     class Meta:
         model = TaskStatus
-        fields = ["number", "current_question", "summary", "is_done"]
+        fields = ["number", "current_question", "is_done"]
 
 
 class TaskResultsForUserSerializer(serializers.ModelSerializer):

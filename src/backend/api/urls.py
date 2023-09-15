@@ -5,6 +5,7 @@ from api.views.answer import answer_create
 from api.views.questions import get_question
 from api.views.results import get_results_for_user_by_task
 from api.views.tasks import TasksViewSet
+from api.views.tasks import TaskStatusViewSet
 from api.views.users import UserFromTelegramViewSet
 
 app_name = "api"
@@ -12,7 +13,11 @@ app_name = "api"
 router = DefaultRouter()
 
 router.register(r"users", UserFromTelegramViewSet, basename="users")
-router.register(r"users/(?P<telegram_id>\d+)/tasks", TasksViewSet, basename="tasks")
+router.register(
+    r"users/(?P<telegram_id>\d+)/tasks",
+    TaskStatusViewSet,
+    basename="tasks"
+)
 
 urlpatterns = [
     path("v1/", include(router.urls)),
