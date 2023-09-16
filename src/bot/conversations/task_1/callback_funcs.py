@@ -4,8 +4,9 @@ from telegram import Update
 from telegram.constants import ParseMode
 from telegram.ext import ContextTypes, ConversationHandler
 
+import internal_requests.service as api_service
 from conversations.task_1.keyboards import get_inline_keyboard, get_reply_keyboard
-from conversations.task_1.templates import MESSAGES, RESULT, SCORE
+from conversations.task_1.templates import RESULT, SCORE
 
 INITIAL_MESSAGE_NUMBER = 5
 CHOICES = "АБВГДЕ"
@@ -13,6 +14,7 @@ MESSAGE_KEY_TEMPLATE = "message_{}"
 NUMBER_OF_QUESTIONS = 10
 CHOOSING = 1
 CANCEL_TEXT = "Выполнение задания 1 было пропущено"
+CURRENT_TASK = 1
 
 
 async def start_task_1(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
@@ -46,7 +48,7 @@ async def question_start(
             reply_markup=get_inline_keyboard(
                 template["buttons"],
             ),
-            parse_mode=ParseMode.MARKDOWN_V2,
+            parse_mode=ParseMode.HTML,
         )
     else:
         await update.callback_query.message.reply_text(
@@ -54,7 +56,7 @@ async def question_start(
             reply_markup=get_inline_keyboard(
                 template["buttons"],
             ),
-            parse_mode=ParseMode.MARKDOWN_V2,
+            parse_mode=ParseMode.HTML,
         )
 
 
@@ -71,7 +73,7 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
             reply_markup=get_inline_keyboard(
                 template["buttons"], context.user_data.get("picked_choices")
             ),
-            parse_mode=ParseMode.MARKDOWN_V2,
+            parse_mode=ParseMode.HTML,
         )
 
     if len(context.user_data.get("picked_choices")) == len(CHOICES):
@@ -84,12 +86,12 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 reply_markup=get_reply_keyboard(
                     template["buttons"],
                 ),
-                parse_mode=ParseMode.MARKDOWN_V2,
+                parse_mode=ParseMode.HTML,
             )
             for result in _get_result(query.from_user, context):
                 await query.message.reply_text(
                     text=RESULT[result],
-                    parse_mode=ParseMode.MARKDOWN_V2,
+                    parse_mode=ParseMode.HTML,
                 )
             return ConversationHandler.END
         else:
@@ -104,18 +106,22 @@ async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     return ConversationHandler.END
 
 
-def _get_question_template(
+async def _get_question_template(
     context: ContextTypes.DEFAULT_TYPE,
     start: bool = False,
     result: bool = False,
 ) -> dict:
+    current_question = context.user_data["current_question"]
     if start:
         message_number = INITIAL_MESSAGE_NUMBER
     elif result:
         message_number = INITIAL_MESSAGE_NUMBER + NUMBER_OF_QUESTIONS + 1
     else:
-        message_number = INITIAL_MESSAGE_NUMBER + context.user_data["current_question"]
-    return MESSAGES[MESSAGE_KEY_TEMPLATE.format(message_number)]
+        message_number = INITIAL_MESSAGE_NUMBER + current_question
+    messages = await api_service.get_messages_with_question(
+        task_number=CURRENT_TASK, question_number=current_question
+    )
+    return messages[message_number].content
 
 
 def _get_question_text(template: dict, picked_choices: str = "") -> str:
