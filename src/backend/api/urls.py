@@ -3,6 +3,7 @@ from rest_framework.routers import DefaultRouter
 
 from api.views.answer import answer_create
 from api.views.questions import get_question
+from api.views.results import get_results_for_user_by_task
 from api.views.tasks import TaskStatusViewSet
 from api.views.users import UserFromTelegramViewSet
 
@@ -23,6 +24,11 @@ urlpatterns = [
         "v1/users/<int:telegram_id>/tasks/<int:task_number>/answers/",
         answer_create,
         name="answer_create",
+    ),
+    path(
+        "v1/users/<int:telegram_id>/tasks/<int:task_number>/results/",
+        get_results_for_user_by_task,
+        name="get_results_for_user_by_task",
     ),
     path(
         "v1/task/<int:task_number>/question/<int:question_number>/",
