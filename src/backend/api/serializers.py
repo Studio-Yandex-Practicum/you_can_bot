@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from api.models import Answer, TaskStatus, UserFromTelegram
+from api.models import Answer, Problem, TaskStatus, UserFromTelegram
 
 
 class AnswerSerializer(serializers.ModelSerializer):
@@ -65,3 +65,13 @@ class TaskStatusRetrieveSerializer(TaskStatusSerializer):
     class Meta:
         model = TaskStatus
         fields = ["number", "current_question", "summary", "is_done"]
+
+
+class ProblemSerializer(serializers.ModelSerializer):
+    """
+    Сериализатор модели Problem.
+    """
+
+    class Meta:
+        model = Problem
+        fields = ("id", "user", "message", "answer", "create_date")
