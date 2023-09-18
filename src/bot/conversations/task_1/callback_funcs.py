@@ -6,15 +6,21 @@ from telegram.ext import ContextTypes, ConversationHandler
 
 import internal_requests.service as api_service
 from conversations.task_1.keyboards import get_inline_keyboard, get_reply_keyboard
-from conversations.task_1.templates import RESULT, SCORE
 
 INITIAL_MESSAGE_NUMBER = 5
 CHOICES = "АБВГДЕ"
-MESSAGE_KEY_TEMPLATE = "message_{}"
 NUMBER_OF_QUESTIONS = 10
 CHOOSING = 1
 CANCEL_TEXT = "Выполнение задания 1 было пропущено"
 CURRENT_TASK = 1
+SCORE = {
+    0: " 0️⃣ Баллов",
+    1: " 1️⃣ Балл",
+    2: " 2️⃣ Баллa",
+    3: " 3️⃣ Баллa",
+    4: " 4️⃣ Баллa",
+    5: " 5️⃣ Баллов",
+}
 
 
 async def start_task_1(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
@@ -88,9 +94,12 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 ),
                 parse_mode=ParseMode.HTML,
             )
-            for result in _get_result(query.from_user, context):
+            for result in await api_service.get_messages_with_results(
+                telegram_id=await api_service.get_info_about_user().get("telegram_id"),
+                task_number=CURRENT_TASK,
+            ):
                 await query.message.reply_text(
-                    text=RESULT[result],
+                    text=result.content,
                     parse_mode=ParseMode.HTML,
                 )
             return ConversationHandler.END
@@ -141,19 +150,19 @@ def _save_answer(user, context):  # Временная, хранит ответ�
         context.user_data["answer"][choice] += len(CHOICES) - choices.index(choice) - 1
 
 
-def _get_result(user, context):  # Временная, расшифровывает из контекста
-    """Получает расшифровку"""
-    result = {"1": None, "2": None, "3": None}
-    for choice, score in context.user_data["answer"].items():
-        if result["1"] is None or result["1"][0] < score:
-            result["3"] = result["2"]
-            result["2"] = result["1"]
-            result["1"] = (score, choice)
-        elif result["2"] is None or result["2"][0] < score:
-            result["3"] = result["2"]
-            result["2"] = (score, choice)
-        elif result["3"] is None or result["3"][0] < score:
-            result["3"] = (score, choice)
-        else:
-            pass
-    return result["1"][1], result["2"][1], result["3"][1]
+# def _get_result(user, context):  # Временная, расшифровывает из контекста
+#     """Получает расшифровку"""
+#     result = {"1": None, "2": None, "3": None}
+#     for choice, score in context.user_data["answer"].items():
+#         if result["1"] is None or result["1"][0] < score:
+#             result["3"] = result["2"]
+#             result["2"] = result["1"]
+#             result["1"] = (score, choice)
+#         elif result["2"] is None or result["2"][0] < score:
+#             result["3"] = result["2"]
+#             result["2"] = (score, choice)
+#         elif result["3"] is None or result["3"][0] < score:
+#             result["3"] = (score, choice)
+#         else:
+#             pass
+#     return result["1"][1], result["2"][1], result["3"][1]
