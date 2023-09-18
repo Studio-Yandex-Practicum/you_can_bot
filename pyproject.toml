@@ -7,17 +7,24 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.11"
-Django = "^4.2.4"
+Django = "^4.2.5"
 djangorestframework = "^3.14.0"
-python-telegram-bot = "^20.4"
+python-telegram-bot = "^20.5"
+psycopg2-binary = "^2.9.7"
+gunicorn = "^21.2.0"
+pillow = "^10.0.0"
 
 [tool.poetry.group.dev.dependencies]
-pre-commit = "^3.3.3"
+pre-commit = "^3.4.0"
 flake8 = "^6.1.0"
 isort = "^5.12.0"
 black = "^23.7.0"
 python-dotenv = "^1.0.0"
 
+[tool.isort]
+profile = "black"
+skip_glob = ["**/migrations/*.py"]
+src_paths = ["src/bot", "src/backend"]
 
 [build-system]
 requires = ["poetry-core"]
