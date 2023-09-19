@@ -39,7 +39,7 @@ _LOGGER.setLevel(DEBUG)
 
 
 def _check_telegram_id(telegram_id: int) -> None:
-    """Проверяет доступность переменных окружения.
+    """Проверяет корректность значения telegram_id.
     ### Args:
     - telegram_id (int):
         id пользователя в telegram
@@ -130,7 +130,7 @@ async def _post_request(**kwargs) -> dict[str, Union[str, bool]]:
 
 
 async def _parse_data(data: dict) -> dict[str, str]:
-    """Получает строку с именем и фамилией.
+    """Обрабатывает полученные данные.
     Возвращает словарь с данными пользователя.
     ### Args:
     - response (dict):
