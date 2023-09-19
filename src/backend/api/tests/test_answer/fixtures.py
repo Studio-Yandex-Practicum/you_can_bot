@@ -1,6 +1,6 @@
 from rest_framework.test import APITestCase
 
-from api.models import Question, Task, UserFromTelegram
+from api.models import Question, Task, UserFromTelegram, Result
 
 
 class BaseCaseForAnswerTests(APITestCase):
@@ -10,7 +10,6 @@ class BaseCaseForAnswerTests(APITestCase):
     TELEGRAM_USERNAME = "hasnoname"
     TELEGRAM_NAME = "HasNoName"
     TELEGRAM_SURNAME = "HasNoSurname"
-    CONTENT_TYPE_JSON = "application/json"
     TASK_NUMBER_1 = 1
     TASK_NUMBER_99 = 99
     ANSWER_1 = {"number": "1", "content": "a"}
@@ -18,6 +17,17 @@ class BaseCaseForAnswerTests(APITestCase):
     ANSWER_3 = {"number": "first", "content": "б"}
     ANSWER_4 = {"number": 2, "content": "a"}
     ANSWER_5 = {"number": 1}
+
+    # Константы для первого задания
+    TASK1_ANSWERS_CONTENT = {
+        1: "543210", 2: "053142", 3: "123504", 4: "041235", 5: "012345",
+        6: "410523", 7: "321054", 8: "013245", 9: "543012", 10: "230451",
+    }
+    LAST_ANSWER_NUMBER = 10
+    KEYS_TASK_1 = "АБВГДЕ"
+    RESULT_KEY = "Е"
+    RESULT_TOP = 1
+    RESULT_SCORE = 31
 
     @classmethod
     def setUpClass(cls):
@@ -29,8 +39,18 @@ class BaseCaseForAnswerTests(APITestCase):
             surname=cls.TELEGRAM_SURNAME,
         )
         task_1 = Task.objects.get(number=1)
+
+        # Вопросы и результаты для первого задания
         questions = (
-            Question(task=task_1, number=1, content="", example=""),
-            Question(task=task_1, number=2, content="", example=""),
+            Question(
+                task=task_1, number=num, content=f"Вопрос_{num}", example=""
+            )
+            for num in range(1, cls.LAST_ANSWER_NUMBER + 1)
+
         )
         Question.objects.bulk_create(questions)
+        results = (
+            Result(task=task_1, key=key, title=f"Вопрос_{key}", description="")
+            for key in list(cls.KEYS_TASK_1)
+        )
+        Result.objects.bulk_create(results)
