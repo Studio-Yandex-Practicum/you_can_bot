@@ -1,6 +1,6 @@
 from rest_framework.test import APITestCase
 
-from api.models import Question, Task, UserFromTelegram, Result
+from api.models import Question, Result, Task, UserFromTelegram
 
 
 class BaseCaseForAnswerTests(APITestCase):
