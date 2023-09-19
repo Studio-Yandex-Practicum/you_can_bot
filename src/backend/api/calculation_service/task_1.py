@@ -4,7 +4,7 @@ from typing import Tuple
 
 from rest_framework.serializers import ValidationError
 
-from api.models import Answer, ResultStatus, Result
+from api.models import Answer, Result, ResultStatus
 
 _LOGGER = logging.getLogger(__name__)
 

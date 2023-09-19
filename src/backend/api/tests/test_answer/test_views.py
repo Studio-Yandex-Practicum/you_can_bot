@@ -3,7 +3,7 @@ import datetime
 from django.urls import reverse
 from rest_framework import status
 
-from api.models import Answer, TaskStatus, UserFromTelegram, ResultStatus
+from api.models import Answer, ResultStatus, TaskStatus, UserFromTelegram
 from api.tests.test_answer.fixtures import BaseCaseForAnswerTests
 
 
