@@ -6,13 +6,13 @@ from rest_framework.decorators import api_view
 from rest_framework.exceptions import NotFound, ValidationError
 from rest_framework.response import Response
 
-from api.calculation_service.task_1 import calculate_task_1_result_to_db
+from api.calculation_service.task_1 import calculate_task_1_result
 from api.models import Answer, Question, TaskStatus
 from api.serializers import AnswerSerializer
 
 ANSWER_CREATE_ERROR = "Ошибка при обработке запроса: {error}"
 CALCULATE_TASKS = {
-    1: calculate_task_1_result_to_db,
+    1: calculate_task_1_result,
 }
 
 
@@ -40,7 +40,8 @@ def answer_create(request, telegram_id, task_number):
             task_status.current_question = number
             task_status.save()
         if task_status.current_question == task_status.task.end_question:
-            _create_result_status(task_status, task_number)
+            _create_result_status(task_status, task_number,
+                                  task_status.task.end_question)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -75,23 +76,22 @@ def _get_task_status_or_404(task_number, telegram_id):
     return task_status
 
 
-def _create_result_status(task_status, task_number):
-    answers = _check_all_answers_exist(task_status)
+def _create_result_status(task_status, task_number, end_question):
+    answers = _check_all_answers_exist(task_status, end_question)
     task_status.is_done = True
     task_status.pass_date = datetime.datetime.now()
     task_status.save()
     CALCULATE_TASKS.get(task_number)(answers)
 
 
-def _check_all_answers_exist(task_status):
-    answers = task_status.answers.all()
-    if answers.count() != task_status.task.end_question:
-        questions = task_status.task.questions.all()
-        not_exist_answers = [
-            str(question.number) for question in questions if
-            not question.answers.exists()]
+def _check_all_answers_exist(task_status, end_question):
+    user_answers = set(task_status.answers.values_list(
+        "question__number", flat=True
+    ))
+    if len(user_answers) != end_question:
+        not_exist_answers = set(range(1, end_question + 1)) - user_answers
         raise NotFound(
             detail="Нет полученных ответов на вопросы с номерами: "
-                   f"{', '.join(not_exist_answers)}"
+                   f"{', '.join(map(str, not_exist_answers))}"
         )
-    return answers
+    return task_status.answers.all()
