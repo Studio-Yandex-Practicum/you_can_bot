@@ -29,7 +29,10 @@ USER_NOT_FOUND = (
     '{status_code}: при запросе к {url} пользователь с id {tid} не найден.'
 )
 
-USER_INFO = ('tariff', 'full_name', 'isApproved')
+IS_APPROVED = 'isApproved'
+FULL_NAME = 'full_name'
+TARIFF = 'tariff'
+USER_INFO_KEYS = (TARIFF, FULL_NAME, IS_APPROVED)
 
 _LOGGER = getLogger(__name__)
 configure_logging()
@@ -146,15 +149,15 @@ async def _parse_data(data: dict) -> dict[str, str]:
         raise TypeError(
             TYPE_ERROR.format(type_response=type(data), expected_type=dict)
         )
-    for key in USER_INFO:
+    for key in USER_INFO_KEYS:
         if key not in data:
             raise KeyError(KEY_NOT_FOUND.format(key=key))
-    tariff = data['tariff']
+    tariff = data[TARIFF]
     if tariff not in TARIFFS:
         raise ValueError(
             TARIFF_NOT_FOUND.format(tariff=tariff, expected=TARIFFS)
         )
-    full_name = data['full_name']
+    full_name = data[FULL_NAME]
     if not isinstance(full_name, str):
         raise TypeError(
             TYPE_ERROR.format(
@@ -167,7 +170,7 @@ async def _parse_data(data: dict) -> dict[str, str]:
         name, surname = name_surname[0], name_surname[1]
     else:
         name, surname = full_name, ''
-    is_apporved = data['isApproved']
+    is_apporved = data[IS_APPROVED]
     if not isinstance(is_apporved, bool):
         raise TypeError(
             TYPE_ERROR.format(
