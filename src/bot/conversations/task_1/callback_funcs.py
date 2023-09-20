@@ -3,10 +3,10 @@ import re
 from telegram import Update
 from telegram.constants import ParseMode
 from telegram.ext import ContextTypes, ConversationHandler
-import internal_requests.service as api_service
 
+import internal_requests.service as api_service
 from conversations.task_1.keyboards import get_inline_keyboard, get_reply_keyboard
-from conversations.task_1.templates import MESSAGES, RESULT, SCORE
+from conversations.task_1.templates import MESSAGES, SCORE
 
 INITIAL_MESSAGE_NUMBER = 5
 CHOICES = "АБВГДЕ"
