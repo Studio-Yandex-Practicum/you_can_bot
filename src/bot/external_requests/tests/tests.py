@@ -1,6 +1,5 @@
 from http.client import FORBIDDEN, NOT_FOUND
-from typing import Sequence
-from unittest.mock import MagicMock, patch
+from unittest.mock import Mock, MagicMock, patch
 
 from httpx import AsyncClient, HTTPStatusError, Request, RequestError, Response, codes
 
@@ -17,13 +16,13 @@ class TestGetUserInfoFromLK(CaseForGetUserInfoFromLK):
 
     def set_post_request(
         self,
-        post_request: MagicMock,
+        post_request: Mock,
         exception: Exception,
         **kwargs
     ) -> None:
         """Мок с переданным исключением, сообщением и ответом.
         ### Args:
-        - post_request (MagicMock):
+        - post_request (Mock):
             Мок
         - exception (Exception):
             исключение, которое нужно бросить
@@ -39,39 +38,39 @@ class TestGetUserInfoFromLK(CaseForGetUserInfoFromLK):
 
     async def assert_equal_from_sequence(
         self,
-        post_request: MagicMock,
-        sequence: Sequence[tuple[dict, Exception]]
+        post_request: Mock,
+        compared_values
     ) -> None:
         """Шаблон для вызова assertEqual из последовательности.
         ### Args:
-        - post_request (MagicMock):
+        - post_request (Mock):
             Мок
-        - sequence (Sequence[tuple[dict, Exception]]):
-          последовательность кортежей с подменяемыми словарями
+        - compared_values:
+          последовательность кортежей с подменяемыми объектами
           и ожидаемыми значениями.
         """
-        for return_value, expected in sequence:
-            with self.subTest(return_value=return_value, expected=expected):
-                post_request.return_value = return_value
+        for mocked, expected in compared_values:
+            with self.subTest(mocked=mocked, expected=expected):
+                post_request.return_value = mocked
                 user_info = await get_user_info_from_lk(self.TELEGRAM_ID)
                 self.assertEqual(user_info, expected)
 
     async def assert_raises_from_sequence(
         self,
-        post_request: MagicMock,
-        sequence: Sequence[tuple[dict, Exception]]
+        post_request: Mock,
+        compared_values
     ) -> None:
         """Шаблон для вызова assertRaises из последовательности.
         ### Args:
-        - post_request (MagicMock):
+        - post_request (Mock):
             Мок
-        - sequence (Sequence[tuple[dict, Exception]]):
-          последовательность кортежей с подменяемыми словарями
+        - compared_values:
+          последовательность кортежей с подменяемыми объектами
           и ожидаемыми исключениями.
         """
-        for return_value, exception in sequence:
-            with self.subTest(return_value=return_value, exception=exception):
-                post_request.return_value = return_value
+        for mocked, exception in compared_values:
+            with self.subTest(mocked=mocked, exception=exception):
+                post_request.return_value = mocked
                 with self.assertRaises(exception):
                     await get_user_info_from_lk(self.TELEGRAM_ID)
 
