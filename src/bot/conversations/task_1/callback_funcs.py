@@ -3,6 +3,7 @@ import re
 from telegram import Update
 from telegram.constants import ParseMode
 from telegram.ext import ContextTypes, ConversationHandler
+import internal_requests.service as api_service
 
 from conversations.task_1.keyboards import get_inline_keyboard, get_reply_keyboard
 from conversations.task_1.templates import MESSAGES, RESULT, SCORE
@@ -13,6 +14,7 @@ MESSAGE_KEY_TEMPLATE = "message_{}"
 NUMBER_OF_QUESTIONS = 10
 CHOOSING = 1
 CANCEL_TEXT = "Выполнение задания 1 было пропущено"
+CURRENT_TASK = 1
 
 
 async def start_task_1(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
@@ -86,9 +88,13 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 ),
                 parse_mode=ParseMode.MARKDOWN_V2,
             )
-            for result in _get_result(query.from_user, context):
+            results = await api_service.get_messages_with_results(
+                telegram_id=query.from_user.id,
+                task_number=CURRENT_TASK
+            )
+            for result in results:
                 await query.message.reply_text(
-                    text=RESULT[result],
+                    text=result.content,
                     parse_mode=ParseMode.MARKDOWN_V2,
                 )
             return ConversationHandler.END
@@ -133,21 +139,3 @@ def _save_answer(user, context):  # Временная, хранит ответ�
     choices = context.user_data.get("picked_choices")
     for choice in CHOICES:
         context.user_data["answer"][choice] += len(CHOICES) - choices.index(choice) - 1
-
-
-def _get_result(user, context):  # Временная, расшифровывает из контекста
-    """Получает расшифровку"""
-    result = {"1": None, "2": None, "3": None}
-    for choice, score in context.user_data["answer"].items():
-        if result["1"] is None or result["1"][0] < score:
-            result["3"] = result["2"]
-            result["2"] = result["1"]
-            result["1"] = (score, choice)
-        elif result["2"] is None or result["2"][0] < score:
-            result["3"] = result["2"]
-            result["2"] = (score, choice)
-        elif result["3"] is None or result["3"][0] < score:
-            result["3"] = (score, choice)
-        else:
-            pass
-    return result["1"][1], result["2"][1], result["3"][1]
