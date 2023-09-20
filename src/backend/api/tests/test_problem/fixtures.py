@@ -11,7 +11,6 @@ class BaseCaseForProblemTests(APITestCase):
     TELEGRAM_USERNAME = "hasnoname"
     TELEGRAM_NAME = "HasNoName"
     TELEGRAM_SURNAME = "HasNoSurname"
-    CONTENT_TYPE_JSON = "application/json"
     MESSAGE = "Как дела?"
 
     @classmethod

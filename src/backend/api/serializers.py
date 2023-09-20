@@ -72,6 +72,9 @@ class ProblemSerializer(serializers.ModelSerializer):
     Сериализатор модели Problem.
     """
 
+    message = serializers.CharField(required=True)
+
     class Meta:
         model = Problem
         fields = ("id", "user", "message", "answer", "create_date")
+        read_only_fields = ("user", "answer")
