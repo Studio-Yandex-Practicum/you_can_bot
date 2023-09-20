@@ -15,10 +15,12 @@ from conversations.task_1.templates import (
     SCORES,
     START_TASK_1_TEXT,
 )
+from internal_requests.entities import Answer
 
 CHOICES = "АБВГДЕ"
 CHOOSING = 1
 CURRENT_TASK = 1
+MAX_SCORE = 5
 NUMBER_OF_QUESTIONS = 10
 START_QUESTION_NUMBER = 1
 
@@ -40,7 +42,7 @@ async def get_start_question(
     context.user_data["picked_choices"] = ""
     messages = await api_service.get_messages_with_question(
         task_number=CURRENT_TASK,
-        question_number=context.user_data["current_question"],
+        question_number=question_number,
     )
     await update.effective_message.reply_text(
         text=messages[0].content,
@@ -71,20 +73,24 @@ async def get_answer_question(update: Update, context: ContextTypes.DEFAULT_TYPE
     choice = update.callback_query.data
     context.user_data["picked_choices"] += choice
     picked_choices = context.user_data.get("picked_choices")
-    choices_text = update.effective_message.text.split("\n\n")
-    print(choices_text, picked_choices)
+    message = update.effective_message
+    print(message, picked_choices)
     await update.effective_message.edit_text(
-        _get_question_text(choices_text, picked_choices),
+        _get_question_text(message.text.split("\n\n"), picked_choices),
         reply_markup=get_inline_keyboard(CHOICES, picked_choices),
         parse_mode=ParseMode.HTML,
     )
 
     current_question = context.user_data.get("current_question")
     if len(picked_choices) == len(CHOICES):
-        _save_answer(update.callback_query.from_user, context)  # надо из api
+        _save_answer(message.from_user.id, current_question, picked_choices)
         if current_question == NUMBER_OF_QUESTIONS:
             await end_task_1(update, context)
-        await get_start_question(update, context, current_question + 1)
+        context.user_data["current_question"] += 1
+        await get_start_question(
+            update, context, context.user_data.get("current_question")
+        )
+    return CHOOSING
 
 
 async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
@@ -93,21 +99,29 @@ async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     return ConversationHandler.END
 
 
-def _get_question_text(choices_text, picked_choices: str = "") -> str:
-    text = f"{choices_text[0]}\n"
-    for string in choices_text[1:]:
+def _get_question_text(message_text, picked_choices: str = "") -> str:
+    text = f"{message_text[0]}\n"
+    for string in message_text[1:]:
         text += f"{string}"
         if string[1] in picked_choices:
-            text += f" — {SCORES[len(CHOICES) - picked_choices.index(string[1]) - 1]}"
+            text += f" — {SCORES[MAX_SCORE - picked_choices.index(string[1])]}"
         text += "\n"
     return text
 
 
-def _save_answer(user, context):  # Временная, хранит ответы в контексте
-    """Сохраняет ответ пользователя."""
-    choices = context.user_data.get("picked_choices")
-    for choice in CHOICES:
-        context.user_data["answer"][choice] += len(CHOICES) - choices.index(choice) - 1
+async def _save_answer(user_id, current_question, picked_choices):
+    """Сохраняет ответ пользователя в БД."""
+    answers = ""
+    for lable in CHOICES:
+        answers += MAX_SCORE - picked_choices.index(lable)
+    await api_service.create_answer(
+        Answer(
+            telegram_id=user_id,
+            task_number=CURRENT_TASK,
+            number=current_question,
+            content=answers,
+        )
+    )
 
 
 def _get_result(user, context):  # Временная, расшифровывает из контекста
