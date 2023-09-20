@@ -4,7 +4,7 @@ from typing import Optional, Union
 
 from httpx import AsyncClient, HTTPStatusError, RequestError, codes
 
-from utils.configs import YOUCANBY_TOKEN, YOUCANBY_URL
+from utils.configs import TARIFFS, YOUCANBY_TOKEN, YOUCANBY_URL
 from utils.logger import configure_logging
 
 from .exceptions import APIForbiddenError, PostAPIError, UserNotFound
@@ -29,8 +29,6 @@ USER_NOT_FOUND = (
     '{status_code}: при запросе к {url} пользователь с id {tid} не найден.'
 )
 
-ENV_NAMES = ('YOUCANBY_URL', 'YOUCANBY_TOKEN')
-TARIFFS = ('mini', 'midi', 'maxi', None)
 USER_INFO = ('tariff', 'full_name', 'isApproved')
 
 _LOGGER = getLogger(__name__)
