@@ -5,7 +5,7 @@ from api.models import UserFromTelegram
 from api.serializers import TaskStatusRetrieveSerializer, TaskStatusSerializer
 
 
-class TasksViewSet(
+class TaskStatusViewSet(
     mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet
 ):
     """

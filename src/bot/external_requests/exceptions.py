@@ -1,5 +1,6 @@
 class PostAPIError(Exception):
     """Ошибка в ответе сервера."""
+
     def __init__(self, message):
         self.message = message
 
@@ -9,6 +10,7 @@ class PostAPIError(Exception):
 
 class APIForbiddenError(PostAPIError):
     """Ошибка 403 в ответе сервера."""
+
     def __init__(self, message):
         self.message = message
 
@@ -18,6 +20,7 @@ class APIForbiddenError(PostAPIError):
 
 class UserNotFound(PostAPIError):
     """Ошибка 404 в ответе сервера."""
+
     def __init__(self, message):
         self.message = message
 

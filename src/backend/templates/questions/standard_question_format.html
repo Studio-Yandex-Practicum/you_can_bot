@@ -1,10 +1,5 @@
-<b>{{ question.number }}. {{ question.content }}</b><br>
-<br>
-{% for choice in question.choices %}
-<b>[{{ forloop.counter | add:"1039" | stringformat:"c" }}]</b> {{ choice.title }}<br>
-{% if choice.description %}
-{{ choice.description }}<br>
-{% endif %}
-<br>
-{% empty %}
+<b>{{ question.number }}. {{ question.content }}</b>
+{% for choice in question.choices.all %}
+<b>[{{ forloop.counter | add:"1039" | stringformat:"c" }}]</b> {{ choice.title }}
+{% if choice.description %}{{ choice.description }}{% endif %}{% empty %}
 {% endfor %}
