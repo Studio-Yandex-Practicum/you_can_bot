@@ -95,7 +95,7 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
             for result in results:
                 await query.message.reply_text(
                     text=result.content,
-                    parse_mode=ParseMode.MARKDOWN_V2,
+                    parse_mode=ParseMode.HTML,
                 )
             return ConversationHandler.END
         else:
