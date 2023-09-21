@@ -11,7 +11,7 @@ TASK_404 = "Задание не найдено."
 TASK_NOT_COMPLETED = "Ошибка! Задание не завершено."
 
 
-@api_view(('GET',))
+@api_view(("GET",))
 def get_results_for_user_by_task(request, telegram_id, task_number):
     """
     Получение результата выполнения конкретного задания
@@ -30,8 +30,5 @@ def get_results_for_user_by_task(request, telegram_id, task_number):
 
     results = task_status.result.all()
 
-    serializer = TaskResultsForUserSerializer(
-        results,
-        context={'request': request}
-    )
+    serializer = TaskResultsForUserSerializer(results, context={"request": request})
     return Response(serializer.data, status=status.HTTP_200_OK)

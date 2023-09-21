@@ -20,8 +20,16 @@ class BaseCaseForAnswerTests(APITestCase):
 
     # Константы для первого задания
     TASK1_ANSWERS_CONTENT = {
-        1: "543210", 2: "053142", 3: "123504", 4: "041235", 5: "012345",
-        6: "410523", 7: "321054", 8: "013245", 9: "543012", 10: "230451",
+        1: "543210",
+        2: "053142",
+        3: "123504",
+        4: "041235",
+        5: "012345",
+        6: "410523",
+        7: "321054",
+        8: "013245",
+        9: "543012",
+        10: "230451",
     }
     LAST_ANSWER_NUMBER = 10
     KEYS_TASK_1 = "АБВГДЕ"
@@ -42,11 +50,8 @@ class BaseCaseForAnswerTests(APITestCase):
 
         # Вопросы и результаты для первого задания
         questions = (
-            Question(
-                task=task_1, number=num, content=f"Вопрос_{num}", example=""
-            )
+            Question(task=task_1, number=num, content=f"Вопрос_{num}", example="")
             for num in range(1, cls.LAST_ANSWER_NUMBER + 1)
-
         )
         Question.objects.bulk_create(questions)
         results = (

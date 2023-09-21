@@ -17,30 +17,30 @@ class ViewTasksTests(BaseCaseForAnswerTests):
         )
         self.first_task_url = reverse(
             "api:tasks-detail",
-            kwargs={"telegram_id": self.TELEGRAM_ID,
-                    "task__number": self.TASK_NUMBER_1},
+            kwargs={
+                "telegram_id": self.TELEGRAM_ID,
+                "task__number": self.TASK_NUMBER_1,
+            },
         )
         self.user = UserFromTelegram.objects.get(telegram_id=self.TELEGRAM_ID)
         self.all_user_tasks = TaskStatus.objects.filter(user=self.user)
         self.task_status = TaskStatus.objects.get(
-            user=self.user,
-            task__number=self.TASK_NUMBER_1
+            user=self.user, task__number=self.TASK_NUMBER_1
         )
 
     def test_view_tasks(self):
         """Проверка контроллера tasks."""
 
         expected_responses_data = [
-            [self.common_url,
-                TaskStatusSerializer(self.all_user_tasks, many=True).data],
-            [self.first_task_url,
-                TaskStatusRetrieveSerializer(self.task_status).data]
+            [
+                self.common_url,
+                TaskStatusSerializer(self.all_user_tasks, many=True).data,
+            ],
+            [self.first_task_url, TaskStatusRetrieveSerializer(self.task_status).data],
         ]
         for url, expected_data in expected_responses_data:
             with self.subTest(url=url):
-                self.assertEqual(
-                    self.client.get(url).data, expected_data
-                )
+                self.assertEqual(self.client.get(url).data, expected_data)
 
     def test_TaskStatusSerializer(self):
         """Проверка сериализатора для tasks-list."""
@@ -54,9 +54,7 @@ class ViewTasksTests(BaseCaseForAnswerTests):
         self.assertEqual(len(test_data), self.TASKS_COUNT)
         for field, expected_data in expected_responses_data:
             with self.subTest(field=field):
-                self.assertEqual(
-                    test_data[0].get(field), expected_data
-                )
+                self.assertEqual(test_data[0].get(field), expected_data)
 
     def test_TaskStatusRetrieveSerializer(self):
         """Проверка сериализатора для tasks-detail."""
@@ -69,6 +67,4 @@ class ViewTasksTests(BaseCaseForAnswerTests):
         ]
         for field, expected_data in expected_responses_data:
             with self.subTest(field=field):
-                self.assertEqual(
-                    test_data.get(field), expected_data
-                )
+                self.assertEqual(test_data.get(field), expected_data)

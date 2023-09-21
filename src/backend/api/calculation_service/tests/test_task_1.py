@@ -19,8 +19,7 @@ class TestTask1(TestCase):
         вопросы по первому заданию."""
         answers = [Answer(content="012345") for _ in range(10)]
         self.assertEqual(
-            [(50, 'Е'), (40, 'Д'), (30, 'Г')],
-            _get_result_points(answers)[:3]
+            [(50, "Е"), (40, "Д"), (30, "Г")], _get_result_points(answers)[:3]
         )
 
     def test_task_1_different_answers(self):
@@ -40,8 +39,7 @@ class TestTask1(TestCase):
         )
         answers = [Answer(content=answer) for answer in answers_content]
         self.assertEqual(
-            [(31, 'Е'), (29, 'Д'), (27, 'Б')],
-            _get_result_points(answers)[:3]
+            [(31, "Е"), (29, "Д"), (27, "Б")], _get_result_points(answers)[:3]
         )
 
     def test_task_1_inconsistent_answer_content(self):
@@ -54,20 +52,20 @@ class TestTask1(TestCase):
 
         # Консистентный Answer.content был посчитан корректно
         self.assertEqual(
-            [(5, 'Е'), (4, 'Д'), (3, 'Г')],
-            _get_result_points([Answer(content="012345")])[:3]
+            [(5, "Е"), (4, "Д"), (3, "Г")],
+            _get_result_points([Answer(content="012345")])[:3],
         )
 
     def test_task_1_more_than_one_third_place(self):
         """Правильно определилась расшифровка с одинаковым количеством баллов
         у третьего, четвертого и остальных мест по первому заданию."""
         self.assertEqual(
-            [(5, 'Е'), (5, 'Д'), (5, 'Г'), (5, 'В'), (5, 'Б'), (5, 'А')],
+            [(5, "Е"), (5, "Д"), (5, "Г"), (5, "В"), (5, "Б"), (5, "А")],
             _get_result_points([Answer(content="555555")]),
         )
         self.assertEqual(
-            [(5, 'Е'), (5, 'Д'), (5, 'Г'), (5, 'В'), (1, 'Б'), (1, 'А')],
-            _get_result_points([Answer(content="115555")])
+            [(5, "Е"), (5, "Д"), (5, "Г"), (5, "В"), (1, "Б"), (1, "А")],
+            _get_result_points([Answer(content="115555")]),
         )
 
         # Контент соответствующий реальным ответам на тесты,
@@ -84,11 +82,12 @@ class TestTask1(TestCase):
             "543012",
             "230451",
         )
-        answers = [Answer(content=answer) for answer in
-                   real_ten_answers_content]
+        answers = [Answer(content=answer) for answer in real_ten_answers_content]
 
-        self.assertEqual([(31, 'Е'), (29, 'Д'), (27, 'Г'), (27, 'Б')],
-                         _get_result_points(answers)[:4])
+        self.assertEqual(
+            [(31, "Е"), (29, "Д"), (27, "Г"), (27, "Б")],
+            _get_result_points(answers)[:4],
+        )
 
     def tearDown(self) -> None:
         logging.disable(logging.NOTSET)

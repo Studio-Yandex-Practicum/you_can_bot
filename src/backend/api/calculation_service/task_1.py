@@ -29,9 +29,10 @@ def calculate_task_1_result(user_answers: list[Answer]) -> None:
             task_status=task_status,
             top=results.index(result) + 1,
             result=Result.objects.get(task=task_status.task, key=result[1]),
-            score=result[0])
-        for result in results if
-        results.index(result) < 3 or result[0] == results[2][0]
+            score=result[0],
+        )
+        for result in results
+        if results.index(result) < 3 or result[0] == results[2][0]
     )
     ResultStatus.objects.bulk_create(result_status)
 
