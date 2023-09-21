@@ -101,26 +101,22 @@ class TaskResultsForUserSerializer(serializers.ModelSerializer):
     конкретным пользователем.
     """
 
-    title = serializers.ReadOnlyField(source='result.title')
-    description = serializers.ReadOnlyField(source='result.description')
+    title = serializers.ReadOnlyField(source="result.title")
+    description = serializers.ReadOnlyField(source="result.description")
 
     class Meta:
         model = ResultStatus
-        fields = ['title', 'description']
+        fields = ["title", "description"]
 
     def to_representation(self, obj):
         results = []
         for result in obj:
             results.append(
                 {
-                    'content':
-                        render_to_string(
-                            "results/results_for_user_by_task.html",
-                            {'result': result.result}
-                        )
+                    "content": render_to_string(
+                        "results/results_for_user_by_task.html",
+                        {"result": result.result},
+                    )
                 }
             )
-        return {
-            "count": len(results),
-            "result": results
-        }
+        return {"count": len(results), "result": results}

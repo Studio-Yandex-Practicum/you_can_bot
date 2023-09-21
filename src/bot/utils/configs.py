@@ -1,5 +1,6 @@
 import logging
 import os
+from json import loads
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -29,3 +30,7 @@ LOG_WHEN = "midnight"
 LOG_INTERVAL = 1
 LOG_BACKUP_COUNT = 14
 LOG_ENCODING = "UTF-8"
+
+TARIFFS = loads(os.getenv("TARIFFS"))
+YOUCANBY_URL = os.getenv("YOUCANBY_URL")
+YOUCANBY_TOKEN = os.getenv("YOUCANBY_TOKEN")
