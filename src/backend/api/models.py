@@ -180,6 +180,11 @@ class Result(models.Model):
         blank=True,
     )
 
+    class Meta:
+        verbose_name = "результат"
+        verbose_name_plural = "Результаты заданий"
+        unique_together = ("task", "key")
+
 
 class TaskStatus(models.Model):
     """Модель статуса выполнения задания пользователем."""
@@ -231,6 +236,7 @@ class Answer(models.Model):
         verbose_name="Вопрос",
         to=Question,
         on_delete=models.PROTECT,
+        related_name="answers",
     )
     content = models.TextField("Ответ")
 
