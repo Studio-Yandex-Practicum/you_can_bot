@@ -13,9 +13,7 @@ router = DefaultRouter()
 
 router.register(r"users", UserFromTelegramViewSet, basename="users")
 router.register(
-    r"users/(?P<telegram_id>\d+)/tasks",
-    TaskStatusViewSet,
-    basename="tasks"
+    r"users/(?P<telegram_id>\d+)/tasks", TaskStatusViewSet, basename="tasks"
 )
 
 urlpatterns = [
