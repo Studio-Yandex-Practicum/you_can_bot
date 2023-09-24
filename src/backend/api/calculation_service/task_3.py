@@ -1,4 +1,4 @@
-from api.models import Answer
+from api.models import Answer, Result, ResultStatus
 
 # fmt: off
 SCALES = {
@@ -49,17 +49,34 @@ SCALES = {
 TOP_RESULTS_NUMBER = 3
 
 
-def calculate_task_3_result(user_answers: list[Answer]) -> str:
+def calculate_task_3_result(user_answers: list[Answer]) -> None:
     """
     Принимает список ответов пользователя на 3 задание,
     расчитывает результат и возвращает топ 3 характеристики,
-    наиболее подходящие пользователю.
+    наиболее подходящие пользователю и создает запись в базе
+    данных ResultStatus.
     """
     scale_scores_counter = _distribute_answers_by_scales(user_answers)
-    scale_scores_sorted = _sorted_scales_in_non_growing_order(scale_scores_counter)
-    user_top_features = _make_top_scales_by_scores(scale_scores_sorted)
-    summary = _write_result_to_string(user_top_features)
-    return summary
+    scale_scores_sorted = _sorted_scales_in_non_growing_order(
+        scale_scores_counter)
+    results = _make_top_scales_by_scores(scale_scores_sorted)
+
+    task_status = user_answers[0].task_status
+
+    # Очистка базы данных от предыдущих результатов ResultStatus.
+    task_status.result.all().delete()
+
+    # Создание в базе данных новых результатов ResultStatus.
+    result_status = (
+        ResultStatus(
+            task_status=task_status,
+            top=results.index(result) + 1,
+            result=Result.objects.get(task=task_status.task, key=result[0]),
+            score=result[1],
+        )
+        for result in results
+    )
+    ResultStatus.objects.bulk_create(result_status)
 
 
 def _distribute_answers_by_scales(user_answers: list[Answer]) -> dict[str:int]:
@@ -74,7 +91,7 @@ def _distribute_answers_by_scales(user_answers: list[Answer]) -> dict[str:int]:
 
 
 def _sorted_scales_in_non_growing_order(
-    scale_scores_counter: dict[str:int],
+        scale_scores_counter: dict[str:int],
 ) -> list[tuple[str, int]]:
     """
     Сортирует шкалы и кол-во ответов, относящихся к ним, по невозрастанию.
@@ -86,7 +103,7 @@ def _sorted_scales_in_non_growing_order(
 
 
 def _make_top_scales_by_scores(
-    scale_scores_sorted: list[tuple[str, int]]
+        scale_scores_sorted: list[tuple[str, int]]
 ) -> list[tuple[str, int]]:
     """
     Выбирает шкалы (топ-3), набравшие максимальное кол-во баллов.
@@ -99,10 +116,3 @@ def _make_top_scales_by_scores(
             return user_top_features
         user_top_features.append((scale, score))
     return user_top_features
-
-
-def _write_result_to_string(user_top_features: list[tuple[str, int]]) -> str:
-    """Формирует результат в виде текстовой строки."""
-    return " ".join(
-        [":".join([scale, str(score)]) for scale, score in user_top_features]
-    )

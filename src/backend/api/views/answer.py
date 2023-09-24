@@ -7,12 +7,16 @@ from rest_framework.exceptions import NotFound, ValidationError
 from rest_framework.response import Response
 
 from api.calculation_service.task_1 import calculate_task_1_result
+from api.calculation_service.task_2 import calculate_task_2_result
+from api.calculation_service.task_3 import calculate_task_3_result
 from api.models import Answer, Question, TaskStatus
 from api.serializers import AnswerSerializer
 
 ANSWER_CREATE_ERROR = "Ошибка при обработке запроса: {error}"
 CALCULATE_TASKS = {
     1: calculate_task_1_result,
+    2: calculate_task_2_result,
+    3: calculate_task_3_result
 }
 
 
