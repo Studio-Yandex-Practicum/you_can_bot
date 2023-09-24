@@ -271,7 +271,7 @@ class ViewAnswerTests(BaseCaseForAnswerTests):
         return self.tasks_status[task_number].task.questions.filter(
             number__lt=last_number)
 
-    def _assert_has_attributes(self, task_number,obj, attr, attr_data):
+    def _assert_has_attributes(self, task_number, obj, attr, attr_data):
         """Проверка ожидаемых атрибутов в контексте."""
         error_message = (
             f"В базе данных Задания №{task_number} поле \"{attr}\" "
