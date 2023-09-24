@@ -25,7 +25,11 @@ class ProblemTests(BaseCaseForProblemTests):
         self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
 
         self.assertIn('Allow', response)
-        self.assertEqual(response['Allow'], 'POST, OPTIONS')
+
+        allowed_methods = response['Allow']
+        allowed_methods_list = [method.strip() for method in allowed_methods.split(',')]
+        self.assertIn('POST', allowed_methods_list)
+        self.assertIn('OPTIONS', allowed_methods_list)
 
     def test_db_problem(self):
         """
@@ -61,3 +65,18 @@ class ProblemTests(BaseCaseForProblemTests):
         )
         response = self.client.post(url, data={"message": self.MESSAGE})
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_message_field_is_required(self):
+        """
+        Проверка, что message - обязательное поле.
+        """
+        url = reverse(
+            "api:problem_create",
+            kwargs={"telegram_id": self.TELEGRAM_ID},
+        )
+
+        response = self.client.post(url, data={"message": self.EMPTY_MESSAGE_1})
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+        response = self.client.post(url, data={"message": self.EMPTY_MESSAGE_2})
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)

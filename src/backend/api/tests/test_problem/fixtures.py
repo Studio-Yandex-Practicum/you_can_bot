@@ -12,6 +12,8 @@ class BaseCaseForProblemTests(APITestCase):
     TELEGRAM_NAME = "HasNoName"
     TELEGRAM_SURNAME = "HasNoSurname"
     MESSAGE = "Как дела?"
+    EMPTY_MESSAGE_1 = ""
+    EMPTY_MESSAGE_2 = " "
 
     @classmethod
     def setUpClass(cls):
