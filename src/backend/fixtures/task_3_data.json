@@ -1,0 +1,1280 @@
+[
+  {
+    "model": "api.question",
+    "pk": 81,
+    "fields": {
+      "task": 3,
+      "number": 1,
+      "content": "пара",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 82,
+    "fields": {
+      "task": 3,
+      "number": 2,
+      "content": "пара",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 83,
+    "fields": {
+      "task": 3,
+      "number": 3,
+      "content": "пара",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 84,
+    "fields": {
+      "task": 3,
+      "number": 4,
+      "content": "пара",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 85,
+    "fields": {
+      "task": 3,
+      "number": 5,
+      "content": "пара",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 86,
+    "fields": {
+      "task": 3,
+      "number": 6,
+      "content": "пара",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 87,
+    "fields": {
+      "task": 3,
+      "number": 7,
+      "content": "пара",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 88,
+    "fields": {
+      "task": 3,
+      "number": 8,
+      "content": "пара",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 89,
+    "fields": {
+      "task": 3,
+      "number": 9,
+      "content": "пара",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 90,
+    "fields": {
+      "task": 3,
+      "number": 10,
+      "content": "пара",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 91,
+    "fields": {
+      "task": 3,
+      "number": 11,
+      "content": "пара",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 92,
+    "fields": {
+      "task": 3,
+      "number": 12,
+      "content": "пара",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 93,
+    "fields": {
+      "task": 3,
+      "number": 13,
+      "content": "пара",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 94,
+    "fields": {
+      "task": 3,
+      "number": 14,
+      "content": "пара",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 95,
+    "fields": {
+      "task": 3,
+      "number": 15,
+      "content": "пара",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 96,
+    "fields": {
+      "task": 3,
+      "number": 16,
+      "content": "пара",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 97,
+    "fields": {
+      "task": 3,
+      "number": 17,
+      "content": "пара",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 98,
+    "fields": {
+      "task": 3,
+      "number": 18,
+      "content": "пара",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 99,
+    "fields": {
+      "task": 3,
+      "number": 19,
+      "content": "пара",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 100,
+    "fields": {
+      "task": 3,
+      "number": 20,
+      "content": "пара",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 101,
+    "fields": {
+      "task": 3,
+      "number": 21,
+      "content": "пара",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 102,
+    "fields": {
+      "task": 3,
+      "number": 22,
+      "content": "пара",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 103,
+    "fields": {
+      "task": 3,
+      "number": 23,
+      "content": "пара",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 104,
+    "fields": {
+      "task": 3,
+      "number": 24,
+      "content": "пара",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 105,
+    "fields": {
+      "task": 3,
+      "number": 25,
+      "content": "пара",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 106,
+    "fields": {
+      "task": 3,
+      "number": 26,
+      "content": "пара",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 107,
+    "fields": {
+      "task": 3,
+      "number": 27,
+      "content": "пара",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 108,
+    "fields": {
+      "task": 3,
+      "number": 28,
+      "content": "пара",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 109,
+    "fields": {
+      "task": 3,
+      "number": 29,
+      "content": "пара",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 110,
+    "fields": {
+      "task": 3,
+      "number": 30,
+      "content": "пара",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 111,
+    "fields": {
+      "task": 3,
+      "number": 31,
+      "content": "пара",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 112,
+    "fields": {
+      "task": 3,
+      "number": 32,
+      "content": "пара",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 113,
+    "fields": {
+      "task": 3,
+      "number": 33,
+      "content": "пара",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 114,
+    "fields": {
+      "task": 3,
+      "number": 34,
+      "content": "пара",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 115,
+    "fields": {
+      "task": 3,
+      "number": 35,
+      "content": "пара",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 116,
+    "fields": {
+      "task": 3,
+      "number": 36,
+      "content": "пара",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 117,
+    "fields": {
+      "task": 3,
+      "number": 37,
+      "content": "пара",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 118,
+    "fields": {
+      "task": 3,
+      "number": 38,
+      "content": "пара",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 119,
+    "fields": {
+      "task": 3,
+      "number": 39,
+      "content": "пара",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 120,
+    "fields": {
+      "task": 3,
+      "number": 40,
+      "content": "пара",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 121,
+    "fields": {
+      "task": 3,
+      "number": 41,
+      "content": "пара",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 122,
+    "fields": {
+      "task": 3,
+      "number": 42,
+      "content": "пара",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 201,
+    "fields": {
+      "question": 81,
+      "title": "инженер-конструктор",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 202,
+    "fields": {
+      "question": 81,
+      "title": "инженер-технолог",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 203,
+    "fields": {
+      "question": 82,
+      "title": "терапевт",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 204,
+    "fields": {
+      "question": 82,
+      "title": "радиотехник",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 205,
+    "fields": {
+      "question": 83,
+      "title": "кодировщик информации",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 206,
+    "fields": {
+      "question": 83,
+      "title": "оператор станков с программным управлением",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 207,
+    "fields": {
+      "question": 84,
+      "title": "бизнесмен",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 208,
+    "fields": {
+      "question": 84,
+      "title": "фотограф",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 209,
+    "fields": {
+      "question": 85,
+      "title": "дизайнер",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 210,
+    "fields": {
+      "question": 85,
+      "title": "спасатель МЧС",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 211,
+    "fields": {
+      "question": 86,
+      "title": "психиатр",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 212,
+    "fields": {
+      "question": 86,
+      "title": "политолог",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 213,
+    "fields": {
+      "question": 87,
+      "title": "бухгалтер",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 214,
+    "fields": {
+      "question": 87,
+      "title": "ученый-химик",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 215,
+    "fields": {
+      "question": 88,
+      "title": "частный предприниматель ",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 216,
+    "fields": {
+      "question": 88,
+      "title": "философ",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 217,
+    "fields": {
+      "question": 89,
+      "title": "модельер",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 218,
+    "fields": {
+      "question": 89,
+      "title": "лингвист",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 219,
+    "fields": {
+      "question": 90,
+      "title": "статист",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 220,
+    "fields": {
+      "question": 90,
+      "title": "инспектор службы занятости населения",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 221,
+    "fields": {
+      "question": 91,
+      "title": "брокер",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 222,
+    "fields": {
+      "question": 91,
+      "title": "социальный педагог",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 223,
+    "fields": {
+      "question": 92,
+      "title": "искусствовед",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 224,
+    "fields": {
+      "question": 92,
+      "title": "тренер",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 225,
+    "fields": {
+      "question": 93,
+      "title": "менеджер",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 226,
+    "fields": {
+      "question": 93,
+      "title": "нотариус",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 227,
+    "fields": {
+      "question": 94,
+      "title": "художник",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 228,
+    "fields": {
+      "question": 94,
+      "title": "печатник",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 229,
+    "fields": {
+      "question": 95,
+      "title": "писатель",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 230,
+    "fields": {
+      "question": 95,
+      "title": "лидер общественного движения",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 231,
+    "fields": {
+      "question": 96,
+      "title": "метеоролог",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 232,
+    "fields": {
+      "question": 96,
+      "title": "модельер",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 233,
+    "fields": {
+      "question": 97,
+      "title": "работник пресс-службы",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 234,
+    "fields": {
+      "question": 97,
+      "title": "водитель",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 235,
+    "fields": {
+      "question": 98,
+      "title": "чертежник",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 236,
+    "fields": {
+      "question": 98,
+      "title": "риелтор",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 237,
+    "fields": {
+      "question": 99,
+      "title": "специалист по ремонту компьютеров и оргтехники",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 238,
+    "fields": {
+      "question": 99,
+      "title": "секретарь-референт",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 239,
+    "fields": {
+      "question": 100,
+      "title": "микробиолог",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 240,
+    "fields": {
+      "question": 100,
+      "title": "психолог",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 241,
+    "fields": {
+      "question": 101,
+      "title": "видеооператор",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 242,
+    "fields": {
+      "question": 101,
+      "title": "режиссер",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 243,
+    "fields": {
+      "question": 102,
+      "title": "экономист",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 244,
+    "fields": {
+      "question": 102,
+      "title": "провизор",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 245,
+    "fields": {
+      "question": 103,
+      "title": "зоолог",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 246,
+    "fields": {
+      "question": 103,
+      "title": "главный инженер",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 247,
+    "fields": {
+      "question": 104,
+      "title": "программист",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 248,
+    "fields": {
+      "question": 104,
+      "title": "архитектор",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 249,
+    "fields": {
+      "question": 105,
+      "title": "работник инспекции по делам несовершеннолетних",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 250,
+    "fields": {
+      "question": 105,
+      "title": "маркетолог",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 251,
+    "fields": {
+      "question": 106,
+      "title": "преподаватель",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 252,
+    "fields": {
+      "question": 106,
+      "title": "трейдер",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 253,
+    "fields": {
+      "question": 107,
+      "title": "воспитатель",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 254,
+    "fields": {
+      "question": 107,
+      "title": "декоратор",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 255,
+    "fields": {
+      "question": 108,
+      "title": "реставратор",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 256,
+    "fields": {
+      "question": 108,
+      "title": "заведующий отделом предприятия",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 257,
+    "fields": {
+      "question": 109,
+      "title": "корректор",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 258,
+    "fields": {
+      "question": 109,
+      "title": "литератор и кинокритик",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 259,
+    "fields": {
+      "question": 110,
+      "title": "фермер",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 260,
+    "fields": {
+      "question": 110,
+      "title": "визажист",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 261,
+    "fields": {
+      "question": 111,
+      "title": "парикмахер",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 262,
+    "fields": {
+      "question": 111,
+      "title": "социолог",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 263,
+    "fields": {
+      "question": 112,
+      "title": "экспедитор",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 264,
+    "fields": {
+      "question": 112,
+      "title": "редактор",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 265,
+    "fields": {
+      "question": 113,
+      "title": "ветеринар",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 266,
+    "fields": {
+      "question": 113,
+      "title": "финансовый директор",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 267,
+    "fields": {
+      "question": 114,
+      "title": "автомеханик",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 268,
+    "fields": {
+      "question": 114,
+      "title": "стилист",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 269,
+    "fields": {
+      "question": 115,
+      "title": "археолог",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 270,
+    "fields": {
+      "question": 115,
+      "title": "эксперт",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 271,
+    "fields": {
+      "question": 116,
+      "title": "библиограф",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 272,
+    "fields": {
+      "question": 116,
+      "title": "корреспондент",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 273,
+    "fields": {
+      "question": 117,
+      "title": "эколог",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 274,
+    "fields": {
+      "question": 117,
+      "title": "актер",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 275,
+    "fields": {
+      "question": 118,
+      "title": "логопед",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 276,
+    "fields": {
+      "question": 118,
+      "title": "контролер",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 277,
+    "fields": {
+      "question": 119,
+      "title": "адвокат",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 278,
+    "fields": {
+      "question": 119,
+      "title": "директор организации",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 279,
+    "fields": {
+      "question": 120,
+      "title": "кассир",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 280,
+    "fields": {
+      "question": 120,
+      "title": "продюсер",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 281,
+    "fields": {
+      "question": 121,
+      "title": "поэт, писатель",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 282,
+    "fields": {
+      "question": 121,
+      "title": "продавец",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 283,
+    "fields": {
+      "question": 122,
+      "title": "криминалист",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 284,
+    "fields": {
+      "question": 122,
+      "title": "композитор ",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.result",
+    "pk": 23,
+    "fields": {
+      "task": 3,
+      "key": "1",
+      "title": "Реалистичный",
+      "description": "Предпочитаешь работать с инструментами, техникой или животными, нередко на открытом воздухе. Обладаешь техническими/спортивными  способностями. Склонен избегать деятельности, требующей выполнения общественных обязанностей.\n\nПримеры профессий: автомеханик, авиадиспетчер, электрик, фермер, топограф."
+    }
+  },
+  {
+    "model": "api.result",
+    "pk": 24,
+    "fields": {
+      "task": 3,
+      "key": "2",
+      "title": "Интеллектуальный",
+      "description": "Предпочитаешь исследовать и анализировать физические, биологические и культурные явления. Обладаешь научными, математическими способностями. Склонен избегать задач и ситуаций, связанных с необходимостью проявлять предприимчивость.\n\nПримеры профессий: геолог, химик, физик, лаборант, медработник, биолог."
+    }
+  },
+  {
+    "model": "api.result",
+    "pk": 25,
+    "fields": {
+      "task": 3,
+      "key": "3",
+      "title": "Социальный",
+      "description": "Предпочитаешь работать с людьми. Любишь поучать, развивать, помогать и лечить. Обладаешь способностями к межличностным отношениям и учебе. Склонен избегать деятельности и ситуаций, связанных с принятием логических решений.\n\nПримеры профессий: психолог, логопед, консультант, учитель, социальный работник."
+    }
+  },
+  {
+    "model": "api.result",
+    "pk": 26,
+    "fields": {
+      "task": 3,
+      "key": "4",
+      "title": "Консервативный",
+      "description": "Предпочитаешь систематизировать и обрабатывать данные в процессе заранее спланированной, структурированной работы. Хорошо выполняешь бухгалтерскую работу. Склонен избегать двусмысленных, творческих и нестандартных задач или ситуаций.\n\nПримеры профессий: бухгалтер, секретарь, программист, финансовый аналитик, специалист по налогам."
+    }
+  },
+  {
+    "model": "api.result",
+    "pk": 27,
+    "fields": {
+      "task": 3,
+      "key": "5",
+      "title": "Инициативный",
+      "description": "В ходе реализации проекта предпочтешь оказать влияние. Обладаешь способностью к лидерству и убеждению. Склонен избегать задач или ситуаций, требующих скрупулезной работы  или длительной концентрации внимания.\n\nПримеры профессий: предприниматель, коммерческий руководитель, менеджер проектов, трейдер."
+    }
+  },
+  {
+    "model": "api.result",
+    "pk": 28,
+    "fields": {
+      "task": 3,
+      "key": "6",
+      "title": "Артистичный",
+      "description": "Предпочитаешь работать с материальными и нематериальными вещами, создавать из них предметы искусства. Обладаешь артистичными, музыкальными или лингвистическими способностями. Склонен избегать заурядной или строго распланированной деятельности.\n\nПримеры профессий: актер, композитор, музыкант, дизайнер, декоратор, хореограф."
+    }
+  }
+]
