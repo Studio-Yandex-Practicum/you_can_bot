@@ -182,7 +182,8 @@ python manage.py loaddata \
     fixtures/task_3_data.json \
     fixtures/task_4_data.json \
     fixtures/task_5_data.json \
-    fixtures/task_6_data.json
+    fixtures/task_6_data.json \
+    fixtures/task_7_data.json
 ```
 
 ### Запуск проекта локально (без docker)<a name="local-run"></a>
