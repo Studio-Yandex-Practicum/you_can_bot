@@ -180,7 +180,8 @@ python manage.py loaddata \
     fixtures/task_1_data.json \
     fixtures/task_2_data.json \
     fixtures/task_3_data.json \
-    fixtures/task_4_data.json
+    fixtures/task_4_data.json \
+    fixtures/task_5_data.json
 ```
 
 ### Запуск проекта локально (без docker)<a name="local-run"></a>
@@ -268,7 +269,7 @@ poetry add <package_name>
 
 ### Ветки<a name="branches"></a>
 
-При создании новой ветки наследоваться от develop, не забыв спуллить себе последние изменения  
+При создании новой ветки наследоваться от develop, не забыв спуллить себе последние изменения
 Пример наименования веток:
    - `feature/send-sandwiches`
    - `fix/process-bread-not-found.`
