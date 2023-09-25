@@ -95,7 +95,7 @@ class ViewAnswerTests(BaseCaseForAnswerTests):
 
     def test_view_tasks_status_is_done(self):
         """
-        Проверка изменения полей TaskStatus при завершении Задания №1.
+        Проверка изменения полей TaskStatus при завершении Заданий.
         """
         setup_functions = {
             1: self._setup_task_1_tests,
