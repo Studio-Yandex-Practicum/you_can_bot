@@ -115,7 +115,7 @@ class TaskResultsForUserSerializer(serializers.ModelSerializer):
                 {
                     "content": render_to_string(
                         "results/results_for_user_by_task.html",
-                        {"result": result.result},
+                        {"result": result.result, "result_status": result},
                     )
                 }
             )

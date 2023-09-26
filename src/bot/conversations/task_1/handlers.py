@@ -10,8 +10,9 @@ from conversations.general.templates import FIRST_TASK_BUTTON_LABEL
 from conversations.task_1.callback_funcs import (
     CHOICES,
     CHOOSING,
-    button,
     cancel,
+    get_answer_question,
+    get_start_question,
     start_task_1,
 )
 
@@ -21,8 +22,8 @@ task_1_handler = ConversationHandler(
     ],
     states={
         CHOOSING: [
-            MessageHandler(filters.Regex("^(Далее)$"), button),
-            CallbackQueryHandler(button, pattern=f"^([{CHOICES}])$"),
+            CallbackQueryHandler(get_start_question, pattern=r"^Далее$"),
+            CallbackQueryHandler(get_answer_question, pattern=f"^([{CHOICES}])$"),
         ],
     },
     fallbacks=[CommandHandler("cancel", cancel)],
