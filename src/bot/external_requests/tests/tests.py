@@ -3,7 +3,8 @@ from unittest.mock import MagicMock, Mock, patch
 
 from httpx import AsyncClient, HTTPStatusError, Request, RequestError, Response, codes
 
-from ..exceptions import APIForbiddenError, PostAPIError, UserNotFound
+from ..exceptions import (APIDataError, APIForbiddenError, PostAPIError,
+                          TelegramIdError, UserNotFound)
 from ..service import TARIFFS, get_user_info_from_lk
 from .fixtures import CaseForGetUserInfoFromLK
 
@@ -100,17 +101,17 @@ class TestGetUserInfoFromLK(CaseForGetUserInfoFromLK):
 
     async def test_incorrect_telegram_id(self):
         """Тест некорректного телеграм id."""
-        with self.assertRaises(TypeError):
-            await get_user_info_from_lk(self.STRING)
-        with self.assertRaises(ValueError):
-            await get_user_info_from_lk(self.NEGATIVE_NUMBER)
+        for value in (self.STRING, self.NEGATIVE_NUMBER):
+            with self.subTest(value=value):
+                with self.assertRaises(TelegramIdError):
+                    await get_user_info_from_lk(value)
 
     @patch.object(AsyncClient, "post")
     async def test_incorrect_type_in_responce(self, post_request):
         """Тест некорректного содержания json."""
         self.response.json = MagicMock(return_value=self.STRING)
         await self.assert_raises_from_sequence(
-            post_request, [(self.response, TypeError)]
+            post_request, [(self.response, APIDataError)]
         )
 
     @patch.object(AsyncClient, "post")
@@ -149,9 +150,9 @@ class TestGetUserInfoFromLK(CaseForGetUserInfoFromLK):
         await self.assert_raises_from_sequence(
             post_request,
             [
-                (self.NO_IS_APPROVED, KeyError),
-                (self.NO_FULL_NAME, KeyError),
-                (self.NO_TARIFF, KeyError),
+                (self.NO_IS_APPROVED, APIDataError),
+                (self.NO_FULL_NAME, APIDataError),
+                (self.NO_TARIFF, APIDataError),
             ],
         )
 
@@ -161,9 +162,9 @@ class TestGetUserInfoFromLK(CaseForGetUserInfoFromLK):
         await self.assert_raises_from_sequence(
             post_request,
             [
-                (self.UNEXPECTED_TYPE_ISAPPROVED, TypeError),
-                (self.UNEXPECTED_TYPE_FULL_NAME, TypeError),
-                (self.UNEXPECTED_TYPE_TARIFF, ValueError),
+                (self.UNEXPECTED_TYPE_ISAPPROVED, APIDataError),
+                (self.UNEXPECTED_TYPE_FULL_NAME, APIDataError),
+                (self.UNEXPECTED_TYPE_TARIFF, APIDataError),
             ],
         )
 

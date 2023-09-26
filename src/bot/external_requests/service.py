@@ -4,7 +4,13 @@ from typing import Optional
 
 from httpx import AsyncClient, HTTPStatusError, RequestError, Response, codes
 
-from external_requests.exceptions import APIForbiddenError, PostAPIError, UserNotFound
+from external_requests.exceptions import (
+    APIDataError,
+    APIForbiddenError,
+    PostAPIError,
+    TelegramIdError,
+    UserNotFound
+)
 from utils.configs import TARIFFS, YOUCANBY_TOKEN, YOUCANBY_URL
 
 API_JSON_ERROR = "{key}: Отказ сервера {failure}."
@@ -39,9 +45,8 @@ async def get_user_info_from_lk(telegram_id: int) -> Optional[dict]:
     - telegram_id (int):
         id пользователя в telegram
     ### Raises:
-    - APIForbiddenError, ConnectionError, HTTPStatusError,
-      KeyError, PostAPIError, TypeError, UserNotFound,
-      ValueError
+    - APIDataError, APIForbiddenError, ConnectionError, HTTPStatusError,
+      PostAPIError, TelegramIdError, UserNotFound
     ### Returns:
     - Optional[dict]:
         {'tariff': str,
@@ -72,14 +77,14 @@ def _check_telegram_id(telegram_id: int) -> None:
     - telegram_id (int):
         id пользователя в telegram
     ### Raises:
-    - TypeError, ValueError
+    - TelegramIdError
     ### Returns:
     - None
     """
     if not isinstance(telegram_id, int):
-        raise TypeError(TELEGRAM_ID_NOT_INT)
+        raise TelegramIdError(TELEGRAM_ID_NOT_INT)
     if telegram_id <= 0:
-        raise ValueError(TELEGRAM_ID_NOT_POSITIVE)
+        raise TelegramIdError(TELEGRAM_ID_NOT_POSITIVE)
 
 
 def _logging_exceptions(func):
@@ -160,7 +165,7 @@ async def _parse_data(data: dict) -> dict[str, str]:
     - response (dict):
         ответ сервера
     ### Raises:
-    - KeyError, TypeError, ValueError
+    - APIDataError
     ### Returns:
     - dict:
         {'tariff': str,
@@ -168,18 +173,26 @@ async def _parse_data(data: dict) -> dict[str, str]:
          'surname': str,
          'is_approved': bool}
     """
-    if not isinstance(data, dict):
-        raise TypeError(TYPE_ERROR.format(type_response=type(data), expected_type=dict))
+    DATA_TYPE = dict
+    IS_APPROVED_TYPE = bool
+    FULL_NAME_TYPE = str
+    if not isinstance(data, DATA_TYPE):
+        raise APIDataError(
+            TYPE_ERROR.format(type_response=type(data), expected_type=DATA_TYPE)
+        )
     for key in USER_INFO_KEYS:
         if key not in data:
-            raise KeyError(KEY_NOT_FOUND.format(key=key))
+            raise APIDataError(KEY_NOT_FOUND.format(key=key))
     tariff = data[TARIFF]
     if tariff not in TARIFFS:
-        raise ValueError(TARIFF_NOT_FOUND.format(tariff=tariff, expected=TARIFFS))
+        raise APIDataError(TARIFF_NOT_FOUND.format(tariff=tariff, expected=TARIFFS))
     full_name = data[FULL_NAME]
-    if not isinstance(full_name, str):
-        raise TypeError(
-            TYPE_ERROR.format(type_response=type(full_name), expected_type=str)
+    if not isinstance(full_name, FULL_NAME_TYPE):
+        raise APIDataError(
+            TYPE_ERROR.format(
+                type_response=type(full_name),
+                expected_type=FULL_NAME_TYPE
+            )
         )
     name_surname = full_name.rsplit(" ", 1)
     if len(name_surname) == 2:
@@ -187,9 +200,12 @@ async def _parse_data(data: dict) -> dict[str, str]:
     else:
         name, surname = full_name, ""
     is_approved = data[IS_APPROVED]
-    if not isinstance(is_approved, bool):
-        raise TypeError(
-            TYPE_ERROR.format(type_response=type(is_approved), expected_type=bool)
+    if not isinstance(is_approved, IS_APPROVED_TYPE):
+        raise APIDataError(
+            TYPE_ERROR.format(
+                type_response=type(is_approved),
+                expected_type=IS_APPROVED_TYPE
+            )
         )
     return {
         "tariff": tariff,
