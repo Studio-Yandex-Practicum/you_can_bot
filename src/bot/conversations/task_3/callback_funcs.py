@@ -9,16 +9,15 @@ from conversations.task_3.keyboards import (
     INPUT_PLACEHOLDER,
     NEXT_KEYBOARD,
     NEXT_PLACEHOLDER,
-    REPLY_KEYBOARD
+    REPLY_KEYBOARD,
 )
 from conversations.task_3.templates import (
-    DELIMETER_TEXT_FROM_URL,
+    DELIMITER_TEXT_FROM_URL,
     QUESTIONS,
     RESULT_MESSAGE,
     TASK_3_CANCELLATION_TEXT,
-    TEXT_OF_START_OF_TASK_3
+    TEXT_OF_START_TASK_3,
 )
-
 
 FIRST_QUESTION_MARKER = "Первый вопрос"
 OTHER_QUESTIONS_MARKER = "Следующий вопрос"
@@ -35,7 +34,7 @@ async def show_start_of_test_3(
 ) -> str:
     """Вступление."""
     await update.message.reply_text(
-        TEXT_OF_START_OF_TASK_3,
+        TEXT_OF_START_TASK_3,
         reply_markup=ReplyKeyboardMarkup(
             NEXT_KEYBOARD,
             one_time_keyboard=True,
@@ -59,17 +58,17 @@ async def show_question(
             current_question - 1,
             update.message.text,
         )
-    parsed_answer = QUESTIONS[current_question].split(DELIMETER_TEXT_FROM_URL)
+    parsed_answer = QUESTIONS[current_question].split(DELIMITER_TEXT_FROM_URL)
     try:
         await context.bot.send_photo(
             chat_id=update.effective_chat.id,
             photo=parsed_answer[1],
-            disable_notification=True
+            disable_notification=True,
         )
         await context.bot.send_photo(
             chat_id=update.effective_chat.id,
             photo=parsed_answer[2],
-            disable_notification=True
+            disable_notification=True,
         )
         await update.message.reply_text(
             f"{current_question + 1}. {parsed_answer[0]}",
@@ -78,7 +77,7 @@ async def show_question(
                 one_time_keyboard=True,
                 resize_keyboard=True,
                 input_field_placeholder=INPUT_PLACEHOLDER,
-            )
+            ),
         )
     except ConnectionError as error:
         _LOGGER.error(
