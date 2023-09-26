@@ -33,7 +33,7 @@ async def get_messages_with_results(
     telegram_id: int, task_number: int
 ) -> List[Message]:
     """Получение сообщения с расшифровкой."""
-    endpoint_urn = f"api/v1/users/{telegram_id}/tasks/{task_number}/results/"
+    endpoint_urn = f"users/{telegram_id}/tasks/{task_number}/results/"
     response = await _get_request(endpoint_urn)
     messages = await _parse_api_response_to_messages(response)
     return messages

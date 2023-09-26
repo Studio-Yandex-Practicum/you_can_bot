@@ -13,7 +13,6 @@ from conversations.task_1.keyboards import (
 from conversations.task_1.templates import (
     CANCEL_TEXT,
     END_TASK_1_TEXT,
-    RESULT,
     SCORES,
     START_TASK_1_TEXT,
 )
@@ -60,13 +59,22 @@ async def end_task_1(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.message.reply_text(
         text=END_TASK_1_TEXT,
+        parse_mode=ParseMode.HTML,
+    )
+    results = await api_service.get_messages_with_results(
+        telegram_id=query.from_user.id, task_number=CURRENT_TASK
+    )
+    for result in results[:-1]:
+        await query.message.reply_text(
+            text=result.content,
+            parse_mode=ParseMode.HTML,
+        )
+    await query.message.reply_text(
+        text=results[-1].content,
+        parse_mode=ParseMode.HTML,
         reply_markup=GO_TO_TASK_2_KEYBOARD,
     )
-    for result in _get_result(query.from_user, context):
-        await query.message.reply_text(
-            text=RESULT[result],
-            parse_mode=ParseMode.MARKDOWN_V2,
-        )
+    context.user_data.clear()
     return ConversationHandler.END
 
 
@@ -84,9 +92,10 @@ async def get_answer_question(update: Update, context: ContextTypes.DEFAULT_TYPE
 
     current_question = context.user_data.get("current_question")
     if len(picked_choices) == len(CHOICES):
-        await _save_answer(message.from_user.id, current_question, picked_choices)
+        await _save_answer(message.chat_id, current_question, picked_choices)
         if current_question == NUMBER_OF_QUESTIONS:
-            await end_task_1(update, context)
+            state = await end_task_1(update, context)
+            return state
         context.user_data["current_question"] += 1
         await get_start_question(
             update, context, context.user_data.get("current_question")
@@ -97,6 +106,7 @@ async def get_answer_question(update: Update, context: ContextTypes.DEFAULT_TYPE
 async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     """Прерывает выполнение задания."""
     await update.message.reply_text(CANCEL_TEXT)
+    context.user_data.clear()
     return ConversationHandler.END
 
 
@@ -113,8 +123,8 @@ def _get_question_text(message_text, picked_choices: str = "") -> str:
 async def _save_answer(user_id, current_question, picked_choices):
     """Сохраняет ответ пользователя в БД."""
     answers = ""
-    for lable in CHOICES:
-        answers += str(MAX_SCORE - picked_choices.index(lable))
+    for label in CHOICES:
+        answers += str(MAX_SCORE - picked_choices.index(label))
     await api_service.create_answer(
         Answer(
             telegram_id=user_id,
@@ -123,21 +133,3 @@ async def _save_answer(user_id, current_question, picked_choices):
             content=answers,
         )
     )
-
-
-def _get_result(user, context):  # Временная, расшифровывает из контекста
-    """Получает расшифровку"""
-    result = {"1": None, "2": None, "3": None}
-    for choice, score in context.user_data["answer"].items():
-        if result["1"] is None or result["1"][0] < score:
-            result["3"] = result["2"]
-            result["2"] = result["1"]
-            result["1"] = (score, choice)
-        elif result["2"] is None or result["2"][0] < score:
-            result["3"] = result["2"]
-            result["2"] = (score, choice)
-        elif result["3"] is None or result["3"][0] < score:
-            result["3"] = (score, choice)
-        else:
-            pass
-    return result["1"][1], result["2"][1], result["3"][1]
