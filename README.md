@@ -268,6 +268,40 @@ poetry add <package_name>
    - `feature/send-sandwiches`
    - `fix/process-bread-not-found.`
 
+### Установка и запуск в Docker-контейнерах:<a name="docker"></a>
+
+Cкачайте и установите Docker, следуя [инструкции](https://docs.docker.com/desktop/install/windows-install/) (для
+Windows; в левом меню есть возможность выбрать инструкцию для другой ОС).
+
+1. Создайте .env file в папке проекта на основе .env.example
+2. **Удалите** локальную тестовую базу (если создавали) во избежание конфликтов (optional)
+3. Перейдите в папку infra:
+
+```
+cd infra/
+```
+
+4. Запустите следующую команду:
+
+```
+docker-compose up
+```
+
+Эта команда создаст и запустит в фоновом режиме контейнеры, необходимые для работы приложения (db, backend, bot, nginx).
+
+5. Затем выполните следующие команды внутри контейнера `backend` для
+   выполнения миграций, создания суперпользователя (optional) и
+   сборки статических файлов:
+
+```
+docker-compose exec backend python backend/manage.py migrate
+docker-compose exec backend python backend/manage.py createsuperuser
+```
+
+```
+docker-compose exec backend python backend/manage.py collectstatic --no-input
+```
+
 <!-- MARKDOWN LINKS & BADGES -->
 
 [Python-url]: https://www.python.org/
