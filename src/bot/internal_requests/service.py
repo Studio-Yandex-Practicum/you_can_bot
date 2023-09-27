@@ -83,9 +83,10 @@ async def create_question_from_user(problem: Problem) -> Response:
 
 async def create_answer(answer: Answer) -> Response:
     """Запрос на занесение ответа от пользователя на вопрос задания."""
-    data = asdict(answer)
-    endpoint_urn = f"users/{answer.telegram_id}/problems/"
-    response = await _post_request(data, endpoint_urn)
+    endpoint_urn = f"users/{answer.telegram_id}/tasks/{answer.task_number}/answers/"
+    response = await _post_request(
+        {"number": answer.number, "content": answer.content}, endpoint_urn
+    )
     return response
 
 

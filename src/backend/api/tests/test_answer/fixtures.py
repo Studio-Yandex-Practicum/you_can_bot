@@ -25,12 +25,15 @@ class BaseCaseForAnswerTests(APITestCase):
     ANSWER_5 = {"number": 1}
 
     # Key для формирования результатов Results, при добавлении Заданий дополнить
+    # fmt: off
     TASKS_KEYS = {
         1: ("А", "Б", "В", "Г", "Д", "Е",),
         2: ("ESFP", "ISFP", "ESTP", "ISTP", "ESFJ", "ISFJ", "ESTJ", "ISTJ",
             "ENFJ", "INFJ", "ENFP", "INFP", "ENTJ", "INTJ", "ENTP", "INTP",),
         3: ("scale_1", "scale_2", "scale_3", "scale_4", "scale_5", "scale_6",)
     }
+    # fmt: on
+
     # Константы для Задания №1
     TASK1_ANSWERS_CONTENT = {
         1: "543210",
@@ -72,8 +75,9 @@ class BaseCaseForAnswerTests(APITestCase):
             for task_number in range(1, cls.TASK_COUNT + 1)
         }
         cls.tasks_status = {
-            task_number: TaskStatus.objects.get(user=cls.user_from_telegram,
-                                                task__number=task_number)
+            task_number: TaskStatus.objects.get(
+                user=cls.user_from_telegram, task__number=task_number
+            )
             for task_number in range(1, cls.TASK_COUNT + 1)
         }
 
@@ -81,8 +85,12 @@ class BaseCaseForAnswerTests(APITestCase):
         for task_number in range(1, cls.TASK_COUNT + 1):
             for num in range(1, tasks[task_number].end_question + 1):
                 questions.append(
-                    Question(task=tasks[task_number], number=num,
-                             content=f"Вопрос_{num}", example="")
+                    Question(
+                        task=tasks[task_number],
+                        number=num,
+                        content=f"Вопрос_{num}",
+                        example="",
+                    )
                 )
         Question.objects.bulk_create(questions)
 
@@ -90,7 +98,6 @@ class BaseCaseForAnswerTests(APITestCase):
         for task_number in range(1, cls.TASK_COUNT + 1):
             for key in cls.TASKS_KEYS[task_number]:
                 results.append(
-                    Result(task=tasks[task_number], key=key,
-                           title="", description="")
+                    Result(task=tasks[task_number], key=key, title="", description="")
                 )
         Result.objects.bulk_create(results)

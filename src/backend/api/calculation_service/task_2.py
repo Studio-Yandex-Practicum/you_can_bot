@@ -26,8 +26,7 @@ def calculate_task_2_result(user_answers: list[Answer]) -> None:
 def _get_result(user_answers: list[Answer]) -> str:
     answers_groups = [[] for _ in range(ANSWERS_GROUPS_COUNT)]
     for answer in user_answers:
-        answers_groups[
-            answer.question.number % ANSWERS_GROUPS_COUNT - 1].append(
+        answers_groups[answer.question.number % ANSWERS_GROUPS_COUNT - 1].append(
             1 if answer.content == "а" else 0
         )
 
@@ -41,9 +40,9 @@ def _get_result(user_answers: list[Answer]) -> str:
     user_psychotype = "".join(
         [
             features[0 if a_result > max_score / 2 else 1]
-            for features, max_score, a_result in
-            zip(PSYCHO_FEATURES, MAX_SCORE_BY_FEATURE,
-                user_letter_a_score_by_feature)
+            for features, max_score, a_result in zip(
+                PSYCHO_FEATURES, MAX_SCORE_BY_FEATURE, user_letter_a_score_by_feature
+            )
         ]
     )
     return user_psychotype

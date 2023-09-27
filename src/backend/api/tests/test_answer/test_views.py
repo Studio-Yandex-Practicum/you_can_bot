@@ -14,12 +14,10 @@ class ViewAnswerTests(BaseCaseForAnswerTests):
         """Проверка контроллера answer_create."""
         url = reverse(
             "api:answer_create",
-            kwargs={"telegram_id": self.TELEGRAM_ID,
-                    "task_number": self.TASK_NUMBER_1},
+            kwargs={"telegram_id": self.TELEGRAM_ID, "task_number": self.TASK_NUMBER_1},
         )
         user = UserFromTelegram.objects.get(telegram_id=self.TELEGRAM_ID)
-        task_status = TaskStatus.objects.get(user=user,
-                                             task__number=self.TASK_NUMBER_1)
+        task_status = TaskStatus.objects.get(user=user, task__number=self.TASK_NUMBER_1)
         ANSWER_1_NUMBER = int(self.ANSWER_1["number"])
         ANSWER_1_CONTENT = self.ANSWER_1["content"]
         self.assertEqual(
@@ -110,13 +108,13 @@ class ViewAnswerTests(BaseCaseForAnswerTests):
                 )
                 self.assertTrue(
                     task_status.is_done,
-                    f"При завершении Задания №{task_number}, поле \"is_done\""
-                    " должно быть True."
+                    f'При завершении Задания №{task_number}, поле "is_done"'
+                    " должно быть True.",
                 )
                 self.assertTrue(
                     isinstance(task_status.pass_date, datetime.datetime),
-                    f"При завершении Задания №{task_number}, в поле \"pass_date\""
-                    " не установлено текущее время."
+                    f'При завершении Задания №{task_number}, в поле "pass_date"'
+                    " не установлено текущее время.",
                 )
 
     def test_view_create_result_status_task_1(self):
@@ -126,7 +124,8 @@ class ViewAnswerTests(BaseCaseForAnswerTests):
         """
         self._setup_task_1_tests()
         results_status = ResultStatus.objects.filter(
-            task_status=self.tasks_status[self.TASK_NUMBER_1]).all()
+            task_status=self.tasks_status[self.TASK_NUMBER_1]
+        ).all()
         self.assertTrue(
             results_status.exists(),
             "При завершении Задания №1 в базе данных отсутствуют "
@@ -134,11 +133,14 @@ class ViewAnswerTests(BaseCaseForAnswerTests):
         )
         result = results_status.first()
         self._assert_has_attributes(
-            self.TASK_NUMBER_1, result.result, "key", self.RESULT_KEY_TASK_1)
+            self.TASK_NUMBER_1, result.result, "key", self.RESULT_KEY_TASK_1
+        )
         self._assert_has_attributes(
-            self.TASK_NUMBER_1, result, "top", self.RESULT_TOP_TASK_1)
+            self.TASK_NUMBER_1, result, "top", self.RESULT_TOP_TASK_1
+        )
         self._assert_has_attributes(
-            self.TASK_NUMBER_1, result, "score", self.RESULT_SCORE_TASK_1)
+            self.TASK_NUMBER_1, result, "score", self.RESULT_SCORE_TASK_1
+        )
 
     def test_view_create_result_status_task_2(self):
         """
@@ -147,7 +149,8 @@ class ViewAnswerTests(BaseCaseForAnswerTests):
         """
         self._setup_task_2_tests(is_all_answers=True)
         results_status = ResultStatus.objects.filter(
-            task_status=self.tasks_status[self.TASK_NUMBER_2]).all()
+            task_status=self.tasks_status[self.TASK_NUMBER_2]
+        ).all()
         self.assertTrue(
             results_status.exists(),
             "При завершении Задания №2 в базе данных отсутствуют "
@@ -155,9 +158,11 @@ class ViewAnswerTests(BaseCaseForAnswerTests):
         )
         result = results_status.first()
         self._assert_has_attributes(
-            self.TASK_NUMBER_2, result.result, "key", self.RESULT_KEY_TASK_2)
+            self.TASK_NUMBER_2, result.result, "key", self.RESULT_KEY_TASK_2
+        )
         self._assert_has_attributes(
-            self.TASK_NUMBER_2, result, "top", self.RESULT_TOP_TASK_2)
+            self.TASK_NUMBER_2, result, "top", self.RESULT_TOP_TASK_2
+        )
 
     def test_view_create_result_status_task_3(self):
         """
@@ -166,7 +171,8 @@ class ViewAnswerTests(BaseCaseForAnswerTests):
         """
         self._setup_task_3_tests()
         results_status = ResultStatus.objects.filter(
-            task_status=self.tasks_status[self.TASK_NUMBER_3]).all()
+            task_status=self.tasks_status[self.TASK_NUMBER_3]
+        ).all()
         self.assertTrue(
             results_status.exists(),
             "При завершении Задания №3 в базе данных отсутствуют "
@@ -174,18 +180,20 @@ class ViewAnswerTests(BaseCaseForAnswerTests):
         )
         result = results_status.first()
         self._assert_has_attributes(
-            self.TASK_NUMBER_3, result.result, "key", self.RESULT_KEY_TASK_3)
+            self.TASK_NUMBER_3, result.result, "key", self.RESULT_KEY_TASK_3
+        )
         self._assert_has_attributes(
-            self.TASK_NUMBER_3, result, "top", self.RESULT_TOP_TASK_3)
+            self.TASK_NUMBER_3, result, "top", self.RESULT_TOP_TASK_3
+        )
         self._assert_has_attributes(
-            self.TASK_NUMBER_3, result, "score", self.RESULT_SCORE_TASK_3)
+            self.TASK_NUMBER_3, result, "score", self.RESULT_SCORE_TASK_3
+        )
 
     def _setup_task_1_tests(self, is_all_answers: bool = True):
         task_status = self.tasks_status[self.TASK_NUMBER_1]
         url_task = reverse(
             "api:answer_create",
-            kwargs={"telegram_id": self.TELEGRAM_ID,
-                    "task_number": self.TASK_NUMBER_1},
+            kwargs={"telegram_id": self.TELEGRAM_ID, "task_number": self.TASK_NUMBER_1},
         )
         questions = self._get_task_questions(self.TASK_NUMBER_1, is_all_answers)
         answers = (
@@ -210,8 +218,7 @@ class ViewAnswerTests(BaseCaseForAnswerTests):
         task_status = self.tasks_status[self.TASK_NUMBER_2]
         url_task = reverse(
             "api:answer_create",
-            kwargs={"telegram_id": self.TELEGRAM_ID,
-                    "task_number": self.TASK_NUMBER_2},
+            kwargs={"telegram_id": self.TELEGRAM_ID, "task_number": self.TASK_NUMBER_2},
         )
         questions = self._get_task_questions(self.TASK_NUMBER_2, is_all_answers)
         answers = (
@@ -236,8 +243,7 @@ class ViewAnswerTests(BaseCaseForAnswerTests):
         task_status = self.tasks_status[self.TASK_NUMBER_3]
         url_task = reverse(
             "api:answer_create",
-            kwargs={"telegram_id": self.TELEGRAM_ID,
-                    "task_number": self.TASK_NUMBER_3},
+            kwargs={"telegram_id": self.TELEGRAM_ID, "task_number": self.TASK_NUMBER_3},
         )
         questions = self._get_task_questions(self.TASK_NUMBER_3, is_all_answers)
         answers = (
@@ -269,12 +275,13 @@ class ViewAnswerTests(BaseCaseForAnswerTests):
         if not is_all_answers:
             last_number -= 1
         return self.tasks_status[task_number].task.questions.filter(
-            number__lt=last_number)
+            number__lt=last_number
+        )
 
     def _assert_has_attributes(self, task_number, obj, attr, attr_data):
         """Проверка ожидаемых атрибутов в контексте."""
         error_message = (
-            f"В базе данных Задания №{task_number} поле \"{attr}\" "
+            f'В базе данных Задания №{task_number} поле "{attr}" '
             "расшифрованного результата не соответствует ожидаемому."
         )
         self.assertEqual(getattr(obj, attr), attr_data, error_message)

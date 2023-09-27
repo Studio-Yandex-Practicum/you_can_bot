@@ -57,8 +57,7 @@ def calculate_task_3_result(user_answers: list[Answer]) -> None:
     данных ResultStatus.
     """
     scale_scores_counter = _distribute_answers_by_scales(user_answers)
-    scale_scores_sorted = _sorted_scales_in_non_growing_order(
-        scale_scores_counter)
+    scale_scores_sorted = _sorted_scales_in_non_growing_order(scale_scores_counter)
     results = _make_top_scales_by_scores(scale_scores_sorted)
 
     task_status = user_answers[0].task_status
@@ -91,7 +90,7 @@ def _distribute_answers_by_scales(user_answers: list[Answer]) -> dict[str:int]:
 
 
 def _sorted_scales_in_non_growing_order(
-        scale_scores_counter: dict[str:int],
+    scale_scores_counter: dict[str:int],
 ) -> list[tuple[str, int]]:
     """
     Сортирует шкалы и кол-во ответов, относящихся к ним, по невозрастанию.
@@ -103,7 +102,7 @@ def _sorted_scales_in_non_growing_order(
 
 
 def _make_top_scales_by_scores(
-        scale_scores_sorted: list[tuple[str, int]]
+    scale_scores_sorted: list[tuple[str, int]]
 ) -> list[tuple[str, int]]:
     """
     Выбирает шкалы (топ-3), набравшие максимальное кол-во баллов.

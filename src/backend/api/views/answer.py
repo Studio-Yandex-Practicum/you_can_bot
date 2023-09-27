@@ -1,6 +1,5 @@
-import datetime
-
 from django.conf import settings
+from django.utils import timezone
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.exceptions import NotFound, ValidationError
@@ -16,7 +15,7 @@ ANSWER_CREATE_ERROR = "Ошибка при обработке запроса: {e
 CALCULATE_TASKS = {
     1: calculate_task_1_result,
     2: calculate_task_2_result,
-    3: calculate_task_3_result
+    3: calculate_task_3_result,
 }
 
 
@@ -81,7 +80,7 @@ def _get_task_status_or_404(task_number, telegram_id):
 def _create_result_status(task_status, task_number, end_question):
     answers = _check_all_answers_exist(task_status, end_question)
     task_status.is_done = True
-    task_status.pass_date = datetime.datetime.now()
+    task_status.pass_date = timezone.now()
     task_status.save()
     CALCULATE_TASKS.get(task_number)(answers)
 
