@@ -29,10 +29,11 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 ROOT_URLCONF = "backend.urls"
+
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": [BASE_DIR / "templates"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -44,6 +45,7 @@ TEMPLATES = [
         },
     },
 ]
+
 WSGI_APPLICATION = "backend.wsgi.application"
 if os.getenv("NEED_SQLITE"):
     DATABASES = {
@@ -85,10 +87,17 @@ TIME_ZONE = "Europe/Moscow"
 USE_I18N = True
 USE_L10N = True
 USE_TZ = True
+
 STATIC_URL = "static/"
+MEDIA_URL = "media/"
+MEDIA_ROOT = BASE_DIR / "media"
+
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 MAX_LENGTH_NAME = 150
 MAX_LENGTH_SURNAME = 150
+
+NOT_FOUND_QUESTION_ERROR_MESSAGE = "Не найден вопрос с таким номером."
+NOT_FOUND_TASK_ERROR_MESSAGE = "Не найдено задание с таким номером."
 
 LOG_FILENAME = "backend.log"
 LOG_PATH = BASE_DIR.parent / ".data" / os.getenv("LOG_DIR", "logs")
@@ -124,9 +133,11 @@ LOGGING = {
         },
     },
     "loggers": {
-        "": {
+        "django": {
             "handlers": ["console", "file"],
-            "propagate": True,
+        },
+        "api": {
+            "handlers": ["console", "file"],
         },
     },
 }

@@ -2,7 +2,19 @@ from django.contrib import admin
 from django.contrib.auth import get_user_model
 from django.contrib.auth.admin import UserAdmin
 
-from api.models import Answer, MentorProfile, Problem, TaskStatus, UserFromTelegram
+from api.models import (
+    Answer,
+    Choice,
+    MentorProfile,
+    Photo,
+    Problem,
+    Question,
+    Result,
+    ResultStatus,
+    Task,
+    TaskStatus,
+    UserFromTelegram,
+)
 
 User = get_user_model()
 
@@ -10,17 +22,45 @@ User = get_user_model()
 class AnswerInline(admin.StackedInline):
     model = Answer
     extra = 0
+    can_delete = False
+
+
+class QuestionInline(admin.TabularInline):
+    model = Question
+    extra = 0
+    show_change_link = True
+    can_delete = False
+
+
+class ChoiceInline(admin.TabularInline):
+    model = Choice
+    extra = 0
+    can_delete = False
+
+
+class ResultsInline(admin.StackedInline):
+    model = Result
+    extra = 0
+    can_delete = False
+
+
+class ResultStatusInline(admin.StackedInline):
+    model = ResultStatus
+    extra = 0
+    can_delete = False
 
 
 class ProblemInline(admin.StackedInline):
     model = Problem
     extra = 0
+    can_delete = False
 
 
 class TaskStatusInline(admin.TabularInline):
     model = TaskStatus
     extra = 0
     show_change_link = True
+    can_delete = False
 
 
 @admin.register(Problem)
@@ -41,42 +81,21 @@ class ProblemAdmin(admin.ModelAdmin):
     empty_value_display = "-пусто-"
 
 
-@admin.register(Answer)
-class AnswerAdmin(admin.ModelAdmin):
+@admin.register(Task)
+class TaskAdmin(admin.ModelAdmin):
     list_display = (
         "number",
-        "content",
-        "task",
-        "user",
+        "end_question",
     )
-    list_display_links = (
-        "number",
-        "content",
-    )
-    search_fields = (
-        "task__user__name",
-        "task__user__surname",
-        "task__user__telegram_username",
-    )
-    list_filter = (
-        "number",
-        "task__number",
-    )
-    empty_value_display = "-пусто-"
-
-    @staticmethod
-    def user(obj):
-        return obj.task.user
+    inlines = (QuestionInline, ResultsInline)
 
 
 @admin.register(TaskStatus)
 class TaskStatusAdmin(admin.ModelAdmin):
     list_display = (
-        "number",
-        "summary",
+        "task",
         "user",
         "current_question",
-        "end_question",
         "is_done",
         "pass_date",
     )
@@ -85,9 +104,9 @@ class TaskStatusAdmin(admin.ModelAdmin):
         "user__surname",
         "user__telegram_username",
     )
-    inlines = (AnswerInline,)
+    inlines = (AnswerInline, ResultStatusInline)
     list_filter = (
-        "number",
+        "task",
         "is_done",
     )
     date_hierarchy = "pass_date"
@@ -111,6 +130,11 @@ class UserFromTelegramAdmin(admin.ModelAdmin):
     inlines = (ProblemInline, TaskStatusInline)
 
 
+@admin.register(Question)
+class QuestionAdmin(admin.ModelAdmin):
+    inlines = (ChoiceInline,)
+
+
 class MentorProfileInline(admin.StackedInline):
     model = MentorProfile
     can_delete = False
@@ -122,3 +146,4 @@ class ExtendedUserAdmin(UserAdmin):
 
 admin.site.unregister(User)
 admin.site.register(User, ExtendedUserAdmin)
+admin.site.register(Photo)
