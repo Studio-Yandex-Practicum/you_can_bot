@@ -1,6 +1,6 @@
 from rest_framework.test import APITestCase
 
-from api.models import Question, Result, Task, UserFromTelegram
+from api.models import Question, Result, Task, TaskStatus, UserFromTelegram
 
 
 class BaseCaseForAnswerTests(APITestCase):
@@ -11,6 +11,12 @@ class BaseCaseForAnswerTests(APITestCase):
     TELEGRAM_NAME = "HasNoName"
     TELEGRAM_SURNAME = "HasNoSurname"
     TASK_NUMBER_1 = 1
+    TASK_NUMBER_2 = 2
+    TASK_NUMBER_3 = 3
+
+    # Количество заданий, изменить при добавлении заданий в тесты
+    TASK_COUNT = 3
+
     TASK_NUMBER_99 = 99
     ANSWER_1 = {"number": "1", "content": "a"}
     ANSWER_2 = {"number": 1, "content": "б"}
@@ -18,7 +24,17 @@ class BaseCaseForAnswerTests(APITestCase):
     ANSWER_4 = {"number": 2, "content": "a"}
     ANSWER_5 = {"number": 1}
 
-    # Константы для первого задания
+    # Key для формирования результатов Results, при добавлении Заданий дополнить
+    # fmt: off
+    TASKS_KEYS = {
+        1: ("А", "Б", "В", "Г", "Д", "Е",),
+        2: ("ESFP", "ISFP", "ESTP", "ISTP", "ESFJ", "ISFJ", "ESTJ", "ISTJ",
+            "ENFJ", "INFJ", "ENFP", "INFP", "ENTJ", "INTJ", "ENTP", "INTP",),
+        3: ("scale_1", "scale_2", "scale_3", "scale_4", "scale_5", "scale_6",)
+    }
+    # fmt: on
+
+    # Константы для Задания №1
     TASK1_ANSWERS_CONTENT = {
         1: "543210",
         2: "053142",
@@ -31,11 +47,18 @@ class BaseCaseForAnswerTests(APITestCase):
         9: "543012",
         10: "230451",
     }
-    LAST_ANSWER_NUMBER = 10
-    KEYS_TASK_1 = "АБВГДЕ"
-    RESULT_KEY = "Е"
-    RESULT_TOP = 1
-    RESULT_SCORE = 31
+    RESULT_KEY_TASK_1 = "Е"
+    RESULT_TOP_TASK_1 = 1
+    RESULT_SCORE_TASK_1 = 31
+
+    # Константы для Задания №2
+    RESULT_KEY_TASK_2 = "INFP"
+    RESULT_TOP_TASK_2 = 1
+
+    # Константы для Задания №3
+    RESULT_KEY_TASK_3 = "scale_6"
+    RESULT_TOP_TASK_3 = 1
+    RESULT_SCORE_TASK_3 = 13
 
     @classmethod
     def setUpClass(cls):
@@ -46,16 +69,35 @@ class BaseCaseForAnswerTests(APITestCase):
             name=cls.TELEGRAM_NAME,
             surname=cls.TELEGRAM_SURNAME,
         )
-        task_1 = Task.objects.get(number=1)
 
-        # Вопросы и результаты для первого задания
-        questions = (
-            Question(task=task_1, number=num, content=f"Вопрос_{num}", example="")
-            for num in range(1, cls.LAST_ANSWER_NUMBER + 1)
-        )
+        tasks = {
+            task_number: Task.objects.get(number=task_number)
+            for task_number in range(1, cls.TASK_COUNT + 1)
+        }
+        cls.tasks_status = {
+            task_number: TaskStatus.objects.get(
+                user=cls.user_from_telegram, task__number=task_number
+            )
+            for task_number in range(1, cls.TASK_COUNT + 1)
+        }
+
+        questions = []
+        for task_number in range(1, cls.TASK_COUNT + 1):
+            for num in range(1, tasks[task_number].end_question + 1):
+                questions.append(
+                    Question(
+                        task=tasks[task_number],
+                        number=num,
+                        content=f"Вопрос_{num}",
+                        example="",
+                    )
+                )
         Question.objects.bulk_create(questions)
-        results = (
-            Result(task=task_1, key=key, title=f"Вопрос_{key}", description="")
-            for key in list(cls.KEYS_TASK_1)
-        )
+
+        results = []
+        for task_number in range(1, cls.TASK_COUNT + 1):
+            for key in cls.TASKS_KEYS[task_number]:
+                results.append(
+                    Result(task=tasks[task_number], key=key, title="", description="")
+                )
         Result.objects.bulk_create(results)

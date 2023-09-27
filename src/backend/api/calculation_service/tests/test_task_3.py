@@ -174,10 +174,3 @@ class TestTask3(TestCase):
                     test_scale_scores_counters[test_name]
                 )
                 self.assertEquals(received, expected)
-
-    def test_write_result_to_string(self):
-        """Проверяет корректность формирования результирующей строки."""
-        top_scores_scale = [("scale_3", 10), ("scale_1", 9), ("scale_5", 8)]
-        expected = "scale_3:10 scale_1:9 scale_5:8"
-        received = task_3._write_result_to_string(top_scores_scale)
-        self.assertEquals(received, expected)

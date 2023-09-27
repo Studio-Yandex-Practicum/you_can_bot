@@ -1,6 +1,6 @@
 from django.test import TestCase
 
-from api.calculation_service.task_2 import calculate_task_2_result
+from api.calculation_service.task_2 import _get_result
 from api.models import Answer, Question, Task, TaskStatus, UserFromTelegram
 
 
@@ -39,9 +39,7 @@ class TestTask2(TestCase):
             self._change_answer_content(number_of_answer)
             answers_with_letter_a = index + 1
             with self.subTest(anwers_with_letter_a=answers_with_letter_a):
-                received_response = calculate_task_2_result(
-                    user_answers=self.user_answers.all()
-                )[0]
+                received_response = _get_result(user_answers=self.user_answers.all())[0]
                 if answers_with_letter_a >= 6:
                     expected_response = "E"
                 else:
@@ -75,9 +73,7 @@ class TestTask2(TestCase):
             self._change_answer_content(number_of_answer)
             answers_with_letter_a = index + 1
             with self.subTest(anwers_with_letter_a=answers_with_letter_a):
-                received_response = calculate_task_2_result(
-                    user_answers=self.user_answers.all()
-                )[1]
+                received_response = _get_result(user_answers=self.user_answers.all())[1]
                 if answers_with_letter_a >= 11:
                     expected_response = "S"
                 else:
@@ -111,9 +107,7 @@ class TestTask2(TestCase):
             self._change_answer_content(number_of_answer)
             answers_with_letter_a = index + 1
             with self.subTest(anwers_with_letter_a=answers_with_letter_a):
-                received_response = calculate_task_2_result(
-                    user_answers=self.user_answers.all()
-                )[2]
+                received_response = _get_result(user_answers=self.user_answers.all())[2]
                 if answers_with_letter_a >= 11:
                     expected_response = "T"
                 else:
@@ -147,9 +141,7 @@ class TestTask2(TestCase):
             self._change_answer_content(number_of_answer)
             answers_with_letter_a = index + 1
             with self.subTest(anwers_with_letter_a=answers_with_letter_a):
-                received_response = calculate_task_2_result(
-                    user_answers=self.user_answers.all()
-                )[3]
+                received_response = _get_result(user_answers=self.user_answers.all())[3]
                 if answers_with_letter_a >= 11:
                     expected_response = "J"
                 else:
