@@ -9,8 +9,10 @@ NEXT_KEYBOARD = InlineKeyboardMarkup(
 )
 REPLY_KEYBOARD = InlineKeyboardMarkup(
     (
-        (InlineKeyboardButton(text="а", callback_data="а"),),
-        (InlineKeyboardButton(text="б", callback_data="б"),),
+        (
+            InlineKeyboardButton(text="А", callback_data="А"),
+            InlineKeyboardButton(text="Б", callback_data="Б"),
+        ),
     ),
 )
 TEXT_ENTRY_POINT_BUTTON_FOR_TASK_3 = "ЗАДАНИЕ 3"

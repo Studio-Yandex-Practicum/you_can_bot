@@ -7,13 +7,11 @@ from telegram.ext import (
 )
 
 from conversations.task_3.callback_funcs import (
-    DESCRIPTION_MARKER,
-    FIRST_QUESTION_MARKER,
-    OTHER_QUESTIONS_MARKER,
+    CHOOSING,
     cancel,
-    show_question,
-    show_result,
     show_start_of_task_3,
+    start_question,
+    update_question,
 )
 from conversations.task_3.keyboards import (
     CANCEL_COMMAND,
@@ -27,13 +25,10 @@ task_3_handler: ConversationHandler = ConversationHandler(
         ),
     ],
     states={
-        FIRST_QUESTION_MARKER: [
-            CallbackQueryHandler(show_question, pattern=r"^Далее$")
-        ],
-        OTHER_QUESTIONS_MARKER: [
-            CallbackQueryHandler(show_question, pattern=r"^(а|б)$")
-        ],
-        DESCRIPTION_MARKER: [CallbackQueryHandler(show_result, pattern=r"^(а|б)$")],
+        CHOOSING: [
+            CallbackQueryHandler(start_question, pattern=r"^Далее$"),
+            CallbackQueryHandler(update_question, pattern=r"^(А|Б)$"),
+        ]
     },
     fallbacks=[CommandHandler(CANCEL_COMMAND, cancel)],
 )
