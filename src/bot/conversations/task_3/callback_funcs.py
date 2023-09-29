@@ -55,6 +55,7 @@ async def start_question(
     if question_number != 0:
         _LOGGER.info(
             ANSWER,
+            # Здесь почему-то сейчас выводится имя бота, а не пользователя.
             update.effective_message.from_user.username,
             question_number,
             messages[0].content,
@@ -86,7 +87,7 @@ async def update_question(
     """Обработчик вопросов."""
     picked_choice = update.callback_query.data
     message = update.effective_message
-    await update.effective_message.edit_text(
+    await message.edit_text(
         text=(f"{message.text_html}\n\n" f"Ответ: {picked_choice}"),
         parse_mode=ParseMode.HTML,
     )
@@ -94,7 +95,7 @@ async def update_question(
     current_question = context.user_data.get("current_question")
     await api_service.create_answer(
         Answer(
-            telegram_id=update.effective_message.chat_id,
+            telegram_id=message.chat_id,
             task_number=CURRENT_TASK,
             number=current_question,
             content=update.callback_query.data.lower(),
