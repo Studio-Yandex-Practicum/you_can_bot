@@ -70,13 +70,24 @@ class ProblemTests(BaseCaseForProblemTests):
         """
         Проверка, что message - обязательное поле.
         """
+        EMPTY_FIELD_MSG = "message - обязательное поле."
+
         url = reverse(
             "api:problem_create",
             kwargs={"telegram_id": self.TELEGRAM_ID},
         )
 
         response = self.client.post(url, data={"message": self.EMPTY_MESSAGE_1})
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(
+            response.status_code, status.HTTP_400_BAD_REQUEST, EMPTY_FIELD_MSG
+        )
 
         response = self.client.post(url, data={"message": self.EMPTY_MESSAGE_2})
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(
+            response.status_code, status.HTTP_400_BAD_REQUEST, EMPTY_FIELD_MSG
+        )
+
+        response = self.client.post(url)
+        self.assertEqual(
+            response.status_code, status.HTTP_400_BAD_REQUEST, EMPTY_FIELD_MSG
+        )

@@ -13,7 +13,7 @@ def problem_create(request, telegram_id):
     Создание записи в таблице Problem.
     """
     user = get_object_or_404(UserFromTelegram, telegram_id=telegram_id)
-    serializer = ProblemSerializer(data=request.data, partial=True)
+    serializer = ProblemSerializer(data=request.data)
     if serializer.is_valid():
         serializer.save(user=user)
         return Response(serializer.data, status=status.HTTP_201_CREATED)

@@ -78,11 +78,3 @@ class ProblemSerializer(serializers.ModelSerializer):
         model = Problem
         fields = ("id", "user", "message", "answer", "create_date")
         read_only_fields = ("user", "answer")
-
-    def validate_message(self, value):
-        """
-        Проверка, что сообщение не пустое.
-        """
-        if not value.strip():
-            raise serializers.ValidationError("Сообщение не может быть пустым.")
-        return value
