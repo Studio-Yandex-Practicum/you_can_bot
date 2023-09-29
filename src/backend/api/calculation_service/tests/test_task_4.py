@@ -1,27 +1,49 @@
 from django.test import TestCase
 
 from api.calculation_service import task_4
-from api.models import Answer
+from api.models import Answer, Question, Task, TaskStatus, UserFromTelegram
 
 QUESTIONS_NUMBER = 42
 
 
 class TestTask4(TestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        test_string = "test_string"
+        cls.user = UserFromTelegram.objects.create(
+            telegram_id=88294221,
+            telegram_username=test_string,
+            name=test_string,
+            surname=test_string,
+        )
+        cls.task_status = TaskStatus.objects.get(
+            user=cls.user,
+            task__number=4,
+        )
+        questions = [
+            Question(task=Task.objects.get(number=4), number=question_number)
+            for question_number in range(1, QUESTIONS_NUMBER + 1)
+        ]
+        Question.objects.bulk_create(questions)
+        cls.questions = Question.objects.filter(task=4)
+
     def test_transform_answers_to_dict(self):
         """
         Тестирует преобразование списка объектов Answers в словарь.
         """
         test_content = '5'
         test_user_answers = [
-            Answer(number=i, content=test_content)
-            for i in range(1, QUESTIONS_NUMBER + 1)
+            Answer(question=question, content=test_content)
+            for question in self.questions
         ]
         expected = {
             number: int(test_content)
             for number in range(1, QUESTIONS_NUMBER + 1)
         }
-        recieved = task_4._transform_answers_to_dict(test_user_answers)
-        self.assertEquals(recieved, expected)
+        received = task_4._transform_answers_to_dict(test_user_answers)
+        self.assertEquals(received, expected)
 
     def test_calculate_scales_avg_score(self):
         """
@@ -62,21 +84,12 @@ class TestTask4(TestCase):
             }
         }
         expected = [
-            ['3', '9', '6', '4', '8'],
-            ['4'],
+            [('3', 10), ('9', 7.6), ('6', 6.4), ('4', 6.1), ('8', 6.1)],
+            [('4', 6.1)],
             []
         ]
         for test_name, expected in zip(test_scales_scores, expected):
             with self.subTest(test_name=test_name):
                 recieved = task_4._get_top_features_sorted(
                     test_scales_scores[test_name])
-                self.assertEquals(recieved, expected)
-
-    def test_write_result_to_string(self):
-        """Проверяет корректность формирования результирующей строки."""
-        test_scales_options = [['3', '9', '1'], ['1'], []]
-        expected = ['3 9 1', '1', '0']
-        for test_scale, expected in zip(test_scales_options, expected):
-            with self.subTest(test_scale=test_scale):
-                recieved = task_4._write_result_to_string(test_scale)
                 self.assertEquals(recieved, expected)
