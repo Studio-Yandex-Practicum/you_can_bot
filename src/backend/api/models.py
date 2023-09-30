@@ -130,6 +130,15 @@ class Question(models.Model):
         blank=True,
     )
 
+    class Meta:
+        verbose_name = "Вопрос"
+        verbose_name_plural = "Вопросы"
+        constraints = [
+            models.UniqueConstraint(
+                fields=("task", "number"), name="unique_task_question_number"
+            ),
+        ]
+
     def __str__(self):
         return str(self.number)
 
@@ -170,6 +179,11 @@ class Result(models.Model):
         default="",
         blank=True,
     )
+
+    class Meta:
+        verbose_name = "результат"
+        verbose_name_plural = "Результаты заданий"
+        unique_together = ("task", "key")
 
 
 class TaskStatus(models.Model):
@@ -222,6 +236,7 @@ class Answer(models.Model):
         verbose_name="Вопрос",
         to=Question,
         on_delete=models.PROTECT,
+        related_name="answers",
     )
     content = models.TextField("Ответ")
 

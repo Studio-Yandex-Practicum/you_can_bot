@@ -1,6 +1,39 @@
+from django.template.loader import render_to_string
 from rest_framework import serializers
 
-from api.models import Answer, Problem, TaskStatus, UserFromTelegram
+from api.models import (
+    Answer,
+    Problem,
+    Question,
+    ResultStatus,
+    TaskStatus,
+    UserFromTelegram,
+)
+
+
+class QuestionSerializer(serializers.ModelSerializer):
+    """Сериализатор получения вопроса задания."""
+
+    class Meta:
+        model = Question
+        fields = ("content",)
+
+    def to_representation(self, obj):
+        return {"count": obj.count(), "result": self._get_result(obj)}
+
+    def _get_result(self, obj):
+        result = []
+        for question in obj:
+            result.append(
+                {
+                    "content": render_to_string(
+                        "questions/standard_question_format.html",
+                        {"question": question},
+                        self.context["request"],
+                    )
+                }
+            )
+        return result
 
 
 class AnswerSerializer(serializers.ModelSerializer):
@@ -64,7 +97,36 @@ class TaskStatusRetrieveSerializer(TaskStatusSerializer):
 
     class Meta:
         model = TaskStatus
-        fields = ["number", "current_question", "summary", "is_done"]
+        fields = ["number", "current_question", "is_done"]
+
+
+class TaskResultsForUserSerializer(serializers.ModelSerializer):
+    """
+    Сериализатор модели 'ResultStatus'.
+    Используется для:
+    - Получения результата выполнения конкретного задания
+    конкретным пользователем.
+    """
+
+    title = serializers.ReadOnlyField(source="result.title")
+    description = serializers.ReadOnlyField(source="result.description")
+
+    class Meta:
+        model = ResultStatus
+        fields = ["title", "description"]
+
+    def to_representation(self, obj):
+        results = []
+        for result in obj:
+            results.append(
+                {
+                    "content": render_to_string(
+                        "results/results_for_user_by_task.html",
+                        {"result": result.result, "result_status": result},
+                    )
+                }
+            )
+        return {"count": len(results), "result": results}
 
 
 class ProblemSerializer(serializers.ModelSerializer):
