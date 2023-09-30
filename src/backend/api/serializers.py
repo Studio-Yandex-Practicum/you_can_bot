@@ -1,7 +1,14 @@
 from django.template.loader import render_to_string
 from rest_framework import serializers
 
-from api.models import Answer, Question, ResultStatus, TaskStatus, UserFromTelegram
+from api.models import (
+    Answer,
+    Problem,
+    Question,
+    ResultStatus,
+    TaskStatus,
+    UserFromTelegram,
+)
 
 
 class QuestionSerializer(serializers.ModelSerializer):
@@ -120,3 +127,16 @@ class TaskResultsForUserSerializer(serializers.ModelSerializer):
                 }
             )
         return {"count": len(results), "result": results}
+
+
+class ProblemSerializer(serializers.ModelSerializer):
+    """
+    Сериализатор модели Problem.
+    """
+
+    message = serializers.CharField(required=True)
+
+    class Meta:
+        model = Problem
+        fields = ("id", "user", "message", "answer", "create_date")
+        read_only_fields = ("user", "answer")
