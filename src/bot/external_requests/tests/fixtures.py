@@ -2,7 +2,6 @@ from unittest import IsolatedAsyncioTestCase
 
 
 class CaseForGetUserInfoFromLK(IsolatedAsyncioTestCase):
-
     DOUBLE_SPACE_IN_NAME = {
         "tariff": "mini",
         "full_name": "Егор Денисович Иванов",

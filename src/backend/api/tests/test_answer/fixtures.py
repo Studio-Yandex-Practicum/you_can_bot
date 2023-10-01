@@ -13,9 +13,10 @@ class BaseCaseForAnswerTests(APITestCase):
     TASK_NUMBER_1 = 1
     TASK_NUMBER_2 = 2
     TASK_NUMBER_3 = 3
+    TASK_NUMBER_4 = 4
 
     # Количество заданий, изменить при добавлении заданий в тесты
-    TASK_COUNT = 3
+    TASK_COUNT = 4
 
     TASK_NUMBER_99 = 99
     ANSWER_1 = {"number": "1", "content": "a"}
@@ -30,7 +31,8 @@ class BaseCaseForAnswerTests(APITestCase):
         1: ("А", "Б", "В", "Г", "Д", "Е",),
         2: ("ESFP", "ISFP", "ESTP", "ISTP", "ESFJ", "ISFJ", "ESTJ", "ISTJ",
             "ENFJ", "INFJ", "ENFP", "INFP", "ENTJ", "INTJ", "ENTP", "INTP",),
-        3: ("scale_1", "scale_2", "scale_3", "scale_4", "scale_5", "scale_6",)
+        3: ("scale_1", "scale_2", "scale_3", "scale_4", "scale_5", "scale_6",),
+        4: ("1", "2", "3", "4", "5", "6", "7", "8", "9",)
     }
     # fmt: on
 
@@ -59,6 +61,20 @@ class BaseCaseForAnswerTests(APITestCase):
     RESULT_KEY_TASK_3 = "scale_6"
     RESULT_TOP_TASK_3 = 1
     RESULT_SCORE_TASK_3 = 13
+
+    # Константы для Задания №4
+    # fmt: off
+    TASK4_ANSWERS_CONTENT = {
+        1: 6, 2: 4, 3: 9, 4: 1, 5: 10, 6: 6, 7: 9, 8: 7, 9: 10, 10: 8,
+        11: 4, 12: 2, 13: 6, 14: 4, 15: 5, 16: 6, 17: 7, 18: 8, 19: 9,
+        20: 5, 21: 4, 22: 1, 23: 10, 24: 7, 25: 5, 26: 7, 27: 3, 28: 4,
+        29: 2, 30: 6, 31: 1, 32: 9, 33: 6, 34: 8, 35: 10, 36: 3, 37: 5,
+        38: 6, 39: 3, 40: 9, 41: 6
+    }
+    # fmt: on
+    RESULT_KEY_TASK_4 = "9"
+    RESULT_TOP_TASK_4 = 1
+    RESULT_SCORE_TASK_4 = 7
 
     @classmethod
     def setUpClass(cls):
