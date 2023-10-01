@@ -63,6 +63,7 @@ class BaseCaseForAnswerTests(APITestCase):
     RESULT_SCORE_TASK_3 = 13
 
     # Константы для Задания №4
+    # fmt: off
     TASK4_ANSWERS_CONTENT = {
         1: 6, 2: 4, 3: 9, 4: 1, 5: 10, 6: 6, 7: 9, 8: 7, 9: 10, 10: 8,
         11: 4, 12: 2, 13: 6, 14: 4, 15: 5, 16: 6, 17: 7, 18: 8, 19: 9,
@@ -70,6 +71,7 @@ class BaseCaseForAnswerTests(APITestCase):
         29: 2, 30: 6, 31: 1, 32: 9, 33: 6, 34: 8, 35: 10, 36: 3, 37: 5,
         38: 6, 39: 3, 40: 9, 41: 6
     }
+    # fmt: on
     RESULT_KEY_TASK_4 = "9"
     RESULT_TOP_TASK_4 = 1
     RESULT_SCORE_TASK_4 = 7
