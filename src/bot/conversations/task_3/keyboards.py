@@ -4,14 +4,17 @@ ANSWER = "Ответ пользователя %s на %s вопрос: %s"
 CANSEL = "Пользователь %s закончил диалог."
 CANCEL_COMMAND = "cancel"
 CANCEL_KEYBOARD = ReplyKeyboardRemove()
+GO_TO_TASK_4_KEYBOARD = InlineKeyboardMarkup(
+    ((InlineKeyboardButton(text="ЗАДАНИЕ 4", callback_data="ЗАДАНИЕ 4"),),)
+)
 NEXT_KEYBOARD = InlineKeyboardMarkup(
     ((InlineKeyboardButton(text="Далее", callback_data="Далее"),),)
 )
 REPLY_KEYBOARD = InlineKeyboardMarkup(
     (
         (
-            InlineKeyboardButton(text="А", callback_data="А"),
-            InlineKeyboardButton(text="Б", callback_data="Б"),
+            InlineKeyboardButton(text="А", callback_data="а"),
+            InlineKeyboardButton(text="Б", callback_data="б"),
         ),
     ),
 )

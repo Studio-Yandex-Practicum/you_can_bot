@@ -6,9 +6,9 @@ from telegram.ext import ContextTypes, ConversationHandler
 
 import internal_requests.service as api_service
 from conversations.task_3.keyboards import (
-    ANSWER,
     CANCEL_KEYBOARD,
     CANSEL,
+    GO_TO_TASK_4_KEYBOARD,
     NEXT_KEYBOARD,
     REPLY_KEYBOARD,
 )
@@ -52,16 +52,8 @@ async def start_question(
         task_number=CURRENT_TASK,
         question_number=question_number,
     )
-    if question_number != 0:
-        _LOGGER.info(
-            ANSWER,
-            # Здесь почему-то сейчас выводится имя бота, а не пользователя.
-            update.effective_message.from_user.username,
-            question_number,
-            messages[0].content,
-        )
     try:
-        # Здесь должна выводиться картинка - еще не реализовано
+        # Здесь должна выводиться картинка - еще не реализовано.
         # await context.bot.send_photo(
         #     chat_id=update.effective_chat.id,
         #     photo=messages[0].photo,
@@ -88,7 +80,7 @@ async def update_question(
     picked_choice = update.callback_query.data
     message = update.effective_message
     await message.edit_text(
-        text=(f"{message.text_html}\n\n" f"Ответ: {picked_choice}"),
+        text=(f"{message.text_html}\n\n" f"Ответ: {picked_choice.upper()}"),
         parse_mode=ParseMode.HTML,
     )
 
@@ -98,7 +90,7 @@ async def update_question(
             telegram_id=message.chat_id,
             task_number=CURRENT_TASK,
             number=current_question,
-            content=update.callback_query.data.lower(),
+            content=update.callback_query.data,
         )
     )
     if current_question == NUMBER_OF_QUESTIONS:
@@ -109,17 +101,27 @@ async def update_question(
     return CHOOSING
 
 
-async def show_result(update: Update, context: ContextTypes.DEFAULT_TYPE) -> str:
+async def show_result(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     """Расшифровка."""
-    _LOGGER.info(
-        ANSWER,
-        update.effective_message.from_user.username,
-        NUMBER_OF_QUESTIONS,
-        update.effective_message.text,
+    query = update.callback_query
+    await query.message.reply_text(
+        text=RESULT_MESSAGE,
+        parse_mode=ParseMode.HTML,
     )
-    await context.bot.send_message(
-        chat_id=update.effective_chat.id, text=RESULT_MESSAGE
+    results = await api_service.get_messages_with_results(
+        telegram_id=query.from_user.id, task_number=CURRENT_TASK
     )
+    for result in results[:-1]:
+        await query.message.reply_text(
+            text=result.content,
+            parse_mode=ParseMode.HTML,
+        )
+    await query.message.reply_text(
+        text=results[-1].content,
+        parse_mode=ParseMode.HTML,
+        reply_markup=GO_TO_TASK_4_KEYBOARD,
+    )
+    context.user_data.clear()
     return ConversationHandler.END
 
 

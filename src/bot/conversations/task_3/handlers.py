@@ -27,7 +27,7 @@ task_3_handler: ConversationHandler = ConversationHandler(
     states={
         CHOOSING: [
             CallbackQueryHandler(start_question, pattern=r"^Далее$"),
-            CallbackQueryHandler(update_question, pattern=r"^(А|Б)$"),
+            CallbackQueryHandler(update_question, pattern=r"^(а|б)$"),
         ]
     },
     fallbacks=[CommandHandler(CANCEL_COMMAND, cancel)],
