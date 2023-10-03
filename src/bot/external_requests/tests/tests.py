@@ -3,9 +3,10 @@ from unittest.mock import MagicMock, Mock, patch
 
 from httpx import AsyncClient, HTTPStatusError, Request, RequestError, Response, codes
 
+from .. import TARIFF
 from ..exceptions import (APIDataError, APIForbiddenError, PostAPIError,
                           TelegramIdError, UserNotFound)
-from ..service import TARIFFS, get_user_info_from_lk
+from ..service import ALL_TARIFFS, get_user_info_from_lk
 from .fixtures import CaseForGetUserInfoFromLK
 
 
@@ -187,4 +188,4 @@ class TestGetUserInfoFromLK(CaseForGetUserInfoFromLK):
         ]:
             post_request.return_value = value
             user_info = await get_user_info_from_lk(self.TELEGRAM_ID)
-            self.assertIn(user_info["tariff"], TARIFFS)
+            self.assertIn(user_info[TARIFF], ALL_TARIFFS)
