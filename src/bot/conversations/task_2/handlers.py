@@ -18,7 +18,6 @@ from conversations.task_2.keyboards import (
     TEXT_ENTRY_POINT_BUTTON_FOR_TASK_2,
 )
 
-
 task_2_handler: ConversationHandler = ConversationHandler(
     entry_points=[
         MessageHandler(

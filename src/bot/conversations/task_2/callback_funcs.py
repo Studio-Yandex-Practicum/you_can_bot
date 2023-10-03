@@ -6,8 +6,8 @@ from telegram.ext import ContextTypes, ConversationHandler
 
 import internal_requests.service as api_service
 from conversations.task_2.keyboards import (
-    CANSEL,
     CANCEL_KEYBOARD,
+    CANSEL,
     GO_TO_TASK_3_KEYBOARD,
     NEXT_KEYBOARD,
     REPLY_KEYBOARD,
