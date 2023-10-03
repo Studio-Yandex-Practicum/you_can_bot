@@ -1,6 +1,7 @@
 import logging
 import os
 from dataclasses import asdict
+from json import loads
 from typing import List, Union
 from urllib.parse import urljoin
 
@@ -39,9 +40,9 @@ async def get_messages_with_results(
     return messages
 
 
-async def get_info_about_user() -> UserFromTelegram:
+async def get_info_about_user(telegram_id) -> UserFromTelegram:
     """Получения информации о пользователе из БД."""
-    endpoint_urn = "users/"
+    endpoint_urn = f"users/{telegram_id}/"
     response = await _get_request(endpoint_urn)
     user_info = await _parse_api_response_to_user_info(response)
     return user_info
@@ -147,7 +148,7 @@ async def _parse_api_response_to_messages(response: Response) -> List[Message]:
 
 async def _parse_api_response_to_user_info(response: Response) -> UserFromTelegram:
     """Парсит полученный json из Response в датакласс UserFromTelegram."""
-    pass
+    return UserFromTelegram(**loads(response.text))
 
 
 async def _parse_api_response_to_task_status(
