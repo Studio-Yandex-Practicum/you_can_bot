@@ -52,7 +52,6 @@ class UserFromTelegramRetrieveCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserFromTelegram
         fields = ("telegram_id", "telegram_username", "name", "surname")
-        extra_kwargs = {"telegram_username": {"write_only": True}}
 
 
 class UserFromTelegramUpdateSerializer(serializers.ModelSerializer):
@@ -64,8 +63,8 @@ class UserFromTelegramUpdateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = UserFromTelegram
-        fields = ("telegram_id", "name", "surname")
-        read_only_fields = ("telegram_id",)
+        fields = ("telegram_id", "name", "surname", "telegram_username")
+        read_only_fields = ("telegram_id", "telegram_username")
 
 
 class TaskStatusSerializer(serializers.ModelSerializer):
