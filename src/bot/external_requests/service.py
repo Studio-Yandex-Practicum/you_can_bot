@@ -10,7 +10,7 @@ from external_requests.exceptions import (
     APIForbiddenError,
     PostAPIError,
     TelegramIdError,
-    UserNotFound
+    UserNotFound,
 )
 from utils.configs import ALL_TARIFFS, YOUCANBY_TOKEN, YOUCANBY_URL
 

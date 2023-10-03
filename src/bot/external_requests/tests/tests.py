@@ -4,8 +4,13 @@ from unittest.mock import MagicMock, Mock, patch
 from httpx import AsyncClient, HTTPStatusError, Request, RequestError, Response, codes
 
 from .. import TARIFF
-from ..exceptions import (APIDataError, APIForbiddenError, PostAPIError,
-                          TelegramIdError, UserNotFound)
+from ..exceptions import (
+    APIDataError,
+    APIForbiddenError,
+    PostAPIError,
+    TelegramIdError,
+    UserNotFound,
+)
 from ..service import ALL_TARIFFS, get_user_info_from_lk
 from .fixtures import CaseForGetUserInfoFromLK
 
