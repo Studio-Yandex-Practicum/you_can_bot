@@ -11,6 +11,7 @@ from conversations.menu.handlers import (
 from conversations.menu.keyboards import get_main_menu_commands
 from conversations.task_1.handlers import task_1_handler
 from conversations.task_2.handlers import task_2_handler
+from conversations.task_3.handlers import task_3_handler
 from utils.configs import TOKEN
 
 
@@ -30,6 +31,7 @@ def create_bot():
     # task handlers
     bot_app.add_handler(handler=task_1_handler)
     bot_app.add_handler(handler=task_2_handler)
+    bot_app.add_handler(handler=task_3_handler)
 
     # menu handlers
     bot_app.add_handler(handler=profile_handler)
@@ -41,6 +43,7 @@ def create_bot():
             info_handler,
         ]
     )
+
     return bot_app
 
 

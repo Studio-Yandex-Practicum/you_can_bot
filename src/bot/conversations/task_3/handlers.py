@@ -6,22 +6,22 @@ from telegram.ext import (
     filters,
 )
 
-from conversations.task_2.callback_funcs import (
+from conversations.task_3.callback_funcs import (
     CHOOSING,
     cancel,
-    show_start_of_task_2,
+    show_start_of_task_3,
     start_question,
     update_question,
 )
-from conversations.task_2.keyboards import (
+from conversations.task_3.keyboards import (
     CANCEL_COMMAND,
-    TEXT_ENTRY_POINT_BUTTON_FOR_TASK_2,
+    TEXT_ENTRY_POINT_BUTTON_FOR_TASK_3,
 )
 
-task_2_handler: ConversationHandler = ConversationHandler(
+task_3_handler: ConversationHandler = ConversationHandler(
     entry_points=[
         MessageHandler(
-            filters.Regex(TEXT_ENTRY_POINT_BUTTON_FOR_TASK_2), show_start_of_task_2
+            filters.Regex(TEXT_ENTRY_POINT_BUTTON_FOR_TASK_3), show_start_of_task_3
         ),
     ],
     states={

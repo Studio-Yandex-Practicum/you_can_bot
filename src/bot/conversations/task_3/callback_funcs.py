@@ -5,15 +5,16 @@ from telegram.constants import ParseMode
 from telegram.ext import ContextTypes, ConversationHandler
 
 import internal_requests.service as api_service
-from conversations.task_2.keyboards import (
+from conversations.task_3.keyboards import (
     CANCEL_LOG_TEXT,
-    GO_TO_TASK_3_KEYBOARD,
+    GO_TO_TASK_4_KEYBOARD,
     NEXT_KEYBOARD,
     REPLY_KEYBOARD,
 )
-from conversations.task_2.templates import (
-    TASK_2_CANCELLATION_TEXT,
-    TEXT_OF_START_OF_TASK_2,
+from conversations.task_3.templates import (
+    RESULT_MESSAGE,
+    TASK_3_CANCELLATION_TEXT,
+    TEXT_OF_START_TASK_3,
 )
 from internal_requests.entities import Answer
 
@@ -21,18 +22,19 @@ _LOGGER = logging.getLogger(__name__)
 
 CHOOSING = 1
 
-CURRENT_TASK = 2
-NUMBER_OF_QUESTIONS = 70
+CURRENT_TASK = 3
+NUMBER_OF_QUESTIONS = 42
 START_QUESTION_NUMBER = 1
 
 
-async def show_start_of_task_2(
+async def show_start_of_task_3(
     update: Update, context: ContextTypes.DEFAULT_TYPE
 ) -> int:
-    """Вывод описания задания 2."""
+    """Выводит описание задания 3."""
+    context.user_data.clear()
     context.user_data["current_question"] = START_QUESTION_NUMBER
     await update.effective_message.reply_text(
-        text=TEXT_OF_START_OF_TASK_2,
+        text=TEXT_OF_START_TASK_3,
         reply_markup=NEXT_KEYBOARD,
     )
     return CHOOSING
@@ -47,6 +49,12 @@ async def start_question(
         task_number=CURRENT_TASK,
         question_number=question_number,
     )
+    # Здесь должна выводиться картинка - еще не реализовано.
+    # await context.bot.send_photo(
+    #     chat_id=update.effective_chat.id,
+    #     photo=messages[0].photo,
+    #     disable_notification=True,
+    # )
     await update.effective_message.reply_text(
         text=messages[0].content,
         reply_markup=REPLY_KEYBOARD,
@@ -83,6 +91,10 @@ async def update_question(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
 async def show_result(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     """Расшифровка."""
     query = update.callback_query
+    await query.message.reply_text(
+        text=RESULT_MESSAGE,
+        parse_mode=ParseMode.HTML,
+    )
     results = await api_service.get_messages_with_results(
         telegram_id=query.from_user.id, task_number=CURRENT_TASK
     )
@@ -94,7 +106,7 @@ async def show_result(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int
     await query.message.reply_text(
         text=results[-1].content,
         parse_mode=ParseMode.HTML,
-        reply_markup=GO_TO_TASK_3_KEYBOARD,
+        reply_markup=GO_TO_TASK_4_KEYBOARD,
     )
     context.user_data.clear()
     return ConversationHandler.END
@@ -104,5 +116,5 @@ async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     """Конец диалога."""
     _LOGGER.info(CANCEL_LOG_TEXT, update.effective_chat.id)
     context.user_data.clear()
-    await update.effective_message.reply_text(TASK_2_CANCELLATION_TEXT)
+    await update.effective_message.reply_text(TASK_3_CANCELLATION_TEXT)
     return ConversationHandler.END

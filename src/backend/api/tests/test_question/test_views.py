@@ -8,7 +8,7 @@ class QuestionViewTests(BaseCaseForQuestionTests):
 
     QUESTION_ERROR_MESSAGE = "Не найден вопрос с таким номером."
     TASK_ERROR_MESSAGE = "Не найдено задание с таким номером."
-    CONTENT = "<b>2. вопрос№2</b>\n\n\n"
+    CONTENT = "<b>2.</b><b> вопрос№2</b>\n\n\n"
 
     def test_question_get_correct_json_data(self):
         """Проверка response на формирование правильного json данных."""

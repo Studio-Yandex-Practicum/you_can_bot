@@ -164,3 +164,6 @@ logs/
 # Django #
 media/
 static/
+
+# VSCode
+.vscode/
