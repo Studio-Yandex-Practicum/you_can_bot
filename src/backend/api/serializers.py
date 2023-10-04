@@ -21,19 +21,29 @@ class QuestionSerializer(serializers.ModelSerializer):
     def to_representation(self, obj):
         return {"count": obj.count(), "result": self._get_result(obj)}
 
-    def _get_result(self, obj):
+    def _get_result(self, obj: list[Question]):
         result = []
+        task_number = self.context["task_number"]
+        template_name = self._get_template_name_by_task_number(task_number)
         for question in obj:
             result.append(
                 {
                     "content": render_to_string(
-                        "questions/standard_question_format.html",
+                        template_name,
                         {"question": question},
                         self.context["request"],
                     )
                 }
             )
         return result
+
+    @staticmethod
+    def _get_template_name_by_task_number(task_number):
+        if task_number == 3 or task_number == 8:
+            template_name = "questions/question_with_pairs_format.html"
+        else:
+            template_name = "questions/standard_question_format.html"
+        return template_name
 
 
 class AnswerSerializer(serializers.ModelSerializer):

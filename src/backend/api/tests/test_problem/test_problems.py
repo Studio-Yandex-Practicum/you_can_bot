@@ -24,12 +24,12 @@ class ProblemTests(BaseCaseForProblemTests):
         response = self.client.get(common_url)
         self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
 
-        self.assertIn('Allow', response)
+        self.assertIn("Allow", response)
 
-        allowed_methods = response['Allow']
-        allowed_methods_list = [method.strip() for method in allowed_methods.split(',')]
-        self.assertIn('POST', allowed_methods_list)
-        self.assertIn('OPTIONS', allowed_methods_list)
+        allowed_methods = response["Allow"]
+        allowed_methods_list = [method.strip() for method in allowed_methods.split(",")]
+        self.assertIn("POST", allowed_methods_list)
+        self.assertIn("OPTIONS", allowed_methods_list)
 
     def test_db_problem(self):
         """
