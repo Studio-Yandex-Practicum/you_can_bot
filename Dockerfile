@@ -12,6 +12,5 @@ COPY --from=requirements ./app ./app
 
 WORKDIR ./app
 RUN pip install -r ./requirements.txt --no-cache-dir
-RUN pip install python-dotenv
 
 COPY ./src ./
