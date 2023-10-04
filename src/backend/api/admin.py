@@ -1,3 +1,4 @@
+from django import forms
 from django.contrib import admin
 from django.contrib.auth import get_user_model
 from django.contrib.auth.admin import UserAdmin
@@ -38,10 +39,18 @@ class ChoiceInline(admin.TabularInline):
     can_delete = False
 
 
+class ResultForm(forms.ModelForm):
+    class Meta:
+        model = Result
+        widgets = {"key": forms.TextInput}
+        fields = "__all__"
+
+
 class ResultsInline(admin.StackedInline):
     model = Result
     extra = 0
     can_delete = False
+    form = ResultForm
 
 
 class ResultStatusInline(admin.StackedInline):
