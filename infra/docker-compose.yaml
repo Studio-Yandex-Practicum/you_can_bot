@@ -23,6 +23,7 @@ services:
         - ../.env
       depends_on:
         - db
+      image: you_can_bot:latest
 
     bot:
       build:
@@ -37,6 +38,7 @@ services:
         - ../.data/logs/:/app/.data/logs/
       depends_on:
         - backend
+      image: you_can_bot:latest
 
     nginx:
       image: nginx:1.21.3-alpine
