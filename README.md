@@ -175,7 +175,16 @@ python manage.py migrate
 5. Наполняем БД данными заданий:
 
 ```shell
-python manage.py loaddata fixtures/tasks.json fixtures/task_1_data.json
+python manage.py loaddata \
+    fixtures/tasks.json \
+    fixtures/task_1_data.json \
+    fixtures/task_2_data.json \
+    fixtures/task_3_data.json \
+    fixtures/task_4_data.json \
+    fixtures/task_5_data.json \
+    fixtures/task_6_data.json \
+    fixtures/task_7_data.json \
+    fixtures/task_8_data.json
 ```
 
 ### Запуск проекта локально (без docker)<a name="local-run"></a>

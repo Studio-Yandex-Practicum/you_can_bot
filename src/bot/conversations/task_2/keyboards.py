@@ -1,9 +1,17 @@
-TEXT_ENTRY_POINT_BUTTON_FOR_TASK_2 = "ЗАДАНИЕ 2"
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup
+
+CANCEL_LOG_TEXT = "Пользователь %s закончил диалог."
 CANCEL_COMMAND = "cancel"
-NEXT = "ДАЛЕЕ"
-NEXT_PLACEHOLDER = f"Жми смело кнопку {NEXT}"
-NEXT_KEYBOARD = [[NEXT]]
-REPLY_KEYBOARD = [["а", "б"]]
-INPUT_PLACEHOLDER = "а или б ?"
-ANSWER = "Ответ пользователя %s на %s вопрос: %s"
-CANSEL = "Пользователь %s закончил диалог."
+GO_TO_TASK_3_KEYBOARD = InlineKeyboardMarkup(
+    ((InlineKeyboardButton(text="ЗАДАНИЕ 3", callback_data="ЗАДАНИЕ 3"),),)
+)
+NEXT_KEYBOARD = InlineKeyboardMarkup(
+    ((InlineKeyboardButton(text="Далее", callback_data="Далее"),),)
+)
+REPLY_KEYBOARD = InlineKeyboardMarkup(
+    (
+        (InlineKeyboardButton(text="А", callback_data="а"),),
+        (InlineKeyboardButton(text="Б", callback_data="б"),),
+    ),
+)
+TEXT_ENTRY_POINT_BUTTON_FOR_TASK_2 = "ЗАДАНИЕ 2"

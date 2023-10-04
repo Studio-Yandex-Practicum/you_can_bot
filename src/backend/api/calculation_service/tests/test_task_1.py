@@ -3,7 +3,7 @@ import logging
 from django.test import TestCase
 from rest_framework.serializers import ValidationError
 
-from api.calculation_service.task_1 import calculate_task_1_result
+from api.calculation_service.task_1 import _get_result_points
 from api.models import Answer
 
 
@@ -18,7 +18,9 @@ class TestTask1(TestCase):
         """Правильно определилась расшифровка с одинаковым ответом на все
         вопросы по первому заданию."""
         answers = [Answer(content="012345") for _ in range(10)]
-        self.assertEqual("Е;50\nД;40\nГ;30", calculate_task_1_result(answers))
+        self.assertEqual(
+            [(50, "Е"), (40, "Д"), (30, "Г")], _get_result_points(answers)[:3]
+        )
 
     def test_task_1_different_answers(self):
         """Правильно определилась расшифровка с различными ответами
@@ -36,30 +38,34 @@ class TestTask1(TestCase):
             "230451",
         )
         answers = [Answer(content=answer) for answer in answers_content]
-        self.assertEqual("Е;31\nД;29\nБ;27", calculate_task_1_result(answers))
+        self.assertEqual(
+            [(31, "Е"), (29, "Д"), (27, "Б")], _get_result_points(answers)[:3]
+        )
 
     def test_task_1_inconsistent_answer_content(self):
         """Неконсистентный Answer.content прервал выполнение проверки."""
         with self.assertRaises(ValidationError):
-            calculate_task_1_result([Answer(content="12345")])
+            _get_result_points([Answer(content="12345")])
 
         with self.assertRaises(ValidationError):
-            calculate_task_1_result([Answer(content=None)])
+            _get_result_points([Answer(content=None)])
 
         # Консистентный Answer.content был посчитан корректно
         self.assertEqual(
-            "Е;5\nД;4\nГ;3", calculate_task_1_result([Answer(content="012345")])
+            [(5, "Е"), (4, "Д"), (3, "Г")],
+            _get_result_points([Answer(content="012345")])[:3],
         )
 
     def test_task_1_more_than_one_third_place(self):
         """Правильно определилась расшифровка с одинаковым количеством баллов
         у третьего, четвертого и остальных мест по первому заданию."""
         self.assertEqual(
-            "Е;5\nД;5\nГ;5\nВ;5\nБ;5\nА;5",
-            calculate_task_1_result([Answer(content="555555")]),
+            [(5, "Е"), (5, "Д"), (5, "Г"), (5, "В"), (5, "Б"), (5, "А")],
+            _get_result_points([Answer(content="555555")]),
         )
         self.assertEqual(
-            "Е;5\nД;5\nГ;5\nВ;5", calculate_task_1_result([Answer(content="115555")])
+            [(5, "Е"), (5, "Д"), (5, "Г"), (5, "В"), (1, "Б"), (1, "А")],
+            _get_result_points([Answer(content="115555")]),
         )
 
         # Контент соответствующий реальным ответам на тесты,
@@ -78,7 +84,10 @@ class TestTask1(TestCase):
         )
         answers = [Answer(content=answer) for answer in real_ten_answers_content]
 
-        self.assertEqual("Е;31\nД;29\nГ;27\nБ;27", calculate_task_1_result(answers))
+        self.assertEqual(
+            [(31, "Е"), (29, "Д"), (27, "Г"), (27, "Б")],
+            _get_result_points(answers)[:4],
+        )
 
     def tearDown(self) -> None:
         logging.disable(logging.NOTSET)
