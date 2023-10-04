@@ -80,6 +80,7 @@ class ViewAnswerTests(BaseCaseForAnswerTests):
             1: self._setup_task_1_tests,
             2: self._setup_task_2_tests,
             3: self._setup_task_3_tests,
+            4: self._setup_task_4_tests,
         }
         for task_number in range(1, self.TASK_COUNT + 1):
             with self.subTest(task_number=task_number):
@@ -99,6 +100,7 @@ class ViewAnswerTests(BaseCaseForAnswerTests):
             1: self._setup_task_1_tests,
             2: self._setup_task_2_tests,
             3: self._setup_task_3_tests,
+            4: self._setup_task_4_tests,
         }
         for task_number in range(1, self.TASK_COUNT + 1):
             with self.subTest(task_number=task_number):
@@ -189,6 +191,31 @@ class ViewAnswerTests(BaseCaseForAnswerTests):
             self.TASK_NUMBER_3, result, "score", self.RESULT_SCORE_TASK_3
         )
 
+    def test_view_create_result_status_task_4(self):
+        """
+        Проверка создания в базе данных расшифрованных результатов ResultStatus
+        при получении последнего ответа Задания №4.
+        """
+        self._setup_task_4_tests()
+        results_status = ResultStatus.objects.filter(
+            task_status=self.tasks_status[self.TASK_NUMBER_4]
+        ).all()
+        self.assertTrue(
+            results_status.exists(),
+            "При завершении Задания №4 в базе данных отсутствуют "
+            "расшифрованные результаты",
+        )
+        result = results_status.first()
+        self._assert_has_attributes(
+            self.TASK_NUMBER_4, result.result, "key", self.RESULT_KEY_TASK_4
+        )
+        self._assert_has_attributes(
+            self.TASK_NUMBER_4, result, "top", self.RESULT_TOP_TASK_4
+        )
+        self._assert_has_attributes(
+            self.TASK_NUMBER_4, result, "score", self.RESULT_SCORE_TASK_4
+        )
+
     def _setup_task_1_tests(self, is_all_answers: bool = True):
         task_status = self.tasks_status[self.TASK_NUMBER_1]
         url_task = reverse(
@@ -260,6 +287,31 @@ class ViewAnswerTests(BaseCaseForAnswerTests):
             data={
                 "number": task_status.task.end_question,
                 "content": "б",
+            },
+        )
+        return response
+
+    def _setup_task_4_tests(self, is_all_answers: bool = True):
+        task_status = self.tasks_status[self.TASK_NUMBER_4]
+        url_task = reverse(
+            "api:answer_create",
+            kwargs={"telegram_id": self.TELEGRAM_ID, "task_number": self.TASK_NUMBER_4},
+        )
+        questions = self._get_task_questions(self.TASK_NUMBER_4, is_all_answers)
+        answers = (
+            Answer(
+                task_status=task_status,
+                question_id=question.id,
+                content=self.TASK4_ANSWERS_CONTENT[question.number],
+            )
+            for question in questions
+        )
+        Answer.objects.bulk_create(answers)
+        response = self.client.post(
+            url_task,
+            data={
+                "number": task_status.task.end_question,
+                "content": self.TASK4_ANSWERS_CONTENT[task_status.task.end_question],
             },
         )
         return response

@@ -2,6 +2,7 @@ from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
 from api.views.answer import answer_create
+from api.views.problems import problem_create
 from api.views.questions import get_question
 from api.views.results import get_results_for_user_by_task
 from api.views.tasks import TaskStatusViewSet
@@ -18,6 +19,11 @@ router.register(
 
 urlpatterns = [
     path("v1/", include(router.urls)),
+    path(
+        "v1/users/<int:telegram_id>/problems/",
+        problem_create,
+        name="problem_create",
+    ),
     path(
         "v1/users/<int:telegram_id>/tasks/<int:task_number>/answers/",
         answer_create,

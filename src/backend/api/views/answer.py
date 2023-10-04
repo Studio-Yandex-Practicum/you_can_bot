@@ -8,6 +8,7 @@ from rest_framework.response import Response
 from api.calculation_service.task_1 import calculate_task_1_result
 from api.calculation_service.task_2 import calculate_task_2_result
 from api.calculation_service.task_3 import calculate_task_3_result
+from api.calculation_service.task_4 import calculate_task_4_result
 from api.models import Answer, Question, TaskStatus
 from api.serializers import AnswerSerializer
 
@@ -16,6 +17,7 @@ CALCULATE_TASKS = {
     1: calculate_task_1_result,
     2: calculate_task_2_result,
     3: calculate_task_3_result,
+    4: calculate_task_4_result,
 }
 
 
