@@ -127,16 +127,29 @@ class TaskResultsForUserSerializer(serializers.ModelSerializer):
 
     def to_representation(self, obj):
         results = []
+        task_number = self.context["task_number"]
+        template_name = self._get_template_name_by_task_number(task_number)
         for result in obj:
             results.append(
                 {
                     "content": render_to_string(
-                        "results/results_for_user_by_task.html",
-                        {"result": result.result, "result_status": result},
+                        template_name,
+                        {
+                            "result": result.result,
+                            "result_status": result,
+                        },
                     )
                 }
             )
         return {"count": len(results), "result": results}
+
+    @staticmethod
+    def _get_template_name_by_task_number(task_number):
+        if task_number == 2:
+            template_name = "results/result_with_you_and_dash_format.html"
+        else:
+            template_name = "results/standard_result_format.html"
+        return template_name
 
 
 class ProblemSerializer(serializers.ModelSerializer):

@@ -30,7 +30,7 @@ class ResultsURLTests(BaseCaseForResultsTests):
     def test_template(self):
         """Проверка используемого шаблона."""
         response = self.client.get(self.data["correct"])
-        template = "results/results_for_user_by_task.html"
+        template = "results/standard_result_format.html"
         self.assertTemplateUsed(response, template)
 
     def test_context(self):
