@@ -13,6 +13,7 @@ python-telegram-bot = "^20.5"
 psycopg2-binary = "^2.9.7"
 gunicorn = "^21.2.0"
 pillow = "^10.0.0"
+python-dotenv = "^1.0.0"
 
 [tool.poetry.group.dev.dependencies]
 pre-commit = "^3.4.0"

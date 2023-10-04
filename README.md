@@ -221,6 +221,66 @@ cd src/bot/
 python -m unittest
 ```
 
+### Установка и запуск в Docker-контейнерах:<a name="docker"></a>
+
+Cкачайте и установите Docker, следуя [инструкции](https://docs.docker.com/desktop/install/windows-install/) (для
+Windows; в левом меню есть возможность выбрать инструкцию для другой ОС).
+
+1. Создайте `.env` file в папке проекта на основе `.env.example`
+2. **Удалите** локальную тестовую базу (если создавали) во избежание конфликтов (optional)
+3. Перейдите в папку infra:
+
+```shell
+cd infra/
+```
+
+4. Запустите следующую команду:
+
+```shell
+docker-compose up -d
+```
+
+Эта команда создаст и запустит в фоновом режиме контейнеры, необходимые для работы приложения (db, backend, bot, nginx).
+
+5. Затем выполните следующие команды внутри контейнера `backend`
+
+- Применение миграций
+```shell
+docker-compose exec backend python backend/manage.py migrate
+```
+
+- Загрузка данных заданий
+```shell
+docker-compose exec backend python backend/manage.py loaddata \
+    backend/fixtures/tasks.json \
+    backend/fixtures/task_1_data.json \
+    backend/fixtures/task_2_data.json \
+    backend/fixtures/task_3_data.json \
+    backend/fixtures/task_4_data.json \
+    backend/fixtures/task_5_data.json \
+    backend/fixtures/task_6_data.json \
+    backend/fixtures/task_7_data.json \
+    backend/fixtures/task_8_data.json
+```
+
+- Создание супер пользователя _(optional)_
+
+win:
+```shell
+docker-compose exec backend python backend/manage.py createsuperuser
+```
+linux:
+```shell
+docker compose exec -it backend python backend/manage.py createsuperuser
+```
+
+- Сбор статики
+```shell
+docker-compose exec backend python backend/manage.py collectstatic --no-input
+```
+
+Админка будет доступна по адресу http://127.0.0.1/admin/
+
 ## Рекомендации для разработчиков<a name="development"></a>
 
 ### Форматирование кода<a name="formatting"></a>
@@ -276,6 +336,7 @@ poetry add <package_name>
 Пример наименования веток:
    - `feature/send-sandwiches`
    - `fix/process-bread-not-found.`
+
 
 <!-- MARKDOWN LINKS & BADGES -->
 

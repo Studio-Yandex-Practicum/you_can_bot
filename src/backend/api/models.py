@@ -165,9 +165,8 @@ class Result(models.Model):
         on_delete=models.CASCADE,
         related_name="results",
     )
-    key = models.CharField(
+    key = models.TextField(
         "Ключ",
-        max_length=6,
         help_text=(
             "Значение, полученное в ходе расшифровки, которое используется"
             " как краткая запись результата. Например, ISTP."

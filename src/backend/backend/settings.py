@@ -8,7 +8,11 @@ load_dotenv()
 BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv("SECRET_KEY", default="secret_key")
 DEBUG = os.getenv("DEBUG", default=False)
+
 ALLOWED_HOSTS = [os.getenv("ALLOWED_HOSTS", default="*")]
+
+CSRF_TRUSTED_ORIGINS = ("http://127.0.0.1",)
+
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
@@ -19,6 +23,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "api.apps.ApiConfig",
 ]
+
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -89,6 +94,7 @@ USE_L10N = True
 USE_TZ = True
 
 STATIC_URL = "static/"
+STATIC_ROOT = BASE_DIR / "static"
 MEDIA_URL = "media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
