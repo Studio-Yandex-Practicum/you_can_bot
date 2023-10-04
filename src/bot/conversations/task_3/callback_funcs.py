@@ -6,8 +6,7 @@ from telegram.ext import ContextTypes, ConversationHandler
 
 import internal_requests.service as api_service
 from conversations.task_3.keyboards import (
-    CANCEL_KEYBOARD,
-    CANSEL,
+    CANCEL_LOG_TEXT,
     GO_TO_TASK_4_KEYBOARD,
     NEXT_KEYBOARD,
     REPLY_KEYBOARD,
@@ -20,11 +19,9 @@ from conversations.task_3.templates import (
 from internal_requests.entities import Answer
 
 _LOGGER = logging.getLogger(__name__)
-ANSWER_ERROR = (
-    "Ошибка при обращении к вопросу №{number}:/n Url: {url}/n Ошибка: {error}."
-)
 
 CHOOSING = 1
+
 CURRENT_TASK = 3
 NUMBER_OF_QUESTIONS = 42
 START_QUESTION_NUMBER = 1
@@ -32,7 +29,7 @@ START_QUESTION_NUMBER = 1
 
 async def show_start_of_task_3(
     update: Update, context: ContextTypes.DEFAULT_TYPE
-) -> str:
+) -> int:
     """Выводит описание задания 3."""
     context.user_data.clear()
     context.user_data["current_question"] = START_QUESTION_NUMBER
@@ -44,7 +41,7 @@ async def show_start_of_task_3(
 
 
 async def start_question(
-    update: Update, context: ContextTypes.DEFAULT_TYPE, question_number: int = 1
+    update: Update, _context: ContextTypes.DEFAULT_TYPE, question_number: int = 1
 ) -> None:
     """Начинает новый вопрос."""
     await update.callback_query.answer()
@@ -52,35 +49,25 @@ async def start_question(
         task_number=CURRENT_TASK,
         question_number=question_number,
     )
-    try:
-        # Здесь должна выводиться картинка - еще не реализовано.
-        # await context.bot.send_photo(
-        #     chat_id=update.effective_chat.id,
-        #     photo=messages[0].photo,
-        #     disable_notification=True,
-        # )
-        await update.effective_message.reply_text(
-            text=messages[0].content,
-            reply_markup=REPLY_KEYBOARD,
-            parse_mode=ParseMode.HTML,
-        )
-    except ConnectionError as error:
-        _LOGGER.error(
-            ANSWER_ERROR.format(
-                number=question_number, url=messages[0].photo, error=error
-            )
-        )
+    # Здесь должна выводиться картинка - еще не реализовано.
+    # await context.bot.send_photo(
+    #     chat_id=update.effective_chat.id,
+    #     photo=messages[0].photo,
+    #     disable_notification=True,
+    # )
+    await update.effective_message.reply_text(
+        text=messages[0].content,
+        reply_markup=REPLY_KEYBOARD,
+        parse_mode=ParseMode.HTML,
+    )
 
 
-async def update_question(
-    update: Update,
-    context: ContextTypes.DEFAULT_TYPE,
-) -> str:
+async def update_question(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     """Обработчик вопросов."""
     picked_choice = update.callback_query.data
     message = update.effective_message
     await message.edit_text(
-        text=(f"{message.text_html}\n\n" f"Ответ: {picked_choice.upper()}"),
+        text=f"{message.text_html}\n\nОтвет: {picked_choice.upper()}",
         parse_mode=ParseMode.HTML,
     )
 
@@ -127,9 +114,7 @@ async def show_result(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int
 
 async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     """Конец диалога."""
-    _LOGGER.info(CANSEL, update.effective_message.from_user.first_name)
+    _LOGGER.info(CANCEL_LOG_TEXT, update.effective_chat.id)
     context.user_data.clear()
-    await update.effective_message.reply_text(
-        TASK_3_CANCELLATION_TEXT, reply_markup=CANCEL_KEYBOARD
-    )
+    await update.effective_message.reply_text(TASK_3_CANCELLATION_TEXT)
     return ConversationHandler.END

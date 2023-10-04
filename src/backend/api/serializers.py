@@ -1,7 +1,14 @@
 from django.template.loader import render_to_string
 from rest_framework import serializers
 
-from api.models import Answer, Question, ResultStatus, TaskStatus, UserFromTelegram
+from api.models import (
+    Answer,
+    Problem,
+    Question,
+    ResultStatus,
+    TaskStatus,
+    UserFromTelegram,
+)
 
 
 class QuestionSerializer(serializers.ModelSerializer):
@@ -14,19 +21,29 @@ class QuestionSerializer(serializers.ModelSerializer):
     def to_representation(self, obj):
         return {"count": obj.count(), "result": self._get_result(obj)}
 
-    def _get_result(self, obj):
+    def _get_result(self, obj: list[Question]):
         result = []
+        task_number = self.context["task_number"]
+        template_name = self._get_template_name_by_task_number(task_number)
         for question in obj:
             result.append(
                 {
                     "content": render_to_string(
-                        "questions/standard_question_format.html",
+                        template_name,
                         {"question": question},
                         self.context["request"],
                     )
                 }
             )
         return result
+
+    @staticmethod
+    def _get_template_name_by_task_number(task_number):
+        if task_number == 3 or task_number == 8:
+            template_name = "questions/question_with_pairs_format.html"
+        else:
+            template_name = "questions/standard_question_format.html"
+        return template_name
 
 
 class AnswerSerializer(serializers.ModelSerializer):
@@ -120,3 +137,16 @@ class TaskResultsForUserSerializer(serializers.ModelSerializer):
                 }
             )
         return {"count": len(results), "result": results}
+
+
+class ProblemSerializer(serializers.ModelSerializer):
+    """
+    Сериализатор модели Problem.
+    """
+
+    message = serializers.CharField(required=True)
+
+    class Meta:
+        model = Problem
+        fields = ("id", "user", "message", "answer", "create_date")
+        read_only_fields = ("user", "answer")

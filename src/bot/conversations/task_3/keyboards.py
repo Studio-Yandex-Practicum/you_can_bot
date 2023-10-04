@@ -1,9 +1,7 @@
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardRemove
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 
-ANSWER = "Ответ пользователя %s на %s вопрос: %s"
-CANSEL = "Пользователь %s закончил диалог."
+CANCEL_LOG_TEXT = "Пользователь %s закончил диалог."
 CANCEL_COMMAND = "cancel"
-CANCEL_KEYBOARD = ReplyKeyboardRemove()
 GO_TO_TASK_4_KEYBOARD = InlineKeyboardMarkup(
     ((InlineKeyboardButton(text="ЗАДАНИЕ 4", callback_data="ЗАДАНИЕ 4"),),)
 )
