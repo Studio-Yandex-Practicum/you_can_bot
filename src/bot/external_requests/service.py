@@ -55,7 +55,7 @@ async def get_user_info_from_lk(telegram_id: int) -> Optional[dict]:
          'surname': str,
          'is_approved': bool}
     """
-    _check_telegram_id(telegram_id)
+    check_telegram_id(telegram_id)
     try:
         user_info = await _post_request(tid=telegram_id, token=YOUCANBY_TOKEN)
         parsed_info = await _parse_data(user_info)
@@ -72,7 +72,7 @@ async def get_user_info_from_lk(telegram_id: int) -> Optional[dict]:
     return parsed_info
 
 
-def _check_telegram_id(telegram_id: int) -> None:
+def check_telegram_id(telegram_id: int) -> None:
     """Проверяет корректность значения telegram_id.
     ### Args:
     - telegram_id (int):
@@ -205,8 +205,7 @@ async def _parse_data(data: dict) -> dict[str, str]:
     if not isinstance(full_name, FULL_NAME_TYPE):
         raise APIDataError(
             TYPE_ERROR.format(
-                type_response=type(full_name),
-                expected_type=FULL_NAME_TYPE
+                type_response=type(full_name), expected_type=FULL_NAME_TYPE
             )
         )
     name, surname = await _split_full_name(full_name)
@@ -214,8 +213,7 @@ async def _parse_data(data: dict) -> dict[str, str]:
     if not isinstance(is_approved, IS_APPROVED_TYPE):
         raise APIDataError(
             TYPE_ERROR.format(
-                type_response=type(is_approved),
-                expected_type=IS_APPROVED_TYPE
+                type_response=type(is_approved), expected_type=IS_APPROVED_TYPE
             )
         )
     return {

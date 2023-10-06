@@ -98,16 +98,8 @@ async def _get_request(endpoint_urn: str) -> Response:
                 url=endpoint_urn,
             )
         )
-    await _log_get_response(response)
     response.raise_for_status()
     return response
-
-
-async def _log_get_response(response: Response) -> None:
-    if response.status_code == 200:
-        _LOGGER.debug("Запрос успешен.")
-    else:
-        _LOGGER.error("Запрос не успешен.")
 
 
 async def _post_request(data: dict, endpoint_urn: str) -> Response:
@@ -119,19 +111,8 @@ async def _post_request(data: dict, endpoint_urn: str) -> Response:
             ),
             json=data,
         )
-    await _log_post_response(data, response)
     response.raise_for_status()
     return response
-
-
-async def _log_post_response(data: dict, response: Response) -> None:
-    if response.is_success:
-        _LOGGER.debug(f"Запрос успешен. Входные данные: {data}")
-    else:
-        _LOGGER.error(
-            f"Запрос неудачен. Входные данные: {data}"
-            f" Ответ сервера: {response.status_code} {response.text}"
-        )
 
 
 async def _parse_api_response_to_messages(response: Response) -> List[Message]:
