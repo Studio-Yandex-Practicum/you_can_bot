@@ -134,7 +134,7 @@ class UserTests(APITestCase):
             "telegram_id": 999,
             "name": "a",
             "surname": "b",
-            "telegram_username": "c"
+            "telegram_username": "c",
         }
 
         # Создаем нового юзера через эндпоинт создания

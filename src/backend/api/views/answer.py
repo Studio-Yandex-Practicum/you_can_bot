@@ -1,18 +1,23 @@
-import datetime
-
 from django.conf import settings
+from django.utils import timezone
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.exceptions import NotFound, ValidationError
 from rest_framework.response import Response
 
 from api.calculation_service.task_1 import calculate_task_1_result
+from api.calculation_service.task_2 import calculate_task_2_result
+from api.calculation_service.task_3 import calculate_task_3_result
+from api.calculation_service.task_4 import calculate_task_4_result
 from api.models import Answer, Question, TaskStatus
 from api.serializers import AnswerSerializer
 
 ANSWER_CREATE_ERROR = "Ошибка при обработке запроса: {error}"
 CALCULATE_TASKS = {
     1: calculate_task_1_result,
+    2: calculate_task_2_result,
+    3: calculate_task_3_result,
+    4: calculate_task_4_result,
 }
 
 
@@ -77,7 +82,7 @@ def _get_task_status_or_404(task_number, telegram_id):
 def _create_result_status(task_status, task_number, end_question):
     answers = _check_all_answers_exist(task_status, end_question)
     task_status.is_done = True
-    task_status.pass_date = datetime.datetime.now()
+    task_status.pass_date = timezone.now()
     task_status.save()
     CALCULATE_TASKS.get(task_number)(answers)
 
