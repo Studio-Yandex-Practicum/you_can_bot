@@ -34,7 +34,6 @@ class UserTests(APITestCase):
             "surname": "Смит",
         }
         expected_response_data = new_user_data.copy()
-        expected_response_data.pop("telegram_username")
         count_of_users_before = UserFromTelegram.objects.count()
 
         response = self.client.post(
@@ -59,6 +58,7 @@ class UserTests(APITestCase):
                 "telegram_id": UserTests.user.telegram_id,
                 "name": UserTests.user.name,
                 "surname": UserTests.user.surname,
+                "telegram_username": self.user.telegram_username,
             },
         )
 
@@ -110,7 +110,12 @@ class UserTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(
             response.data,
-            {"telegram_id": new_user_tg_id, "name": new_name, "surname": new_surname},
+            {
+                "telegram_id": new_user_tg_id,
+                "name": new_name,
+                "surname": new_surname,
+                "telegram_username": new_user_username,
+            },
         )
         self.assertEqual(count_of_users_before, UserFromTelegram.objects.count())
 
@@ -125,29 +130,32 @@ class UserTests(APITestCase):
     def test_requests_chain_tg_user(self):
         """Последовательные запросы к различным эндпоинтам юзера работают
         корректно."""
-        expected_response_data = {"telegram_id": 999, "name": "a", "surname": "b"}
-        request_data = expected_response_data.copy()
-        request_data["telegram_username"] = "c"
+        data = {
+            "telegram_id": 999,
+            "name": "a",
+            "surname": "b",
+            "telegram_username": "c",
+        }
 
         # Создаем нового юзера через эндпоинт создания
         response = self.client.post(
-            reverse("api:users-list"), request_data, format=self.REQUEST_FORMAT
+            reverse("api:users-list"), data, format=self.REQUEST_FORMAT
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(response.data, expected_response_data)
+        self.assertEqual(response.data, data)
 
-        new_user_url = self._get_detail_user_url(expected_response_data["telegram_id"])
+        new_user_url = self._get_detail_user_url(data["telegram_id"])
 
         # Получаем нового пользователя через эндпоинт по telegram_id
         response = self.client.get(new_user_url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data, expected_response_data)
+        self.assertEqual(response.data, data)
 
         # Изменяем нового пользователя
         new_name = "e"
-        expected_response_data["name"] = new_name
+        data["name"] = new_name
         response = self.client.patch(
             new_user_url, {"name": new_name}, format=self.REQUEST_FORMAT
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data, expected_response_data)
+        self.assertEqual(response.data, data)

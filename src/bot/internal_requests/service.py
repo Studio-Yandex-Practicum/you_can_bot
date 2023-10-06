@@ -1,6 +1,7 @@
 import logging
 import os
 from dataclasses import asdict
+from json import loads
 from typing import List, Union
 from urllib.parse import urljoin
 
@@ -39,9 +40,9 @@ async def get_messages_with_results(
     return messages
 
 
-async def get_info_about_user() -> UserFromTelegram:
+async def get_info_about_user(telegram_id) -> UserFromTelegram:
     """Получения информации о пользователе из БД."""
-    endpoint_urn = "users/"
+    endpoint_urn = f"users/{telegram_id}/"
     response = await _get_request(endpoint_urn)
     user_info = await _parse_api_response_to_user_info(response)
     return user_info
@@ -98,16 +99,8 @@ async def _get_request(endpoint_urn: str) -> Response:
                 url=endpoint_urn,
             )
         )
-    await _log_get_response(response)
     response.raise_for_status()
     return response
-
-
-async def _log_get_response(response: Response) -> None:
-    if response.status_code == 200:
-        _LOGGER.debug("Запрос успешен.")
-    else:
-        _LOGGER.error("Запрос не успешен.")
 
 
 async def _post_request(data: dict, endpoint_urn: str) -> Response:
@@ -119,19 +112,8 @@ async def _post_request(data: dict, endpoint_urn: str) -> Response:
             ),
             json=data,
         )
-    await _log_post_response(data, response)
     response.raise_for_status()
     return response
-
-
-async def _log_post_response(data: dict, response: Response) -> None:
-    if response.is_success:
-        _LOGGER.debug(f"Запрос успешен. Входные данные: {data}")
-    else:
-        _LOGGER.error(
-            f"Запрос неудачен. Входные данные: {data}"
-            f" Ответ сервера: {response.status_code} {response.text}"
-        )
 
 
 async def _parse_api_response_to_messages(response: Response) -> List[Message]:
@@ -148,7 +130,7 @@ async def _parse_api_response_to_messages(response: Response) -> List[Message]:
 
 async def _parse_api_response_to_user_info(response: Response) -> UserFromTelegram:
     """Парсит полученный json из Response в датакласс UserFromTelegram."""
-    pass
+    return UserFromTelegram(**loads(response.text))
 
 
 async def _parse_api_response_to_task_status(

@@ -4,8 +4,15 @@ from typing import Optional
 
 from httpx import AsyncClient, HTTPStatusError, RequestError, Response, codes
 
-from external_requests.exceptions import APIForbiddenError, PostAPIError, UserNotFound
-from utils.configs import TARIFFS, YOUCANBY_TOKEN, YOUCANBY_URL
+from external_requests import IS_APPROVED, NAME, SURNAME, TARIFF
+from external_requests.exceptions import (
+    APIDataError,
+    APIForbiddenError,
+    PostAPIError,
+    TelegramIdError,
+    UserNotFound,
+)
+from utils.configs import ALL_TARIFFS, YOUCANBY_TOKEN, YOUCANBY_URL
 
 API_JSON_ERROR = "{key}: Отказ сервера {failure}."
 COMMON_ERROR = "Сбой при получении ответа от сервера: {error}"
@@ -25,10 +32,10 @@ FIELDS_TYPE_ERROR = (
 VARIABLE_ENV_NOT_FOUND = "Не найдены переменные окружения: {tokens}."
 USER_NOT_FOUND = "{status_code}: при запросе к {url} пользователь с id {tid} не найден."
 
-IS_APPROVED = "isApproved"
-FULL_NAME = "full_name"
-TARIFF = "tariff"
-USER_INFO_KEYS = (TARIFF, FULL_NAME, IS_APPROVED)
+YOUCANBY_IS_APPROVED = "isApproved"
+YOUCANBY_FULL_NAME = "full_name"
+YOUCANBY_TARIFF = "tariff"
+YOUCANBY_USER_INFO_KEYS = (YOUCANBY_TARIFF, YOUCANBY_FULL_NAME, YOUCANBY_IS_APPROVED)
 
 _LOGGER = getLogger(__name__)
 
@@ -39,9 +46,8 @@ async def get_user_info_from_lk(telegram_id: int) -> Optional[dict]:
     - telegram_id (int):
         id пользователя в telegram
     ### Raises:
-    - APIForbiddenError, ConnectionError, HTTPStatusError,
-      KeyError, PostAPIError, TypeError, UserNotFound,
-      ValueError
+    - APIDataError, APIForbiddenError, ConnectionError, HTTPStatusError,
+      PostAPIError, TelegramIdError, UserNotFound
     ### Returns:
     - Optional[dict]:
         {'tariff': str,
@@ -49,7 +55,7 @@ async def get_user_info_from_lk(telegram_id: int) -> Optional[dict]:
          'surname': str,
          'is_approved': bool}
     """
-    _check_telegram_id(telegram_id)
+    check_telegram_id(telegram_id)
     try:
         user_info = await _post_request(tid=telegram_id, token=YOUCANBY_TOKEN)
         parsed_info = await _parse_data(user_info)
@@ -66,20 +72,20 @@ async def get_user_info_from_lk(telegram_id: int) -> Optional[dict]:
     return parsed_info
 
 
-def _check_telegram_id(telegram_id: int) -> None:
+def check_telegram_id(telegram_id: int) -> None:
     """Проверяет корректность значения telegram_id.
     ### Args:
     - telegram_id (int):
         id пользователя в telegram
     ### Raises:
-    - TypeError, ValueError
+    - TelegramIdError
     ### Returns:
     - None
     """
     if not isinstance(telegram_id, int):
-        raise TypeError(TELEGRAM_ID_NOT_INT)
+        raise TelegramIdError(TELEGRAM_ID_NOT_INT)
     if telegram_id <= 0:
-        raise ValueError(TELEGRAM_ID_NOT_POSITIVE)
+        raise TelegramIdError(TELEGRAM_ID_NOT_POSITIVE)
 
 
 def _logging_exceptions(func):
@@ -153,6 +159,20 @@ async def _post_request(**kwargs) -> Response:
     return response
 
 
+async def _split_full_name(full_name: str) -> tuple[str, str]:
+    """Делит полное имя на имя и фамилию.
+    ### Args:
+    - full_name (str):
+        полное имя
+    ### Returns:
+    - tuple[str, str]
+    """
+    name_surname = full_name.rsplit(" ", 1)
+    if len(name_surname) == 2:
+        return name_surname[0], name_surname[1]
+    return full_name, ""
+
+
 async def _parse_data(data: dict) -> dict[str, str]:
     """Обрабатывает полученные данные.
     Возвращает словарь с данными пользователя.
@@ -160,7 +180,7 @@ async def _parse_data(data: dict) -> dict[str, str]:
     - response (dict):
         ответ сервера
     ### Raises:
-    - KeyError, TypeError, ValueError
+    - APIDataError
     ### Returns:
     - dict:
         {'tariff': str,
@@ -168,32 +188,37 @@ async def _parse_data(data: dict) -> dict[str, str]:
          'surname': str,
          'is_approved': bool}
     """
-    if not isinstance(data, dict):
-        raise TypeError(TYPE_ERROR.format(type_response=type(data), expected_type=dict))
-    for key in USER_INFO_KEYS:
-        if key not in data:
-            raise KeyError(KEY_NOT_FOUND.format(key=key))
-    tariff = data[TARIFF]
-    if tariff not in TARIFFS:
-        raise ValueError(TARIFF_NOT_FOUND.format(tariff=tariff, expected=TARIFFS))
-    full_name = data[FULL_NAME]
-    if not isinstance(full_name, str):
-        raise TypeError(
-            TYPE_ERROR.format(type_response=type(full_name), expected_type=str)
+    DATA_TYPE = dict
+    IS_APPROVED_TYPE = bool
+    FULL_NAME_TYPE = str
+    if not isinstance(data, DATA_TYPE):
+        raise APIDataError(
+            TYPE_ERROR.format(type_response=type(data), expected_type=DATA_TYPE)
         )
-    name_surname = full_name.rsplit(" ", 1)
-    if len(name_surname) == 2:
-        name, surname = name_surname[0], name_surname[1]
-    else:
-        name, surname = full_name, ""
-    is_approved = data[IS_APPROVED]
-    if not isinstance(is_approved, bool):
-        raise TypeError(
-            TYPE_ERROR.format(type_response=type(is_approved), expected_type=bool)
+    for key in YOUCANBY_USER_INFO_KEYS:
+        if key not in data:
+            raise APIDataError(KEY_NOT_FOUND.format(key=key))
+    tariff = data[YOUCANBY_TARIFF]
+    if tariff not in ALL_TARIFFS:
+        raise APIDataError(TARIFF_NOT_FOUND.format(tariff=tariff, expected=ALL_TARIFFS))
+    full_name = data[YOUCANBY_FULL_NAME]
+    if not isinstance(full_name, FULL_NAME_TYPE):
+        raise APIDataError(
+            TYPE_ERROR.format(
+                type_response=type(full_name), expected_type=FULL_NAME_TYPE
+            )
+        )
+    name, surname = await _split_full_name(full_name)
+    is_approved = data[YOUCANBY_IS_APPROVED]
+    if not isinstance(is_approved, IS_APPROVED_TYPE):
+        raise APIDataError(
+            TYPE_ERROR.format(
+                type_response=type(is_approved), expected_type=IS_APPROVED_TYPE
+            )
         )
     return {
-        "tariff": tariff,
-        "name": name,
-        "surname": surname,
-        "is_approved": is_approved,
+        TARIFF: tariff,
+        NAME: name,
+        SURNAME: surname,
+        IS_APPROVED: is_approved,
     }

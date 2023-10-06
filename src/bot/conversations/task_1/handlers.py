@@ -19,6 +19,7 @@ from conversations.task_1.callback_funcs import (
 task_1_handler = ConversationHandler(
     entry_points=[
         MessageHandler(filters.Regex(FIRST_TASK_BUTTON_LABEL), start_task_1),
+        CallbackQueryHandler(start_task_1, r"^start_task_1$"),
     ],
     states={
         CHOOSING: [
