@@ -16,4 +16,4 @@ REPLY_KEYBOARD = InlineKeyboardMarkup(
         ),
     ),
 )
-TEXT_ENTRY_POINT_BUTTON_FOR_TASK_3 = "ЗАДАНИЕ 3"
+TEXT_ENTRY_POINT_BUTTON_FOR_TASK_3 = "Задание 3"
