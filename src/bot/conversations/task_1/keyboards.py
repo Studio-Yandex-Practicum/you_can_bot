@@ -14,5 +14,4 @@ def get_inline_keyboard(buttons: str, picked_choices: str = "") -> InlineKeyboar
     for label in buttons:
         if label not in picked_choices:
             keyboard.append(InlineKeyboardButton(label, callback_data=label))
-    print(keyboard)
     return InlineKeyboardMarkup([keyboard])
