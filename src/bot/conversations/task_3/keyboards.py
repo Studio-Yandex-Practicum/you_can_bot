@@ -8,12 +8,10 @@ GO_TO_TASK_4_KEYBOARD = InlineKeyboardMarkup(
 NEXT_KEYBOARD = InlineKeyboardMarkup(
     ((InlineKeyboardButton(text="Далее", callback_data="Далее"),),)
 )
-REPLY_KEYBOARD = InlineKeyboardMarkup(
+REPLY_KEYBOARD = InlineKeyboardMarkup.from_row(
     (
-        (
-            InlineKeyboardButton(text="А", callback_data="а"),
-            InlineKeyboardButton(text="Б", callback_data="б"),
-        ),
+        InlineKeyboardButton(text="А", callback_data="а"),
+        InlineKeyboardButton(text="Б", callback_data="б"),
     ),
 )
-TEXT_ENTRY_POINT_BUTTON_FOR_TASK_3 = "ЗАДАНИЕ 3"
+TEXT_ENTRY_POINT_BUTTON_FOR_TASK_3 = "Задание 3"
