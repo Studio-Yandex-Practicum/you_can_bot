@@ -8,7 +8,7 @@ COMMANDS = {
 }
 
 # Profile
-USER_PROFILE_TEXT = "Имя: {name}\n" "Пройдено заданий: {tasks_completed}\n"
+USER_PROFILE_TEXT = "Имя: {name}\n" "Фамилия: {surname}\n"
 EDIT_PROFILE_TEXT = "Редактировать профиль"
 EDIT_PROFILE, WAITING_FOR_NAME, WAITING_FOR_SURNAME = range(3)
 ENTER_NAME = "Введи свое имя.\n" "Допустимы буквы русского и латинского алфавитов."

@@ -7,6 +7,8 @@ from telegram.ext import (
     filters,
 )
 
+from internal_requests.service import get_info_about_user
+
 from .keyboards import (
     CONFIRMATION_BUTTONS,
     PROFILE_MENU_BUTTONS,
@@ -37,10 +39,12 @@ from .templates import (
 
 async def get_user_profile(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     """Посмотреть профиль."""
+
+    print(await get_info_about_user())
     text = USER_PROFILE_TEXT.format(
         # TODO get user name and number from data base
         name=update.effective_user.first_name,
-        tasks_completed=GET_NUMBER_FROM_DB,
+        surname=GET_NUMBER_FROM_DB,
     )
     keyboard = ReplyKeyboardMarkup(
         keyboard=PROFILE_MENU_BUTTONS, resize_keyboard=True, one_time_keyboard=True

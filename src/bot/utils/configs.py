@@ -31,6 +31,8 @@ LOG_INTERVAL = 1
 LOG_BACKUP_COUNT = 14
 LOG_ENCODING = "UTF-8"
 
-TARIFFS = loads(os.getenv("TARIFFS"))
+ALLOWED_TARIFFS = loads(os.getenv("ALLOWED_TARIFFS", '["midi", "maxi"]'))
+ALL_TARIFFS = loads(os.getenv("ALL_TARIFFS", '["mini", "midi", "maxi", null]'))
 YOUCANBY_URL = os.getenv("YOUCANBY_URL")
 YOUCANBY_TOKEN = os.getenv("YOUCANBY_TOKEN")
+EXTERNAL_REQUESTS_ARE_MOCK = os.getenv("EXTERNAL_REQUESTS_ARE_MOCK") == "True"
