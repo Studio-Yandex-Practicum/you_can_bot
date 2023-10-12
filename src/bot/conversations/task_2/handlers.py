@@ -23,6 +23,7 @@ task_2_handler: ConversationHandler = ConversationHandler(
         MessageHandler(
             filters.Regex(TEXT_ENTRY_POINT_BUTTON_FOR_TASK_2), show_start_of_task_2
         ),
+        CallbackQueryHandler(show_start_of_task_2, r"^start_task_2$"),
     ],
     states={
         CHOOSING: [

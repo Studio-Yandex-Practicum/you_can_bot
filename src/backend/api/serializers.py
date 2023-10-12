@@ -69,20 +69,17 @@ class UserFromTelegramRetrieveCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserFromTelegram
         fields = ("telegram_id", "telegram_username", "name", "surname")
-        extra_kwargs = {"telegram_username": {"write_only": True}}
 
 
-class UserFromTelegramUpdateSerializer(serializers.ModelSerializer):
+class UserFromTelegramUpdateSerializer(UserFromTelegramRetrieveCreateSerializer):
     """
     Сериализатор модели `UserFromTelegram`.
     Используется для:
     - Изменения полей name и surname в объекте модели UserFromTelegram.
     """
 
-    class Meta:
-        model = UserFromTelegram
-        fields = ("telegram_id", "name", "surname")
-        read_only_fields = ("telegram_id",)
+    class Meta(UserFromTelegramRetrieveCreateSerializer.Meta):
+        read_only_fields = ("telegram_id", "telegram_username")
 
 
 class TaskStatusSerializer(serializers.ModelSerializer):

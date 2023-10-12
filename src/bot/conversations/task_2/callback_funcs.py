@@ -30,6 +30,9 @@ async def show_start_of_task_2(
     update: Update, context: ContextTypes.DEFAULT_TYPE
 ) -> int:
     """Вывод описания задания 2."""
+    query = update.callback_query
+    if query is not None:
+        await query.message.edit_reply_markup()
     context.user_data["current_question"] = START_QUESTION_NUMBER
     await update.effective_message.reply_text(
         text=TEXT_OF_START_OF_TASK_2,

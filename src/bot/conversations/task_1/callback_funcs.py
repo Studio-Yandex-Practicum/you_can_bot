@@ -30,6 +30,9 @@ LABEL_PATTERN = r"\[([А-Я])\]"
 
 async def start_task_1(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     """Выводит описание задания 1."""
+    query = update.callback_query
+    if query is not None:
+        await query.message.edit_reply_markup()
     context.user_data["current_question"] = START_QUESTION_NUMBER
     await update.effective_message.reply_text(
         text=START_TASK_1_TEXT,
