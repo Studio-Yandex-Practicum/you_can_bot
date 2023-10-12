@@ -1,3 +1,5 @@
+import asyncio
+
 from django import forms
 from django.contrib import admin
 from django.contrib.auth import get_user_model
@@ -16,8 +18,15 @@ from api.models import (
     TaskStatus,
     UserFromTelegram,
 )
+from .conversation_utils import non_context_send_message
+
 
 User = get_user_model()
+
+
+PROBLEM_ANSWER = (
+    "Психолог ответил на ваш вопрос: «{question}».\n\n Ответ: «{content}»"
+)
 
 
 class AnswerInline(admin.StackedInline):
@@ -88,6 +97,18 @@ class ProblemAdmin(admin.ModelAdmin):
     )
     date_hierarchy = "create_date"
     empty_value_display = "-пусто-"
+
+    def save_model(self, request, obj, form, change):
+        if change and "answer" in form.changed_data:
+            asyncio.run(
+                non_context_send_message(
+                    text=PROBLEM_ANSWER.format(
+                        question=obj.message, content=obj.answer
+                    ),
+                    user_id=obj.user.telegram_id,
+                )
+            )
+        super().save_model(request, obj, form, change)
 
 
 @admin.register(Task)
