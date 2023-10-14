@@ -9,6 +9,7 @@ COMMANDS = {
 
 # Profile
 USER_PROFILE_TEXT = "Имя: {name}\n" "Фамилия: {surname}\n"
+MY_TASKS = "Мои задания"
 EDIT_PROFILE_TEXT = "Редактировать профиль"
 EDIT_PROFILE, WAITING_FOR_NAME, WAITING_FOR_SURNAME = range(3)
 ENTER_NAME = "Введи свое имя.\n" "Допустимы буквы русского и латинского алфавитов."
@@ -29,6 +30,8 @@ NAME_PATTERN = "^[A-Za-zА-яЁё ]+$"
 TASKS_LIST_TEXT = "Выбери задание"
 TASKS_NUMBER = 8
 TASKS_BUTTON_TEXT = "Задание"
+PATTERN_DONE = r"^result_task_(?P<number>\d+)$"
+PATTERN_UNDONE = r"^start_task_(?P<number>\d+)$"
 
 # Ask question
 ASK_ME_QUESTION_TEXT = "Задай вопрос, который тебя интересует"

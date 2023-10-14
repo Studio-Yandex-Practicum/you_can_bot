@@ -7,13 +7,18 @@ from telegram.ext import (
     filters,
 )
 
-from internal_requests.service import get_info_about_user
+from internal_requests.service import (
+    get_info_about_user,
+    get_user_task_status_list,
+    update_user_info,
+)
 
 from .keyboards import (
     CONFIRMATION_BUTTONS,
-    PROFILE_MENU_BUTTONS,
+    PROFILE_MENU_BUTTON,
     URL_BUTTON,
     create_tasks_keyboard,
+    create_inline_tasks_keyboard
 )
 from .templates import (
     ASK_ME_QUESTION_TEXT,
@@ -25,6 +30,7 @@ from .templates import (
     GET_MORE_INFO_TEXT,
     GET_NUMBER_FROM_DB,
     INCORRECT_NAME,
+    MY_TASKS,
     NAME_PATTERN,
     PROFILE_CHANGED,
     QUESTION_CONFIRMATION_TEXT,
@@ -39,49 +45,51 @@ from .templates import (
 
 async def get_user_profile(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     """Посмотреть профиль."""
-
-    print(await get_info_about_user())
+    user_info = await get_info_about_user(update.effective_user.id)
     text = USER_PROFILE_TEXT.format(
-        # TODO get user name and number from data base
-        name=update.effective_user.first_name,
-        surname=GET_NUMBER_FROM_DB,
+        name=user_info.name,
+        surname=user_info.surname,
     )
     keyboard = ReplyKeyboardMarkup(
-        keyboard=PROFILE_MENU_BUTTONS, resize_keyboard=True, one_time_keyboard=True
+        keyboard=PROFILE_MENU_BUTTON, resize_keyboard=True, one_time_keyboard=True
     )
     await update.message.reply_text(text=text, reply_markup=keyboard)
     return EDIT_PROFILE
 
 
-async def edit_user_profile(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    """Изменение профиля - начало диалога."""
-    await update.message.reply_text(text=ENTER_NAME)
-    return WAITING_FOR_NAME
+# async def edit_user_profile(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+#     """Изменение профиля - начало диалога."""
+#     await update.message.reply_text(text=ENTER_NAME)
+#     return WAITING_FOR_NAME
 
 
-async def update_user_name(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    """Принимает изменения имени."""
-    user_name = update.message.text.title()
-    context.user_data["name"] = user_name
-    await update.message.reply_text(text=ENTER_SURNAME)
-    return WAITING_FOR_SURNAME
+# async def update_user_name(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+#     """Принимает изменения имени."""
+#     user_name = update.message.text.title()
+#     context.user_data["name"] = user_name
+#     data = {'name': user_name}
+#     await update_user_info(update.effective_user.id, data)
+#     await update.message.reply_text(text=ENTER_SURNAME)
+#     return WAITING_FOR_SURNAME
 
 
-async def update_user_surname(
-    update: Update, context: ContextTypes.DEFAULT_TYPE
-) -> None:
-    """
-    Принимает изменения фамилии
-    и запрашивает подтверждение изменения профиля.
-    """
-    user_surname = update.message.text.title()
-    context.user_data["surname"] = user_surname
-    keyboard = ReplyKeyboardMarkup(
-        CONFIRMATION_BUTTONS, resize_keyboard=True, one_time_keyboard=True
-    )
-    await update.message.reply_text(
-        text=CONFIRM_PROFILE_CHANGING, reply_markup=keyboard
-    )
+# async def update_user_surname(
+#     update: Update, context: ContextTypes.DEFAULT_TYPE
+# ) -> None:
+#     """
+#     Принимает изменения фамилии
+#     и запрашивает подтверждение изменения профиля.
+#     """
+#     user_surname = update.message.text.title()
+#     context.user_data["surname"] = user_surname
+#     data = {'surname': user_surname}
+#     keyboard = ReplyKeyboardMarkup(
+#         CONFIRMATION_BUTTONS, resize_keyboard=True, one_time_keyboard=True
+#     )
+#     await update.message.reply_text(
+#         text=CONFIRM_PROFILE_CHANGING, reply_markup=keyboard
+#     )
+#     await update_user_info(update.effective_user.id, data)
 
 
 async def send_incorrect_data_alert(
@@ -112,8 +120,11 @@ async def show_all_user_tasks(
     update: Update, context: ContextTypes.DEFAULT_TYPE
 ) -> None:
     """Посмотреть список заданий."""
-    keyboard = create_tasks_keyboard()
-    await update.message.reply_text(text=TASKS_LIST_TEXT, reply_markup=keyboard)
+    tasks = await get_user_task_status_list(telegram_id=update.effective_user.id)
+    # print(task_statuses)
+    keyboard = create_inline_tasks_keyboard(tasks)
+    # update.effective_message.reply_text
+    await update.effective_message.reply_text(text=TASKS_LIST_TEXT, reply_markup=keyboard)
 
 
 async def show_all_user_results(
@@ -171,25 +182,12 @@ cancel_handler = MessageHandler(filters.Regex("^Отменить$"), cancel)
 profile_handler = ConversationHandler(
     entry_points=[CommandHandler("profile", get_user_profile)],
     states={
-        EDIT_PROFILE: [
-            MessageHandler(filters.Regex("^Редактировать профиль$"), edit_user_profile)
-        ],
-        WAITING_FOR_NAME: [
-            MessageHandler(
-                filters.Regex(NAME_PATTERN)
-                & ~filters.Regex("^(Подтвердить|Отменить)$"),
-                update_user_name,
-            ),
-            MessageHandler(~filters.Regex(NAME_PATTERN), send_incorrect_data_alert),
-        ],
-        WAITING_FOR_SURNAME: [
-            MessageHandler(
-                filters.Regex(NAME_PATTERN)
-                & ~filters.Regex("^(Подтвердить|Отменить)$"),
-                update_user_surname,
-            ),
-            MessageHandler(~filters.Regex(NAME_PATTERN), send_incorrect_data_alert),
-        ],
+        MY_TASKS: [
+            MessageHandler(filters.Regex("^Мои задания$"), show_all_user_tasks),
+            MessageHandler(~filters.Regex(NAME_PATTERN), send_incorrect_data_alert)
+        ]
+
+
     },
     fallbacks=[
         MessageHandler(filters.Regex("^Подтвердить$"), save_user_profile_changings),
@@ -198,6 +196,28 @@ profile_handler = ConversationHandler(
     ],
 )
 
+
+
+
+        # EDIT_PROFILE: [
+        #     MessageHandler(filters.Regex("^Редактировать профиль$"), edit_user_profile)
+        # ],
+        # WAITING_FOR_NAME: [
+        #     MessageHandler(
+        #         filters.Regex(NAME_PATTERN)
+        #         & ~filters.Regex("^(Подтвердить|Отменить)$"),
+        #         update_user_name,
+        #     ),
+        #     MessageHandler(~filters.Regex(NAME_PATTERN), send_incorrect_data_alert),
+        # ],
+        # WAITING_FOR_SURNAME: [
+        #     MessageHandler(
+        #         filters.Regex(NAME_PATTERN)
+        #         & ~filters.Regex("^(Подтвердить|Отменить)$"),
+        #         update_user_surname,
+        #     ),
+        #     MessageHandler(~filters.Regex(NAME_PATTERN), send_incorrect_data_alert),
+        # ],
 ask_question_handler = ConversationHandler(
     entry_points=[CommandHandler("ask", suggest_ask_question)],
     states={

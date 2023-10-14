@@ -40,12 +40,19 @@ async def get_messages_with_results(
     return messages
 
 
-async def get_info_about_user(telegram_id) -> UserFromTelegram:
+async def get_info_about_user(telegram_id: int) -> UserFromTelegram:
     """Получения информации о пользователе из БД."""
     endpoint_urn = f"users/{telegram_id}/"
     response = await _get_request(endpoint_urn)
     user_info = await _parse_api_response_to_user_info(response)
     return user_info
+
+
+async def update_user_info(telegram_id: int, data: dict):
+    endpoint_run = f"users/{telegram_id}/"
+    response = await _patch_request(data, endpoint_run)
+    user_info_updated = await _parse_api_response_to_user_info(response)
+    return user_info_updated
 
 
 async def get_user_task_status_by_number(
@@ -91,27 +98,44 @@ async def create_answer(answer: Answer) -> Response:
     return response
 
 
-async def _get_request(endpoint_urn: str) -> Response:
+async def _get_request(endpoint_url: str) -> Response:
     async with AsyncClient() as client:
         response = await client.get(
             url=urljoin(
                 base=INTERNAL_API_URL,
-                url=endpoint_urn,
+                url=endpoint_url,
             )
+        )
+    # print(response, 'RESPONSE')
+    # print(response.text, 'RESPONSE.TEXT')
+    response.raise_for_status()
+    return response
+
+
+async def _post_request(data: dict, endpoint_url: str) -> Response:
+    async with AsyncClient() as client:
+        response = await client.post(
+            url=urljoin(
+                base=INTERNAL_API_URL,
+                url=endpoint_url,
+            ),
+            json=data,
         )
     response.raise_for_status()
     return response
 
 
-async def _post_request(data: dict, endpoint_urn: str) -> Response:
+async def _patch_request(data: dict, endpoint_url: str) -> Response:
     async with AsyncClient() as client:
-        response = await client.post(
+        response = await client.patch(
             url=urljoin(
                 base=INTERNAL_API_URL,
-                url=endpoint_urn,
+                url=endpoint_url,
             ),
             json=data,
         )
+    print(response)
+    print(response.text)
     response.raise_for_status()
     return response
 
@@ -125,6 +149,7 @@ async def _parse_api_response_to_messages(response: Response) -> List[Message]:
         photo = item.get("photo", "")
         message = Message(content=content, photo=photo)
         messages.append(message)
+    print(messages, 'MESSAGES')
     return messages
 
 
@@ -137,4 +162,16 @@ async def _parse_api_response_to_task_status(
     response: Response,
 ) -> Union[TaskStatus, List[TaskStatus]]:
     """Парсит полученный json из Response в экземпляр(ы) TaskStatus."""
-    pass
+    json_response = response.json()
+    tasks = []
+    for task_info in json_response:
+        task = TaskStatus(**task_info)
+        tasks.append(task)
+    return tasks
+    # print(response.text)
+    # print(loads('{"first": "one"}'))
+    # print(type(response.text), '(((((((((((((((())))))))))))))))')
+    # t = loads(response.text)
+    # print(loads(response.text), '===============================')
+    # print(type(loads(response.text)), '000000000000000000000000')
+    # print(TaskStatus(**t), '----------------------')
