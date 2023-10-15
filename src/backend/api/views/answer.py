@@ -21,6 +21,14 @@ CALCULATE_TASKS = {
 }
 
 
+@api_view(("GET",))
+def get_answers(request, telegram_id, task_number):
+    """
+    Получение ответа на вопрос по заданию.
+    """
+    pass
+
+
 @api_view(("POST",))
 def answer_create(request, telegram_id, task_number):
     """

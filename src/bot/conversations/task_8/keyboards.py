@@ -2,9 +2,6 @@ from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 
 CANCEL_LOG_TEXT = "Пользователь %s закончил диалог."
 CANCEL_COMMAND = "cancel"
-GO_TO_TASK_4_KEYBOARD = InlineKeyboardMarkup(
-    ((InlineKeyboardButton(text="ЗАДАНИЕ 4", callback_data="ЗАДАНИЕ 4"),),)
-)
 NEXT_KEYBOARD = InlineKeyboardMarkup(
     ((InlineKeyboardButton(text="Далее", callback_data="Далее"),),)
 )
@@ -14,4 +11,4 @@ REPLY_KEYBOARD = InlineKeyboardMarkup.from_row(
         InlineKeyboardButton(text="Б", callback_data="б"),
     ),
 )
-TEXT_ENTRY_POINT_BUTTON_FOR_TASK_3 = "Задание 3"
+TEXT_ENTRY_POINT_BUTTON_FOR_TASK_8 = "Задание 8"

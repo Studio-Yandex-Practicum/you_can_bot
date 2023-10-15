@@ -52,7 +52,7 @@
     "model": "api.task",
     "pk": 8,
     "fields": {
-      "end_question": 20
+      "end_question": 30
     }
   }
 ]

@@ -4,6 +4,7 @@ from conversations.general.handlers import acquaintance_handler
 from conversations.task_1.handlers import task_1_handler
 from conversations.task_2.handlers import task_2_handler
 from conversations.task_3.handlers import task_3_handler
+from conversations.task_8.handlers import task_8_handler
 from utils.configs import TOKEN
 
 
@@ -17,6 +18,7 @@ def create_bot():
     bot_app.add_handler(handler=task_1_handler)
     bot_app.add_handler(handler=task_2_handler)
     bot_app.add_handler(handler=task_3_handler)
+    bot_app.add_handler(handler=task_8_handler)
 
     return bot_app
 

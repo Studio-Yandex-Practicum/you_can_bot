@@ -18,7 +18,7 @@ def create_task_statuses(sender, instance, created, **kwargs):
             Task.TaskNumber.FIFTH: 1,
             Task.TaskNumber.SIXTH: 3,
             Task.TaskNumber.SEVENTH: 1,
-            Task.TaskNumber.EIGHTH: 20,
+            Task.TaskNumber.EIGHTH: 30,
         }
         for task_number in Task.TaskNumber.values:
             task, created = Task.objects.get_or_create(
