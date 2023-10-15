@@ -11,17 +11,23 @@ from telegram.constants import ParseMode
 from telegram.ext import ContextTypes, ConversationHandler, CallbackContext
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 
-# from conversations.general.templates import FIRST_TASK_BUTTON_LABEL
 from conversations.task_1.callback_funcs import (
     CHOICES,
     CHOOSING,
-    cancel,
+    # cancel,
     get_answer_question,
     get_start_question,
-    start_task_1,
 )
+
 from conversations.task_2.callback_funcs import (
-    show_start_of_task_2
+    start_question
+)
+
+import internal_requests.service as api_service
+from conversations.task_1.keyboards import (
+    GO_TO_TASK_2_KEYBOARD,
+    START_TASK_1_KEYBOARD,
+    get_inline_keyboard,
 )
 
 TASK_ONE_DESCRIPTION = (
@@ -39,47 +45,17 @@ NEXT_KEYBOARD = InlineKeyboardMarkup(
 )
 
 TASK_ONE_DATA = {
-    "button_label": "Задание 1",
+    "task_name": "Задание 1",
     "description": TASK_ONE_DESCRIPTION,
-    "callback_start_label": "start_task_1",
-    "callback_start": start_task_1
+    "cancel_text": "Выполнение задания 1 было пропущено",
 }
 
 TASK_TWO_DATA = {
-    "button_label": "Задание 2",
+    "task_name": "Задание 2",
     "description": TASK_TWO_DESCRIPTION,
-    "callback_start_label": "show_start_of_task_2",
-    "callback_start": show_start_of_task_2
+    "cancel_text": "Выполнение задания 2 было пропущено",
 }
 
-
-
-async def start_task_1(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    """Выводит описание задания 1."""
-    query = update.callback_query
-    print(query)
-    if query is not None:
-        await query.message.edit_reply_markup()
-    context.user_data["current_question"] = START_QUESTION_NUMBER
-    await update.effective_message.reply_text(
-        text=START_TASK_1_TEXT,
-        reply_markup=NEXT_KEYBOARD,
-    )
-    return CHOOSING
-
-async def show_start_of_task_2(
-    update: Update, context: ContextTypes.DEFAULT_TYPE
-) -> int:
-    """Вывод описания задания 2."""
-    query = update.callback_query
-    if query is not None:
-        await query.message.edit_reply_markup()
-    context.user_data["current_question"] = START_QUESTION_NUMBER
-    await update.effective_message.reply_text(
-        text=TEXT_OF_START_OF_TASK_2,
-        reply_markup=NEXT_KEYBOARD,
-    )
-    return CHOOSING
 
 class BaseTaskConversation:
     """
@@ -92,24 +68,100 @@ class BaseTaskConversation:
         question_method,
         update_method
     ):
-        self.entry_point_button_label = task_data["button_label"]
-        self.start_method = task_data["callback_start"]
-        self.start_method_label = task_data["callback_start_label"]
+        self.entry_point_button_label = task_data["task_name"]
+        self.description = task_data["description"]
+        self.cancel_text = task_data["cancel_text"]
         self.question_method = question_method
+        self.question_method = self.question_method
         self.update_method = update_method
 
-    def get_entry_points(self):
+    async def show_task_description(
+        self,
+        update: Update, context: ContextTypes.DEFAULT_TYPE
+    ) -> int:
+        """
+        Выводит инструкцию по прохождению задания.
+        Вызывается из CallbackQueryHandler в методе set_entry_points.
+        Возвращает CHOOSING (число, равное 1), чтобы диалог перешел
+        в состояние CHOOSING.
+        """
+        description = self.description
+        query = update.callback_query
+        if query is not None:
+            await query.message.edit_reply_markup()
+        context.user_data["current_question"] = START_QUESTION_NUMBER
+        await update.effective_message.reply_text(
+            text=description,
+            reply_markup=NEXT_KEYBOARD,
+        )
+        return CHOOSING
+
+    async def cancel(
+        self,
+        update: Update, context: ContextTypes.DEFAULT_TYPE
+    ) -> int:
+        """
+        Прерывает выполнение задания и выводит сообщение об этом.
+        Вызывается из CallbackQueryHandler в методе set_fallbacks.
+        """
+        await update.message.reply_text(self.cancel_text)
+        context.user_data.clear()
+        return ConversationHandler.END
+
+    # async def get_start_question(
+    #     self,
+    #     update: Update, context: ContextTypes.DEFAULT_TYPE, question_number: int = 1
+    # ) -> None:
+    #     """Начинает новый вопрос."""
+    #     await update.callback_query.answer()
+    #     context.user_data["picked_choices"] = ""
+    #     messages = await api_service.get_messages_with_question(
+    #         task_number=1,
+    #         question_number=question_number,
+    #     )
+    #     await update.effective_message.reply_text(
+    #         text=messages[0].content,
+    #         reply_markup=get_inline_keyboard(CHOICES),
+    #         parse_mode=ParseMode.HTML,
+    #     )
+
+    # async def start_question(
+    #     update: Update, _context: ContextTypes.DEFAULT_TYPE, question_number: int = 1
+    # ) -> None:
+    #     """Начинает новый вопрос."""
+    #     await update.callback_query.answer()
+    #     messages = await api_service.get_messages_with_question(
+    #         task_number=CURRENT_TASK,
+    #         question_number=question_number,
+    #     )
+    #     await update.effective_message.reply_text(
+    #         text=messages[0].content,
+    #         reply_markup=REPLY_KEYBOARD,
+    #         parse_mode=ParseMode.HTML,
+    #     )
+
+
+    def set_entry_points(self):
+        """
+        Описывает entry_points для вхождения в диалог.
+        Нужно использовать при создании хэндлера для задания.
+        """
         return [
             MessageHandler(
-                filters.Regex(
-                    self.entry_point_button_label), self.start_method
+                filters.Regex(self.entry_point_button_label),
+                self.show_task_description
             ),
             CallbackQueryHandler(
-                self.start_method, r"^" + self.start_method_label +"$"
+                self.show_task_description,
+                pattern=r"^show_task_description$",
             ),
         ]
 
-    def get_states(self):
+    def set_states(self):
+        """
+        Управляет ведением диалога.
+        Нужно использовать при создании хэндлера для задания.
+        """
         return {
             CHOOSING: [
                 CallbackQueryHandler(self.question_method, pattern=r"^Далее$"),
@@ -117,8 +169,13 @@ class BaseTaskConversation:
             ]
         }
 
-    def get_fallbacks(self):
-        return [CommandHandler("cancel", cancel)]
+    def set_fallbacks(self):
+        """
+        Управляет выходом из диалога.
+        Нужно использовать при создании хэндлера для задания.
+        """
+        return [CommandHandler("cancel", self.cancel)]
+
 
 task_one = BaseTaskConversation(
     TASK_ONE_DATA,
@@ -128,24 +185,52 @@ task_one = BaseTaskConversation(
 
 task_two = BaseTaskConversation(
     TASK_TWO_DATA,
-    get_start_question,
+    # get_start_question,
+    start_question,
     get_answer_question,
 )
 
 task_one_handler = ConversationHandler(
-    entry_points=task_one.get_entry_points(),
-    states=task_one.get_states(),
-    fallbacks=task_one.get_fallbacks(),
+    entry_points=task_one.set_entry_points(),
+    states=task_one.set_states(),
+    fallbacks=task_one.set_fallbacks(),
 )
 
 task_two_handler = ConversationHandler(
-    entry_points=task_two.get_entry_points(),
-    states=task_two.get_states(),
-    fallbacks=task_two.get_fallbacks(),
+    entry_points=task_two.set_entry_points(),
+    states=task_two.set_states(),
+    fallbacks=task_two.set_fallbacks(),
 )
 
 
 #BACKUPS
+
+# async def start_task_1(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+#     """Выводит описание задания 1."""
+#     query = update.callback_query
+#     print(query)
+#     if query is not None:
+#         await query.message.edit_reply_markup()
+#     context.user_data["current_question"] = START_QUESTION_NUMBER
+#     await update.effective_message.reply_text(
+#         text=START_TASK_1_TEXT,
+#         reply_markup=NEXT_KEYBOARD,
+#     )
+#     return CHOOSING
+
+# async def show_start_of_task_2(
+#     update: Update, context: ContextTypes.DEFAULT_TYPE
+# ) -> int:
+#     """Вывод описания задания 2."""
+#     query = update.callback_query
+#     if query is not None:
+#         await query.message.edit_reply_markup()
+#     context.user_data["current_question"] = START_QUESTION_NUMBER
+#     await update.effective_message.reply_text(
+#         text=TEXT_OF_START_OF_TASK_2,
+#         reply_markup=NEXT_KEYBOARD,
+#     )
+#     return CHOOSING
 
 # Эта штука дает возможность обращаться с текстом от юзера
 # user_message = update.message # Выдает длинную колбасу с данными
