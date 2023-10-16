@@ -1,8 +1,10 @@
 from django.urls import reverse
 from rest_framework import status
+from unittest.mock import patch
 
 from api.models import Problem
 from api.tests.test_problem.fixtures import BaseCaseForProblemTests
+from api.views.problems import PROBLEM_TEXT
 
 
 class ProblemTests(BaseCaseForProblemTests):
@@ -22,16 +24,21 @@ class ProblemTests(BaseCaseForProblemTests):
         )
 
         response = self.client.get(common_url)
-        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+        self.assertEqual(
+            response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED
+        )
 
         self.assertIn("Allow", response)
 
         allowed_methods = response["Allow"]
-        allowed_methods_list = [method.strip() for method in allowed_methods.split(",")]
+        allowed_methods_list = [
+            method.strip() for method in allowed_methods.split(",")
+        ]
         self.assertIn("POST", allowed_methods_list)
         self.assertIn("OPTIONS", allowed_methods_list)
 
-    def test_db_problem(self):
+    @patch("api.views.problems.non_context_send_message")
+    def test_db_problem(self, mock_send_message):
         """
         Проверка занесения данных в таблицу Problems.
         """
@@ -53,6 +60,14 @@ class ProblemTests(BaseCaseForProblemTests):
             True,
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(mock_send_message.called, True)
+        mock_send_message.assert_called_with(
+            text=PROBLEM_TEXT.format(
+                question=self.MESSAGE,
+                user=self.user_from_telegram.name,
+            ),  # Ожидаемый текст уведомления ментора
+            user_id=self.MENTOR_TELEGRAM_ID,  # Telegram ID ментора из фикстуров
+        )
 
     def test_problem_from_unknown_user(self):
         """
@@ -77,12 +92,16 @@ class ProblemTests(BaseCaseForProblemTests):
             kwargs={"telegram_id": self.TELEGRAM_ID},
         )
 
-        response = self.client.post(url, data={"message": self.EMPTY_MESSAGE_1})
+        response = self.client.post(
+            url, data={"message": self.EMPTY_MESSAGE_1}
+        )
         self.assertEqual(
             response.status_code, status.HTTP_400_BAD_REQUEST, EMPTY_FIELD_MSG
         )
 
-        response = self.client.post(url, data={"message": self.EMPTY_MESSAGE_2})
+        response = self.client.post(
+            url, data={"message": self.EMPTY_MESSAGE_2}
+        )
         self.assertEqual(
             response.status_code, status.HTTP_400_BAD_REQUEST, EMPTY_FIELD_MSG
         )

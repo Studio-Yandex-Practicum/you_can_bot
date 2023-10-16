@@ -88,6 +88,7 @@ class ProblemAdmin(admin.ModelAdmin):
         "message",
         "answer",
         "create_date",
+        "get_answer_status",
     )
     list_display_links = ("message",)
     search_fields = (
@@ -109,6 +110,12 @@ class ProblemAdmin(admin.ModelAdmin):
                 )
             )
         super().save_model(request, obj, form, change)
+
+    @admin.display(description="Статус ответа")
+    def get_answer_status(self, obj):
+        if obj.answer:
+            return "Ответ получен"
+        return "Ответ не получен"
 
 
 @admin.register(Task)

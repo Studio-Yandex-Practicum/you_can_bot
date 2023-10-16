@@ -1,3 +1,4 @@
+import os
 from httpx import HTTPStatusError, codes
 from telegram import Update
 from telegram.ext import ContextTypes, ConversationHandler
@@ -35,14 +36,18 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
 
     await _get_or_create_user_from_telegram(update, context)
     await update.message.reply_text(
-        templates.ALLOWED_TARIFFS_START_MESSAGE.format(name=context.user_info[NAME]),
+        templates.ALLOWED_TARIFFS_START_MESSAGE.format(
+            name=context.user_info[NAME]
+        ),
         reply_markup=keyboards.HELLO_KEYBOARD,
     )
 
     return HELLO
 
 
-async def start_acquaintance(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+async def start_acquaintance(
+    update: Update, context: ContextTypes.DEFAULT_TYPE
+) -> int:
     """Знакомит пользователя со скиллсетами."""
     query = update.callback_query
     await query.answer()
@@ -53,7 +58,9 @@ async def start_acquaintance(update: Update, context: ContextTypes.DEFAULT_TYPE)
     return HELLO
 
 
-async def start_skill_sets(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+async def start_skill_sets(
+    update: Update, context: ContextTypes.DEFAULT_TYPE
+) -> int:
     """Выдает краткое описание первого задания
     и предлагает к нему приступить."""
     query = update.callback_query
@@ -98,7 +105,9 @@ async def _get_user_info_and_set_in_context(update, context):
     """Добавляет информацию о пользователе в context."""
     context.user_info = None
     try:
-        context.user_info = await get_user_info_from_lk(update.effective_user.id)
+        context.user_info = await get_user_info_from_lk(
+            update.effective_user.id
+        )
     except UserNotFound:
         await update.message.reply_text(templates.UNKNOWN_START_MESSAGE)
     except APIDataError:

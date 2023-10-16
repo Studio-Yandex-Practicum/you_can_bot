@@ -14,13 +14,13 @@ class MentorProfile(models.Model):
     user = models.OneToOneField(
         to=User,
         on_delete=models.CASCADE,
+        primary_key=True,
     )
     telegram_id = models.IntegerField(
-        "Никнейм Telegram",
+        "Айди Telegram",
         help_text="На этот id в Telegram могут быть отправлены уведомления",
-        unique=True,
-        blank=True,
         null=True,
+        blank=True,
     )
 
     class Meta:
@@ -297,7 +297,7 @@ class Problem(models.Model):
     )
 
     class Meta:
-        ordering = ("pk",)
+        ordering = ("-pk",)
         verbose_name = "вопрос"
         verbose_name_plural = "Вопросы от пользователей"
 

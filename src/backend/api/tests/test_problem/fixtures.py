@@ -29,10 +29,10 @@ class BaseCaseForProblemTests(APITestCase):
             )
             cls.user.mentorprofile.telegram_id = cls.MENTOR_TELEGRAM_ID
             cls.user.mentorprofile.save()
-            print(f"{cls.user.mentorprofile.telegram_id=}")
             cls.user_from_telegram = UserFromTelegram.objects.create(
                 telegram_id=cls.TELEGRAM_ID,
                 telegram_username=cls.TELEGRAM_USERNAME,
                 name=cls.TELEGRAM_NAME,
                 surname=cls.TELEGRAM_SURNAME,
+                mentor=cls.user.mentorprofile,
             )
