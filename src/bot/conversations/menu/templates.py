@@ -28,10 +28,12 @@ NAME_PATTERN = "^[A-Za-zА-яЁё ]+$"
 
 # Show all tasks + show user results
 TASKS_LIST_TEXT = "Выбери задание"
+SHOW_TASKS = 0
 TASKS_NUMBER = 8
 TASKS_BUTTON_TEXT = "Задание"
-PATTERN_DONE = r"^result_task_(?P<number>\d+)$"
-PATTERN_UNDONE = r"^start_task_(?P<number>\d+)$"
+TASK_RESULTS = 1
+PATTERN_DONE = "result_task_"
+PATTERN_UNDONE = "start_task_"
 
 # Ask question
 ASK_ME_QUESTION_TEXT = "Задай вопрос, который тебя интересует"
@@ -40,6 +42,7 @@ SEND_QUESTION_TEXT = "Подтверди отправку вопроса спе�
 QUESTION_CONFIRMATION_TEXT = (
     "Твой вопрос был сохранен. " "Чуть позже тебе ответит специалист."
 )
+QUESTION_CANCEL = "Вопрос не отправлен, но это можно сделать позднее."
 
 # Get more info
 GET_MORE_INFO_TEXT = "Узнай больше на сайте YOU CAN"

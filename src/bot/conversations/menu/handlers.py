@@ -5,12 +5,24 @@ from telegram.ext import (
     ConversationHandler,
     MessageHandler,
     filters,
+    CallbackQueryHandler,
+    CallbackContext
 )
 
+from .decorators import user_exists
+
+from internal_requests.entities import (
+    Problem,
+)
+
+from conversations.task_1.handlers import start_task_1
+from .callback_funcs import show_done_tasks, show_undone_tasks
 from internal_requests.service import (
     get_info_about_user,
     get_user_task_status_list,
     update_user_info,
+    create_question_from_user,
+    get_messages_with_results
 )
 
 from .keyboards import (
@@ -18,9 +30,13 @@ from .keyboards import (
     PROFILE_MENU_BUTTON,
     URL_BUTTON,
     create_tasks_keyboard,
-    create_inline_tasks_keyboard
+    create_inline_tasks_keyboard,
+    create_inline_buttons_agree_or_cancel,
+    create_my_tasks_keyboard
 )
 from .templates import (
+    QUESTION_CANCEL,
+    SHOW_TASKS,
     ASK_ME_QUESTION_TEXT,
     CANCEL_TEXT,
     CONFIRM_PROFILE_CHANGING,
@@ -50,11 +66,12 @@ async def get_user_profile(update: Update, context: ContextTypes.DEFAULT_TYPE) -
         name=user_info.name,
         surname=user_info.surname,
     )
-    keyboard = ReplyKeyboardMarkup(
-        keyboard=PROFILE_MENU_BUTTON, resize_keyboard=True, one_time_keyboard=True
-    )
+    # keyboard = ReplyKeyboardMarkup(
+    #     keyboard=PROFILE_MENU_BUTTON, resize_keyboard=True, one_time_keyboard=True
+    # )
+    keyboard = create_my_tasks_keyboard()
     await update.message.reply_text(text=text, reply_markup=keyboard)
-    return EDIT_PROFILE
+    return MY_TASKS
 
 
 # async def edit_user_profile(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
@@ -116,15 +133,22 @@ async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     return ConversationHandler.END
 
 
+@user_exists
 async def show_all_user_tasks(
     update: Update, context: ContextTypes.DEFAULT_TYPE
 ) -> None:
     """Посмотреть список заданий."""
     tasks = await get_user_task_status_list(telegram_id=update.effective_user.id)
-    # print(task_statuses)
     keyboard = create_inline_tasks_keyboard(tasks)
-    # update.effective_message.reply_text
-    await update.effective_message.reply_text(text=TASKS_LIST_TEXT, reply_markup=keyboard)
+    if update.callback_query:
+        await update.callback_query.message.edit_text(
+            text=TASKS_LIST_TEXT, reply_markup=keyboard
+        )
+    else:
+        await update.effective_message.reply_text(
+            text=TASKS_LIST_TEXT, reply_markup=keyboard
+        )
+    return SHOW_TASKS
 
 
 async def show_all_user_results(
@@ -146,9 +170,10 @@ async def suggest_ask_question(
 async def get_user_question(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Подтвердить отправку вопроса"""
     context.user_data["question"] = update.message.text
-    keyboard = ReplyKeyboardMarkup(
-        keyboard=CONFIRMATION_BUTTONS, resize_keyboard=True, one_time_keyboard=True
-    )
+    # keyboard = ReplyKeyboardMarkup(
+    #     keyboard=CONFIRMATION_BUTTONS, resize_keyboard=True, one_time_keyboard=True
+    # )
+    keyboard = create_inline_buttons_agree_or_cancel()
     await update.message.reply_text(text=SEND_QUESTION_TEXT, reply_markup=keyboard)
 
 
@@ -156,9 +181,20 @@ async def confirm_saving_question(
     update: Update, context: ContextTypes.DEFAULT_TYPE
 ) -> int:
     """Сохраняет вопрос в базу данных."""
-    # TODO сохранение данных в базу данных из context.user_data
+    question = context.user_data['question']
+    problem = Problem(telegram_id=update.effective_user.id, message=question)
+    await create_question_from_user(problem)
     context.user_data.clear()
-    await update.message.reply_text(text=QUESTION_CONFIRMATION_TEXT)
+    await update.callback_query.message.edit_text(text=QUESTION_CONFIRMATION_TEXT)
+    return ConversationHandler.END
+
+
+async def cancel_save_question(
+        update: Update, context: ContextTypes.DEFAULT_TYPE
+) -> int:
+    """Отменяет отправку вопроса."""
+    context.user_data.clear()
+    await update.callback_query.message.edit_text(text=QUESTION_CANCEL)
     return ConversationHandler.END
 
 
@@ -168,6 +204,11 @@ async def show_url(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         keyboard=URL_BUTTON, resize_keyboard=True, one_time_keyboard=True
     )
     await update.message.reply_text(text=GET_MORE_INFO_TEXT, reply_markup=keyboard)
+
+
+async def fallback(update: Update, context: CallbackContext):
+    await update.message.reply_text('Некорректный ввод. Пожалуйста, выберите одну из доступных команд.')
+    return ConversationHandler.END
 
 
 # async def move_back(
@@ -183,18 +224,41 @@ profile_handler = ConversationHandler(
     entry_points=[CommandHandler("profile", get_user_profile)],
     states={
         MY_TASKS: [
-            MessageHandler(filters.Regex("^Мои задания$"), show_all_user_tasks),
-            MessageHandler(~filters.Regex(NAME_PATTERN), send_incorrect_data_alert)
+            CallbackQueryHandler(show_all_user_tasks, pattern=r"^my_tasks$")
+            # MessageHandler(~filters.Regex(NAME_PATTERN), send_incorrect_data_alert)
         ]
 
 
     },
     fallbacks=[
-        MessageHandler(filters.Regex("^Подтвердить$"), save_user_profile_changings),
-        # MessageHandler(filters.Regex('^Отменить$'), cancel)
-        cancel_handler,
+       MessageHandler(filters.Regex(r"^[a-zA-Zа-яА-я]{1,}$"), fallback)
     ],
 )
+
+show_all_tasks_handler = ConversationHandler(
+    allow_reentry=True,
+    entry_points=[
+        CommandHandler('tasks', show_all_user_tasks),
+        # CallbackQueryHandler(start_task_1, pattern=r"^result_task_(?P<number>\d+)$")
+        ],
+    states={
+        SHOW_TASKS: [
+            CallbackQueryHandler(
+                show_done_tasks, pattern=r"^result_task_(?P<number>\d+)$"
+            ),
+            CallbackQueryHandler(
+                show_undone_tasks, pattern=r"^start_task_(?P<number>\d+)$"
+            )
+        ]
+    },
+    fallbacks=[
+        MessageHandler(filters.Regex(r"^[a-zA-Zа-яА-я]{1,}$"), fallback),
+    ],
+    
+)
+
+# show_all_tasks_handler = CommandHandler("tasks", show_all_user_tasks)
+
 
 
 
@@ -218,8 +282,11 @@ profile_handler = ConversationHandler(
         #     ),
         #     MessageHandler(~filters.Regex(NAME_PATTERN), send_incorrect_data_alert),
         # ],
+
 ask_question_handler = ConversationHandler(
-    entry_points=[CommandHandler("ask", suggest_ask_question)],
+    entry_points=[
+        CommandHandler("ask", suggest_ask_question)
+        ],
     states={
         WAITING_FOR_QUESTION: [
             MessageHandler(
@@ -231,12 +298,12 @@ ask_question_handler = ConversationHandler(
         ],
     },
     fallbacks=[
-        MessageHandler(filters.Regex("^Подтвердить$"), confirm_saving_question),
+        CallbackQueryHandler(confirm_saving_question, pattern=r"^agree_question$"),
         # MessageHandler(filters.Regex('^Отменить$'), cancel)
-        cancel_handler,
+        CallbackQueryHandler(cancel_save_question, pattern=r"^cancel_question$")
     ],
 )
 
-show_all_tasks_handler = CommandHandler("tasks", show_all_user_tasks)
+# show_all_tasks_handler = CommandHandler("tasks", show_all_user_tasks)
 show_user_results_handler = CommandHandler("results", show_all_user_results)
 info_handler = CommandHandler("info", show_url)

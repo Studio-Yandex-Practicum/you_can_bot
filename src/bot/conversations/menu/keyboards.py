@@ -38,15 +38,44 @@ def create_inline_tasks_keyboard(tasks):
                         f"{TASKS_BUTTON_TEXT + ' ' + str(info.number)}"
                     ),
                     callback_data=(
-                        PATTERN_DONE if info.is_done else PATTERN_UNDONE
+                        (PATTERN_DONE if info.is_done else PATTERN_UNDONE) +
+                        str(info.number)
                     )
                 )
                 ]
             for info in tasks
         ]
     )
-    print(tasks_keyboard)
     return tasks_keyboard
+
+
+def create_inline_buttons_agree_or_cancel():
+    keyboard = InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(
+                    text="Подтвердить",
+                    callback_data="agree_question"
+                ),
+                InlineKeyboardButton(
+                    text="Отмена",
+                    callback_data="cancel_question"
+                )
+            ]
+        ]
+    )
+    return keyboard
+
+
+def create_my_tasks_keyboard():
+    keyboard = InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(text=MY_TASKS, callback_data="my_tasks")
+            ]
+        ]
+    )
+    return keyboard
 
 
 def create_tasks_keyboard() -> ReplyKeyboardMarkup:
