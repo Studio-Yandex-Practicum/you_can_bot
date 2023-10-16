@@ -1,4 +1,5 @@
 import asyncio
+
 from django.shortcuts import get_object_or_404
 from rest_framework import status
 from rest_framework.decorators import api_view
@@ -6,8 +7,9 @@ from rest_framework.response import Response
 
 from api.models import UserFromTelegram
 from api.serializers import ProblemSerializer
-from ..conversation_utils import non_context_send_message
 from backend.settings import MAIN_MENTOR_ID
+
+from ..conversation_utils import non_context_send_message
 
 PROBLEM_TEXT = "Пользователь {user} отправил вопрос: «{question}»."
 
