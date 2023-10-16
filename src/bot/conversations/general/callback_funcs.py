@@ -1,4 +1,3 @@
-import os
 from httpx import HTTPStatusError, codes
 from telegram import Update
 from telegram.ext import ContextTypes, ConversationHandler

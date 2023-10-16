@@ -1,8 +1,7 @@
 from rest_framework.test import APITestCase
-from django.contrib.auth.hashers import make_password
 from django.db import transaction
 
-from api.models import MentorProfile, User, UserFromTelegram
+from api.models import User, UserFromTelegram
 
 
 class BaseCaseForProblemTests(APITestCase):
