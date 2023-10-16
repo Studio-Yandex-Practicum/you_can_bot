@@ -1,5 +1,5 @@
-from rest_framework.test import APITestCase
 from django.db import transaction
+from rest_framework.test import APITestCase
 
 from api.models import User, UserFromTelegram
 

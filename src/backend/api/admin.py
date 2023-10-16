@@ -18,8 +18,8 @@ from api.models import (
     TaskStatus,
     UserFromTelegram,
 )
-from .conversation_utils import non_context_send_message
 
+from .conversation_utils import non_context_send_message
 
 User = get_user_model()
 

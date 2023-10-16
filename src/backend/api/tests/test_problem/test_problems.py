@@ -1,6 +1,7 @@
+from unittest.mock import patch
+
 from django.urls import reverse
 from rest_framework import status
-from unittest.mock import patch
 
 from api.models import Problem
 from api.tests.test_problem.fixtures import BaseCaseForProblemTests
