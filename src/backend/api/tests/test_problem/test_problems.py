@@ -66,8 +66,8 @@ class ProblemTests(BaseCaseForProblemTests):
             text=PROBLEM_TEXT.format(
                 question=self.MESSAGE,
                 user=self.user_from_telegram.name,
-            ),  # Ожидаемый текст уведомления ментора
-            user_id=self.MENTOR_TELEGRAM_ID,  # Telegram ID ментора из фикстуров
+            ),
+            user_id=self.MENTOR_TELEGRAM_ID,
         )
 
     def test_problem_from_unknown_user(self):

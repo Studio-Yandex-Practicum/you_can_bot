@@ -20,6 +20,7 @@ from api.models import (
 )
 
 from .conversation_utils import non_context_send_message
+from .filters import AnswerFilter
 
 User = get_user_model()
 
@@ -98,6 +99,7 @@ class ProblemAdmin(admin.ModelAdmin):
     )
     date_hierarchy = "create_date"
     empty_value_display = "-пусто-"
+    list_filter = [AnswerFilter]
 
     def save_model(self, request, obj, form, change):
         if change and "answer" in form.changed_data:
