@@ -1,8 +1,11 @@
+from conversations.task_1.handlers import start_task_1
+from conversations.task_2.handlers import show_start_of_task_2
+from conversations.task_3.handlers import show_start_of_task_3
+
 # Main menu button commands
 COMMANDS = {
     "profile": "Профиль",
     "tasks": "Посмотреть все задания",
-    "results": "Посмотреть расшифровку моих заданий",
     "ask": "Задать вопрос",
     "info": "Перейти на сайт/инфо",
 }
@@ -27,8 +30,13 @@ PROFILE_CHANGED = "Изменения сохранены"
 NAME_PATTERN = "^[A-Za-zА-яЁё ]+$"
 
 # Show all tasks + show user results
+TASKS = {
+    1: start_task_1,
+    2: show_start_of_task_2,
+    3: show_start_of_task_3,
+}
 TASKS_LIST_TEXT = "Выбери задание"
-SHOW_TASKS = 0
+SHOW_TASKS = 1
 TASKS_NUMBER = 8
 TASKS_BUTTON_TEXT = "Задание"
 TASK_RESULTS = 1

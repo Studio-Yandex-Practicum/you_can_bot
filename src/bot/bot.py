@@ -6,7 +6,6 @@ from conversations.menu.handlers import (
     info_handler,
     profile_handler,
     show_all_tasks_handler,
-    show_user_results_handler,
 )
 from conversations.menu.keyboards import get_main_menu_commands
 from conversations.task_1.handlers import task_1_handler
@@ -39,7 +38,6 @@ def create_bot():
     bot_app.add_handlers(
         handlers=[
             show_all_tasks_handler,
-            show_user_results_handler,
             info_handler,
         ]
     )
