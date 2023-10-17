@@ -11,7 +11,7 @@ def user_exists(func):
             await get_info_about_user(telegram_id)
             return await func(update, context)
         except Exception as e:
-            print(f"Ошибка: {e}")
+            print(f"Ошибка c пользователем: {e}")
             return ConversationHandler.END
 
     return wrapper

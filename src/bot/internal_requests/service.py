@@ -106,8 +106,6 @@ async def _get_request(endpoint_url: str) -> Response:
                 url=endpoint_url,
             )
         )
-    # print(response, 'RESPONSE')
-    # print(response.text, 'RESPONSE.TEXT')
     response.raise_for_status()
     return response
 
@@ -134,8 +132,6 @@ async def _patch_request(data: dict, endpoint_url: str) -> Response:
             ),
             json=data,
         )
-    print(response)
-    print(response.text)
     response.raise_for_status()
     return response
 
@@ -149,7 +145,6 @@ async def _parse_api_response_to_messages(response: Response) -> List[Message]:
         photo = item.get("photo", "")
         message = Message(content=content, photo=photo)
         messages.append(message)
-    print(messages, 'MESSAGES')
     return messages
 
 
@@ -168,10 +163,3 @@ async def _parse_api_response_to_task_status(
         task = TaskStatus(**task_info)
         tasks.append(task)
     return tasks
-    # print(response.text)
-    # print(loads('{"first": "one"}'))
-    # print(type(response.text), '(((((((((((((((())))))))))))))))')
-    # t = loads(response.text)
-    # print(loads(response.text), '===============================')
-    # print(type(loads(response.text)), '000000000000000000000000')
-    # print(TaskStatus(**t), '----------------------')
