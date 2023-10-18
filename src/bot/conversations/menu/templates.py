@@ -1,7 +1,3 @@
-from conversations.task_1.handlers import start_task_1
-from conversations.task_2.handlers import show_start_of_task_2
-from conversations.task_3.handlers import show_start_of_task_3
-
 # Main menu button commands
 COMMANDS = {
     "profile": "Профиль",
@@ -11,8 +7,12 @@ COMMANDS = {
 }
 
 # Profile
-USER_PROFILE_TEXT = "Имя: {name}\n" "Фамилия: {surname}\n"
-MY_TASKS = "Мои задания"
+USER_PROFILE_TEXT = "<b>Имя:</b> {name}\n" "<b>Фамилия:</b> {surname}\n"
+MY_TASKS_START = 1
+TASKS_LIST_TEXT = (
+    "Нажав на кнопку с заданием, ты можешь начать, или продолжить его выполнение, "
+    "или посмотреть результаты."
+)
 EDIT_PROFILE_TEXT = "Редактировать профиль"
 EDIT_PROFILE, WAITING_FOR_NAME, WAITING_FOR_SURNAME = range(3)
 ENTER_NAME = "Введи свое имя.\n" "Допустимы буквы русского и латинского алфавитов."
@@ -30,25 +30,21 @@ PROFILE_CHANGED = "Изменения сохранены"
 NAME_PATTERN = "^[A-Za-zА-яЁё ]+$"
 
 # Show all tasks + show user results
-TASKS = {
-    1: start_task_1,
-    2: show_start_of_task_2,
-    3: show_start_of_task_3,
-}
-TASKS_LIST_TEXT = "Выбери задание"
 SHOW_TASKS = 1
+MY_TASKS = "Мои задания"
 TASKS_NUMBER = 8
 TASKS_BUTTON_TEXT = "Задание"
 TASK_RESULTS = 1
 PATTERN_DONE = "result_task_"
 PATTERN_UNDONE = "start_task_"
+PICKED_TASK = "<b>Выбранное задание: {task_number}</b>"
 
 # Ask question
-ASK_ME_QUESTION_TEXT = "Задай вопрос, который тебя интересует"
+ASK_ME_QUESTION_TEXT = "Отправь вопрос, который тебя интересует."
 WAITING_FOR_QUESTION = 0
-SEND_QUESTION_TEXT = "Подтверди отправку вопроса специалисту"
+SEND_QUESTION_TEXT = "Подтверди отправку вопроса психологу."
 QUESTION_CONFIRMATION_TEXT = (
-    "Твой вопрос был сохранен. " "Чуть позже тебе ответит специалист."
+    "Твой вопрос был сохранен. " "Чуть позже тебе ответит психолог."
 )
 QUESTION_CANCEL = "Вопрос не отправлен, но это можно сделать позднее."
 
@@ -59,7 +55,3 @@ URL = "https://youcan.by/"
 
 CONFIRM = "Подтвердить"
 CANCEL = "Отменить"
-CANCEL_TEXT = "Действие отменено"
-
-# Temporary (to be removed when get data from database)
-GET_NUMBER_FROM_DB = 5

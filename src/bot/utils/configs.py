@@ -35,4 +35,4 @@ ALLOWED_TARIFFS = loads(os.getenv("ALLOWED_TARIFFS", '["midi", "maxi"]'))
 ALL_TARIFFS = loads(os.getenv("ALL_TARIFFS", '["mini", "midi", "maxi", null]'))
 YOUCANBY_URL = os.getenv("YOUCANBY_URL")
 YOUCANBY_TOKEN = os.getenv("YOUCANBY_TOKEN")
-EXTERNAL_REQUESTS_ARE_MOCK = os.getenv("EXTERNAL_REQUESTS_ARE_MOCK", True)
+EXTERNAL_REQUESTS_ARE_MOCK = os.getenv("EXTERNAL_REQUESTS_ARE_MOCK") == "True"

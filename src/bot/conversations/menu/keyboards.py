@@ -19,7 +19,17 @@ from .templates import (
 )
 
 CANCEL_BUTTON = [KeyboardButton(text=CANCEL)]
-
+AGREE_OR_CANCEL_KEYBOARD = InlineKeyboardMarkup(
+    inline_keyboard=[
+        [
+            InlineKeyboardButton(text="Подтвердить", callback_data="agree_question"),
+            InlineKeyboardButton(text="Отмена", callback_data="cancel_question"),
+        ]
+    ]
+)
+MY_TASKS_KEYBOARD = InlineKeyboardMarkup(
+    inline_keyboard=[[InlineKeyboardButton(text=MY_TASKS, callback_data="my_tasks")]]
+)
 CONFIRMATION_BUTTONS = [[KeyboardButton(text=CONFIRM)], CANCEL_BUTTON]
 
 URL_BUTTON = [[KeyboardButton(text=URL_BUTTON_TEXT, web_app=WebAppInfo(url=URL))]]
@@ -50,28 +60,3 @@ def create_inline_tasks_keyboard(tasks):
         ]
     )
     return tasks_keyboard
-
-
-def create_inline_buttons_agree_or_cancel():
-    """Создает инлайн клавиатуру со кнопками подтвердить и отменить."""
-    keyboard = InlineKeyboardMarkup(
-        inline_keyboard=[
-            [
-                InlineKeyboardButton(
-                    text="Подтвердить", callback_data="agree_question"
-                ),
-                InlineKeyboardButton(text="Отмена", callback_data="cancel_question"),
-            ]
-        ]
-    )
-    return keyboard
-
-
-def create_my_tasks_keyboard():
-    """Создает инлайн клавиатуру с кнопкой мои задания."""
-    keyboard = InlineKeyboardMarkup(
-        inline_keyboard=[
-            [InlineKeyboardButton(text=MY_TASKS, callback_data="my_tasks")]
-        ]
-    )
-    return keyboard
