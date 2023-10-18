@@ -30,7 +30,6 @@ class Migration(migrations.Migration):
                     models.CharField(
                         help_text="На этот никнейм в Telegram могут быть отправлены уведомления",
                         max_length=32,
-                        unique=True,
                         verbose_name="Никнейм Telegram",
                     ),
                 ),
@@ -67,11 +66,16 @@ class Migration(migrations.Migration):
                 (
                     "telegram_username",
                     models.CharField(
-                        max_length=32, unique=True, verbose_name="Никнейм Telegram"
+                        max_length=32,
+                        unique=True,
+                        verbose_name="Никнейм Telegram",
                     ),
                 ),
                 ("name", models.CharField(max_length=150, verbose_name="Имя")),
-                ("surname", models.CharField(max_length=150, verbose_name="Фамилия")),
+                (
+                    "surname",
+                    models.CharField(max_length=150, verbose_name="Фамилия"),
+                ),
                 (
                     "mentor",
                     models.ForeignKey(
@@ -116,7 +120,10 @@ class Migration(migrations.Migration):
                         verbose_name="Номер задания",
                     ),
                 ),
-                ("summary", models.TextField(null=True, verbose_name="Расшифровка")),
+                (
+                    "summary",
+                    models.TextField(null=True, verbose_name="Расшифровка"),
+                ),
                 (
                     "is_done",
                     models.BooleanField(default=False, verbose_name="Выполнено"),
@@ -172,11 +179,16 @@ class Migration(migrations.Migration):
                     ),
                 ),
                 ("message", models.TextField(verbose_name="Вопрос")),
-                ("answer", models.TextField(null=True, verbose_name="Ответ психолога")),
+                (
+                    "answer",
+                    models.TextField(null=True, verbose_name="Ответ психолога"),
+                ),
                 (
                     "create_date",
                     models.DateTimeField(
-                        auto_now_add=True, db_index=True, verbose_name="Дата создания"
+                        auto_now_add=True,
+                        db_index=True,
+                        verbose_name="Дата создания",
                     ),
                 ),
                 (
