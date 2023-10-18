@@ -20,7 +20,7 @@ from api.models import (
 )
 
 from .conversation_utils import non_context_send_message
-from .filters import AnswerFilter
+from .filters import ANSWER_NOT_RECEIVED, ANSWER_RECEIVED, ProblemAnswerFilter
 
 User = get_user_model()
 
@@ -99,7 +99,7 @@ class ProblemAdmin(admin.ModelAdmin):
     )
     date_hierarchy = "create_date"
     empty_value_display = "-пусто-"
-    list_filter = [AnswerFilter]
+    list_filter = (ProblemAnswerFilter,)
 
     def save_model(self, request, obj, form, change):
         if change and "answer" in form.changed_data:
@@ -116,8 +116,8 @@ class ProblemAdmin(admin.ModelAdmin):
     @admin.display(description="Статус ответа")
     def get_answer_status(self, obj):
         if obj.answer:
-            return "Ответ получен"
-        return "Ответ не получен"
+            return ANSWER_RECEIVED
+        return ANSWER_NOT_RECEIVED
 
 
 @admin.register(Task)

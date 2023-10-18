@@ -15,7 +15,7 @@ class MentorProfile(models.Model):
         to=User,
         on_delete=models.CASCADE,
     )
-    telegram_id = models.PositiveIntegerField(
+    telegram_id = models.PositiveBigIntegerField(
         "Айди Telegram",
         help_text="На этот id в Telegram могут быть отправлены уведомления",
         null=True,
