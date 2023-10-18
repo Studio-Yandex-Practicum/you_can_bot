@@ -84,6 +84,7 @@ async def end_task_1(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def get_answer_question(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Обработчик кнопок."""
+    print("Я внутри обработчика ответов для первого задания")
     choice = update.callback_query.data
     context.user_data["picked_choices"] += choice
     picked_choices = context.user_data.get("picked_choices")

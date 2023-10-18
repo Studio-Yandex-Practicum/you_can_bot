@@ -14,13 +14,11 @@ from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from conversations.task_1.callback_funcs import (
     CHOICES,
     CHOOSING,
-    # cancel,
     get_answer_question,
-    get_start_question,
 )
 
 from conversations.task_2.callback_funcs import (
-    start_question
+    update_question
 )
 
 import internal_requests.service as api_service
@@ -29,6 +27,26 @@ from conversations.task_1.keyboards import (
     START_TASK_1_KEYBOARD,
     get_inline_keyboard,
 )
+from internal_requests.entities import Answer
+
+REPLY_KEYBOARD = InlineKeyboardMarkup.from_row(
+    (
+        InlineKeyboardButton(text="А", callback_data="А"),
+        InlineKeyboardButton(text="Б", callback_data="Б"),
+    ),
+)
+
+def get_default_inline_keyboard(buttons: str, picked_choices: str = "") -> InlineKeyboardMarkup:
+    """Добавляет кнопки в сообщении с учетом уже выбранных ответов."""
+    keyboard = []
+    for label in buttons:
+        if label not in picked_choices:
+            keyboard.append(InlineKeyboardButton(label, callback_data=label))
+    return InlineKeyboardMarkup([keyboard])
+
+
+CHOICES_TYPE_ONE = "АБВГДЕ"
+CHOICES_TYPE_TWO = "АБ"
 
 TASK_ONE_DESCRIPTION = (
     "Далее будет 10 вопросов, в каждом из них – шесть утверждений.\n"
@@ -45,15 +63,23 @@ NEXT_KEYBOARD = InlineKeyboardMarkup(
 )
 
 TASK_ONE_DATA = {
+    "task_number": 1,
+    # нужно будет переписать, чтобы это считывалось из базы данных
+    "number_of_questions": 10,
     "task_name": "Задание 1",
     "description": TASK_ONE_DESCRIPTION,
     "cancel_text": "Выполнение задания 1 было пропущено",
+    "choices": CHOICES_TYPE_ONE,
 }
 
 TASK_TWO_DATA = {
+    "task_number": 2,
+    # нужно будет переписать, чтобы это считывалось из базы данных
+    "number_of_questions": 70,
     "task_name": "Задание 2",
     "description": TASK_TWO_DESCRIPTION,
     "cancel_text": "Выполнение задания 2 было пропущено",
+    "choices": CHOICES_TYPE_TWO,
 }
 
 
@@ -65,15 +91,26 @@ class BaseTaskConversation:
     def __init__(
         self,
         task_data,
-        question_method,
-        update_method
+        # question_method,
+        # update_method
     ):
+        self.task_number = task_data["task_number"]
+        self.number_of_questions = task_data["number_of_questions"]
         self.entry_point_button_label = task_data["task_name"]
         self.description = task_data["description"]
         self.cancel_text = task_data["cancel_text"]
-        self.question_method = question_method
-        self.question_method = self.question_method
-        self.update_method = update_method
+        # self.question_method = question_method
+        # if task_data["task_number"] == 1:
+        if self.task_number == 1:
+            self.question_method = self.get_start_question_type_one
+            self.update_method = get_answer_question
+        else:
+            self.question_method = self.show_question
+            self.question_method = self.question_method
+        # self.update_method = update_method
+
+        self.update_method = self.handle_user_answer
+        self.choices = task_data["choices"]
 
     async def show_task_description(
         self,
@@ -108,38 +145,104 @@ class BaseTaskConversation:
         context.user_data.clear()
         return ConversationHandler.END
 
-    # async def get_start_question(
-    #     self,
-    #     update: Update, context: ContextTypes.DEFAULT_TYPE, question_number: int = 1
-    # ) -> None:
-    #     """Начинает новый вопрос."""
-    #     await update.callback_query.answer()
-    #     context.user_data["picked_choices"] = ""
-    #     messages = await api_service.get_messages_with_question(
-    #         task_number=1,
-    #         question_number=question_number,
-    #     )
-    #     await update.effective_message.reply_text(
-    #         text=messages[0].content,
-    #         reply_markup=get_inline_keyboard(CHOICES),
-    #         parse_mode=ParseMode.HTML,
-    #     )
+    async def get_start_question_type_one(
+        self,
+        update: Update, context: ContextTypes.DEFAULT_TYPE, question_number: int = 1
+    ) -> None:
+        """
+        Выводит первый вопрос задания.
+        """
+        # Эта строка печатается, когда нажимаешь кнопку Далее, прочитав описание задания
+        print("Метод get_start_question начал работу")
+        await update.callback_query.answer()
+        context.user_data["picked_choices"] = ""
+        # Вытаскивает из базы данных первый вопрос
+        messages = await api_service.get_messages_with_question(
+            task_number=1,
+            question_number=question_number,
+        )
+        await update.effective_message.reply_text(
+            text=messages[0].content,
+            reply_markup=get_inline_keyboard(self.choices),
+            parse_mode=ParseMode.HTML,
+        )
 
-    # async def start_question(
-    #     update: Update, _context: ContextTypes.DEFAULT_TYPE, question_number: int = 1
-    # ) -> None:
-    #     """Начинает новый вопрос."""
-    #     await update.callback_query.answer()
-    #     messages = await api_service.get_messages_with_question(
-    #         task_number=CURRENT_TASK,
-    #         question_number=question_number,
-    #     )
-    #     await update.effective_message.reply_text(
-    #         text=messages[0].content,
-    #         reply_markup=REPLY_KEYBOARD,
-    #         parse_mode=ParseMode.HTML,
-    #     )
+    # В task 2 и task 3 такой метод назывался start_question
+    async def show_question(
+        self,
+        update: Update, _context: ContextTypes.DEFAULT_TYPE, question_number: int = 1
+    ) -> None:
+        """Начинает новый вопрос."""
+        print("Метод show_question начал работу")
+        await update.callback_query.answer()
+        messages = await api_service.get_messages_with_question(
+            task_number=2,
+            question_number=question_number,
+        )
+        # reply_markup = REPLY_KEYBOARD
+        await update.effective_message.reply_text(
+            text=messages[0].content,
+            # reply_markup=REPLY_KEYBOARD,
+            # reply_markup=get_inline_keyboard(self.choices),
+            reply_markup=get_default_inline_keyboard(self.choices),
+            parse_mode=ParseMode.HTML,
+        )
+        await update.callback_query.answer()
 
+# В task 2 и task 3 этот метод назывался update_question
+    async def handle_user_answer(
+        self,
+        update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+        """
+        Обрабатывает ответ пользователя на вопрос.
+        """
+        print("Я внутри метода handle_user_answer")
+        picked_choice = update.callback_query.data
+        message = update.effective_message
+        # Здесь к тексту сообщения и вариантам ответов аппендится ответ пользователя
+        await message.edit_text(
+            text=f"{message.text_html}\n\nОтвет: {picked_choice.upper()}",
+            parse_mode=ParseMode.HTML,
+        )
+        current_question = context.user_data.get("current_question")
+        await api_service.create_answer(
+            Answer(
+                telegram_id=message.chat_id,
+                task_number=self.task_number,
+                number=current_question,
+                content=update.callback_query.data,
+            )
+        )
+        if current_question == self.number_of_questions:
+            context.user_data.clear()
+            print('Это был последний вопрос')
+            return await self.show_result(update, context)
+        context.user_data["current_question"] += 1
+        print("context.user_data:")
+        print(context.user_data)
+        await self.show_question(update, context, context.user_data.get("current_question"))
+        return CHOOSING
+
+    async def show_result(
+        self,
+        update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+        """Расшифровка."""
+        query = update.callback_query
+        results = await api_service.get_messages_with_results(
+            telegram_id=query.from_user.id, task_number=self.task_number
+        )
+        for result in results[:-1]:
+            await query.message.reply_text(
+                text=result.content,
+                parse_mode=ParseMode.HTML,
+            )
+        await query.message.reply_text(
+            text=results[-1].content,
+            parse_mode=ParseMode.HTML,
+            reply_markup=REPLY_KEYBOARD, # поменять на клавиатуру, переходящую к следующему заданию
+        )
+        context.user_data.clear()
+        return ConversationHandler.END
 
     def set_entry_points(self):
         """
@@ -165,7 +268,8 @@ class BaseTaskConversation:
         return {
             CHOOSING: [
                 CallbackQueryHandler(self.question_method, pattern=r"^Далее$"),
-                CallbackQueryHandler(self.update_method, pattern=f"^([{CHOICES}])$")
+                CallbackQueryHandler(self.update_method, pattern=f"^([{self.choices}])$")
+                # CallbackQueryHandler(self.update_method, pattern=f"^([{CHOICES}])$")
             ]
         }
 
@@ -179,15 +283,14 @@ class BaseTaskConversation:
 
 task_one = BaseTaskConversation(
     TASK_ONE_DATA,
-    get_start_question,
-    get_answer_question,
+    # get_start_question,
+    # get_answer_question,
 )
 
 task_two = BaseTaskConversation(
     TASK_TWO_DATA,
-    # get_start_question,
-    start_question,
-    get_answer_question,
+    # start_question,
+    # update_question,
 )
 
 task_one_handler = ConversationHandler(
