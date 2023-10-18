@@ -110,9 +110,7 @@ LOG_PATH = BASE_DIR.parent / ".data" / os.getenv("LOG_DIR", "logs")
 LOG_PATH.mkdir(parents=True, exist_ok=True)
 LOG_PATH = LOG_PATH / LOG_FILENAME
 LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO")
-LOG_FORMAT = (
-    "[%(asctime)s,%(msecs)d] %(levelname)s [%(name)s:%(lineno)s] %(message)s"
-)
+LOG_FORMAT = "[%(asctime)s,%(msecs)d] %(levelname)s [%(name)s:%(lineno)s] %(message)s"
 LOG_DT_FORMAT = "%d.%m.%y %H:%M:%S"
 
 LOGGING = {

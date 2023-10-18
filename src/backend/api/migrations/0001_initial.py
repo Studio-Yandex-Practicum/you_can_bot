@@ -126,9 +126,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "is_done",
-                    models.BooleanField(
-                        default=False, verbose_name="Выполнено"
-                    ),
+                    models.BooleanField(default=False, verbose_name="Выполнено"),
                 ),
                 (
                     "pass_date",
@@ -183,9 +181,7 @@ class Migration(migrations.Migration):
                 ("message", models.TextField(verbose_name="Вопрос")),
                 (
                     "answer",
-                    models.TextField(
-                        null=True, verbose_name="Ответ психолога"
-                    ),
+                    models.TextField(null=True, verbose_name="Ответ психолога"),
                 ),
                 (
                     "create_date",
@@ -225,9 +221,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "number",
-                    models.PositiveSmallIntegerField(
-                        verbose_name="Номер вопроса"
-                    ),
+                    models.PositiveSmallIntegerField(verbose_name="Номер вопроса"),
                 ),
                 ("content", models.TextField(verbose_name="Ответ")),
                 (

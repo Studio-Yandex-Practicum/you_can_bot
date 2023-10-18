@@ -25,9 +25,7 @@ from .filters import ANSWER_NOT_RECEIVED, ANSWER_RECEIVED, ProblemAnswerFilter
 User = get_user_model()
 
 
-PROBLEM_ANSWER = (
-    "Психолог ответил на ваш вопрос: «{question}».\n\n Ответ: «{content}»"
-)
+PROBLEM_ANSWER = "Психолог ответил на ваш вопрос: «{question}».\n\n Ответ: «{content}»"
 
 
 class AnswerInline(admin.StackedInline):
