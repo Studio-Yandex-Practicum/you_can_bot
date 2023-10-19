@@ -163,9 +163,7 @@ ask_question_handler = ConversationHandler(
     states={
         WAITING_FOR_QUESTION: [
             MessageHandler(
-                filters.TEXT
-                & ~filters.COMMAND
-                & ~filters.Regex("^(Подтвердить|Отменить)$"),
+                filters.TEXT,
                 get_user_question,
             )
         ],
