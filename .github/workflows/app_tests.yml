@@ -1,4 +1,4 @@
-name: Django tests
+name: Django and bot tests
 
 on:
   push:
