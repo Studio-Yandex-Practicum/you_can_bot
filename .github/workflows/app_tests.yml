@@ -34,3 +34,10 @@ jobs:
         NEED_SQLITE: True
       run: |
         poetry run python src/backend/manage.py test src/backend
+    -
+      name: Bot tests
+      env:
+        NEED_SQLITE: True
+      run: |
+        cd src/bot
+        poetry run python -m unittest
