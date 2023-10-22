@@ -11,13 +11,11 @@ from telegram.ext import (
 
 from telegram import Update
 from telegram.constants import ParseMode
-from telegram.ext import ContextTypes, ConversationHandler, CallbackContext
+from telegram.ext import ContextTypes, ConversationHandler
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 
 import internal_requests.service as api_service
 from conversations.task_1.keyboards import (
-    GO_TO_TASK_2_KEYBOARD,
-    START_TASK_1_KEYBOARD,
     get_inline_keyboard,
 )
 from internal_requests.entities import Answer
@@ -155,6 +153,12 @@ class BaseTaskConversation:
     ) -> None:
         """Начинает новый вопрос."""
         print("Метод show_question начал работу")
+        # Добавление этой строки приводит к ошибке при запуске Задания 2:
+            # telegram.error.BadRequest: Message is not modified: specified new
+            # message content and reply markup are exactly the same as a current
+            # content and reply markup of the message
+            # await update.callback_query.edit_message_reply_markup()
+        # При этом кнопка Далее никуда не девается
         await update.callback_query.answer()
         messages = await api_service.get_messages_with_question(
             task_number=2,
@@ -190,10 +194,11 @@ class BaseTaskConversation:
                 content=update.callback_query.data,
             )
         )
+
         if current_question == self.number_of_questions:
-            context.user_data.clear()
             print('Это был последний вопрос')
-            return await self.show_result(update, context)
+            state = await self.show_result(update, context)
+            return state
         context.user_data["current_question"] += 1
         print("context.user_data:")
         print(context.user_data)
@@ -203,9 +208,17 @@ class BaseTaskConversation:
 
     async def show_result(
         self,
-        update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-        """Расшифровка."""
+        update: Update, context: ContextTypes.DEFAULT_TYPE):
+        """
+        Выводит результаты пользователя и завершает диалог текущего задания,
+        после чего переходит к следующему.
+        """
         query = update.callback_query
+        if self.result_intro:
+            await query.message.reply_text(
+                text=self.result_intro,
+                parse_mode=ParseMode.HTML,
+            )
         results = await api_service.get_messages_with_results(
             telegram_id=query.from_user.id, task_number=self.task_number
         )
@@ -217,10 +230,14 @@ class BaseTaskConversation:
         await query.message.reply_text(
             text=results[-1].content,
             parse_mode=ParseMode.HTML,
-            reply_markup=REPLY_KEYBOARD, # поменять на клавиатуру, переходящую к следующему заданию
+            reply_markup=InlineKeyboardMarkup(
+                ((InlineKeyboardButton(text=f"Задание {self.task_number + 1}",
+                callback_data=f"start_task_{self.task_number + 1}"),),)
+            ),
         )
         context.user_data.clear()
         return ConversationHandler.END
+
 
     def set_entry_points(self):
         """
@@ -235,7 +252,7 @@ class BaseTaskConversation:
             CallbackQueryHandler(
                 self.show_task_description,
                 pattern=rf"^start_task_{self.task_number}$"
-            ),
+            )
         ]
 
     def set_states(self):
@@ -256,7 +273,6 @@ class BaseTaskConversation:
         Нужно использовать при создании хэндлера для задания.
         """
         return [CommandHandler("cancel", self.cancel)]
-
 
 
 class TaskOneConversation(BaseTaskConversation):
@@ -312,30 +328,6 @@ class TaskOneConversation(BaseTaskConversation):
             )
         )
 
-    async def end_task_1(
-        self, update: Update, context: ContextTypes.DEFAULT_TYPE):
-        query = update.callback_query
-        await query.message.reply_text(
-            text=self.result_intro,
-            # text=END_TASK_1_TEXT,
-            parse_mode=ParseMode.HTML,
-        )
-        results = await api_service.get_messages_with_results(
-            telegram_id=query.from_user.id, task_number=self.task_number
-        )
-        for result in results[:-1]:
-            await query.message.reply_text(
-                text=result.content,
-                parse_mode=ParseMode.HTML,
-            )
-        await query.message.reply_text(
-            text=results[-1].content,
-            parse_mode=ParseMode.HTML,
-            reply_markup=GO_TO_TASK_2_KEYBOARD,
-        )
-        context.user_data.clear()
-        return ConversationHandler.END
-
     async def handle_user_answer(
         self,
         update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
@@ -363,25 +355,16 @@ class TaskOneConversation(BaseTaskConversation):
                 picked_choices,
             )
             # await self._save_answer(message.chat_id, current_question, picked_choices)
-            # if current_question == NUMBER_OF_QUESTIONS:
+
             if current_question == self.number_of_questions:
-                state = await self.end_task_1(update, context)
+                state = await self.show_result(update, context)
                 return state
             context.user_data["current_question"] += 1
-            # await get_start_question(
             await self.show_question(
                 update, context, context.user_data.get("current_question")
             )
         return CHOOSING
 
-def initiate_task_one():
-    print("I'm in initiate task one")
-    task_one = TaskOneConversation(**TASK_ONE_DATA)
-    task_one_handler = ConversationHandler(
-        entry_points=task_one.set_entry_points(),
-        states=task_one.set_states(),
-        fallbacks=task_one.set_fallbacks(),
-    )
 
 task_one = TaskOneConversation(**TASK_ONE_DATA)
 task_two = BaseTaskConversation(**TASK_TWO_DATA)
