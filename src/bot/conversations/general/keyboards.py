@@ -24,7 +24,6 @@ START_SKILL_SETS_KEYBOARD = InlineKeyboardMarkup(
 )
 FIRST_TASK_KEYBOARD = InlineKeyboardMarkup(
     inline_keyboard=[
-        # [InlineKeyboardButton(FIRST_TASK_BUTTON_LABEL, callback_data="show_task_description")]
         [InlineKeyboardButton(FIRST_TASK_BUTTON_LABEL, callback_data="start_task_1")]
     ],
 )
