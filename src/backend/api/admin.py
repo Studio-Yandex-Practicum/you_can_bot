@@ -1,3 +1,5 @@
+import asyncio
+
 from django import forms
 from django.contrib import admin
 from django.contrib.auth import get_user_model
@@ -17,7 +19,13 @@ from api.models import (
     UserFromTelegram,
 )
 
+from .conversation_utils import non_context_send_message
+from .filters import ANSWER_NOT_RECEIVED, ANSWER_RECEIVED, ProblemAnswerFilter
+
 User = get_user_model()
+
+
+PROBLEM_ANSWER = "Психолог ответил на ваш вопрос: «{question}».\n\n Ответ: «{content}»"
 
 
 class AnswerInline(admin.StackedInline):
@@ -79,6 +87,7 @@ class ProblemAdmin(admin.ModelAdmin):
         "message",
         "answer",
         "create_date",
+        "get_answer_status",
     )
     list_display_links = ("message",)
     search_fields = (
@@ -88,6 +97,25 @@ class ProblemAdmin(admin.ModelAdmin):
     )
     date_hierarchy = "create_date"
     empty_value_display = "-пусто-"
+    list_filter = (ProblemAnswerFilter,)
+
+    def save_model(self, request, obj, form, change):
+        if change and "answer" in form.changed_data:
+            asyncio.run(
+                non_context_send_message(
+                    text=PROBLEM_ANSWER.format(
+                        question=obj.message, content=obj.answer
+                    ),
+                    user_id=obj.user.telegram_id,
+                )
+            )
+        super().save_model(request, obj, form, change)
+
+    @admin.display(description="Статус ответа")
+    def get_answer_status(self, obj):
+        if obj.answer:
+            return ANSWER_RECEIVED
+        return ANSWER_NOT_RECEIVED
 
 
 @admin.register(Task)

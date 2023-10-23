@@ -4,6 +4,7 @@ COMMANDS = {
     "tasks": "Посмотреть все задания",
     "ask": "Задать вопрос",
     "info": "Перейти на сайт/инфо",
+    "cancel": "Приостановить выполнение задания",
 }
 USER_NOT_FOUND = (
     "Я с тобой еще не знаком, поэтому не могу выполнить для тебя эту команду. "
@@ -11,41 +12,25 @@ USER_NOT_FOUND = (
 )
 
 # Profile
+SHOW_MY_TASKS_STATE = "SHOW_MY_TASKS"
 USER_PROFILE_TEXT = "<b>Имя:</b> {name}\n" "<b>Фамилия:</b> {surname}\n"
-MY_TASKS_START = 1
 TASKS_LIST_TEXT = (
     "Нажав на кнопку с заданием, ты можешь начать, или продолжить его выполнение, "
     "или посмотреть результаты."
 )
-EDIT_PROFILE_TEXT = "Редактировать профиль"
-EDIT_PROFILE, WAITING_FOR_NAME, WAITING_FOR_SURNAME = range(3)
-ENTER_NAME = "Введи свое имя.\n" "Допустимы буквы русского и латинского алфавитов."
-ENTER_SURNAME = (
-    "Отлично! А теперь введи свою фамилию.\n"
-    "Допустимы буквы русского и латинского алфавитов."
-)
-CONFIRM_PROFILE_CHANGING = "Сохранить изменения в профиле?"
-INCORRECT_NAME = (
-    "Возникла ошибка. Повтори ввод. "
-    "Допустимы только буквы русского "
-    "или латинского алфавита"
-)
-PROFILE_CHANGED = "Изменения сохранены"
 NAME_PATTERN = "^[A-Za-zА-яЁё ]+$"
 
 # Show all tasks + show user results
-SHOW_TASKS = 1
+TASKS_STATE = "TASKS"
 MY_TASKS = "Мои задания"
-TASKS_NUMBER = 8
 TASKS_BUTTON_TEXT = "Задание"
-TASK_RESULTS = 1
 PATTERN_DONE = "result_task_"
 PATTERN_UNDONE = "start_task_"
 PICKED_TASK = "<b>Выбранное задание: {task_number}</b>"
 
 # Ask question
+WAITING_FOR_QUESTION_STATE = "WAITING_FOR_QUESTION"
 ASK_ME_QUESTION_TEXT = "Отправь вопрос, который тебя интересует."
-WAITING_FOR_QUESTION = 0
 SEND_QUESTION_TEXT = "Подтверди отправку вопроса психологу."
 QUESTION_CONFIRMATION_TEXT = (
     "Твой вопрос был сохранен. " "Чуть позже тебе ответит психолог."

@@ -15,15 +15,16 @@ class MentorProfile(models.Model):
         to=User,
         on_delete=models.CASCADE,
     )
-    telegram_username = models.CharField(
-        "Никнейм Telegram",
-        help_text="На этот никнейм в Telegram могут быть отправлены уведомления",
-        max_length=_MAX_LENGTH_OF_TELEGRAM_USERNAME,
-        unique=True,
+    telegram_id = models.PositiveBigIntegerField(
+        "Айди Telegram",
+        help_text="На этот id в Telegram могут быть отправлены уведомления",
+        null=True,
+        blank=True,
     )
 
     class Meta:
-        verbose_name = "Профиль"
+        verbose_name = "Профиль психолога"
+        verbose_name_plural = "Профили психологов"
 
     def __str__(self):
         return f"{self.user}"
@@ -295,7 +296,7 @@ class Problem(models.Model):
     )
 
     class Meta:
-        ordering = ("pk",)
+        ordering = ("-pk",)
         verbose_name = "вопрос"
         verbose_name_plural = "Вопросы от пользователей"
 
