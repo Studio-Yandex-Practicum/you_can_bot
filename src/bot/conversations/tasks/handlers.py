@@ -1,6 +1,7 @@
 import re
 
 from dataclasses import dataclass
+from typing import Tuple
 
 from telegram import Update
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
@@ -23,8 +24,9 @@ from internal_requests.entities import Answer
 
 
 CHOOSING = 1
-CHOICES_SIX_LETTERS = "АБВГДЕ"
-CHOICES_TWO_LETTERS = "АБ"
+CHOICES_SIX_LETTERS = ("А", "Б", "В", "Г", "Д", "Е")
+CHOICES_TWO_LETTERS = ("А", "Б")
+CHOICES_TEN_NUMBERS = ("1", "2", "3", "4", "5", "6", "7", "8", "9", "10")
 LABEL_PATTERN = r"\[([А-Я])\]"
 IDX_IN_STR = 4
 MAX_SCORE = 5
@@ -36,6 +38,12 @@ SCORES = {
     4: " 4️⃣ Баллa",
     5: " 5️⃣ Баллов",
 }
+# Константы, относящиеся ко всем заданиям
+MAX_BUTTON_NUMBER = 5
+START_QUESTION_NUMBER = 1
+NEXT_KEYBOARD = InlineKeyboardMarkup(
+    ((InlineKeyboardButton(text="Далее", callback_data="Далее"),),)
+)
 
 # Константы, относящиеся к Task 1
 TASK_ONE_DESCRIPTION = (
@@ -63,10 +71,17 @@ TASK_THREE_CANCELLATION_TEXT = (
     ' то ты можешь открыть меню, перейти в "Мои задания" и выбрать Задание 3.'
 )
 
-# Константы, относящиеся ко всем заданиям
-START_QUESTION_NUMBER = 1
-NEXT_KEYBOARD = InlineKeyboardMarkup(
-    ((InlineKeyboardButton(text="Далее", callback_data="Далее"),),)
+# Константы, относящиеся к Task 4
+TASK_FOUR_DESCRIPTION = (
+    "Насколько ты согласен с каждым из следующих утверждений? "
+    "Варианты ответов:\n"
+    "1 – совершенно не согласен\n"
+    "10 – полностью согласен\n\n"
+)
+TASK_FOUR_RESULT_INTRO = "Твои ценностные ориентации: \n\n"
+TASK_FOUR_CANCELLATION_TEXT = (
+    "Прохождение задания прервано. Если хочешь начать его сначала,"
+    ' то ты можешь открыть меню, перейти в "Мои задания" и выбрать Задание 4.'
 )
 
 TASK_ONE_DATA = {
@@ -102,18 +117,40 @@ TASK_THREE_DATA = {
     "result_intro": TASK_THREE_RESULT_INTRO
 }
 
+TASK_FOUR_DATA = {
+    "task_number": 4,
+    # нужно будет переписать, чтобы это считывалось из базы данных
+    "number_of_questions": 41,
+    "entry_point_button_label": "Задание 4",
+    "description": TASK_FOUR_DESCRIPTION,
+    "cancel_text": TASK_FOUR_CANCELLATION_TEXT,
+    "choices": CHOICES_TEN_NUMBERS,
+    "result_intro": TASK_FOUR_RESULT_INTRO
+}
+
 
 def get_default_inline_keyboard(
-    buttons: str, picked_choices: str = ""
+    button_labels: Tuple[str]
 ) -> InlineKeyboardMarkup:
     """
-    Добавляет кнопки в клавиатуре в зависимости от типа задания.
+    Добавляет кнопки в клавиатуре, принимая на вход кортеж кнопок.
+    Подходит для создания клавиатур в заданиях, где не требуется менять
+    состав кнопок в зависимости от ответа пользователя (для заданий 2, 3, 4).
+    Количество кнопок в одном ряду клавиатуры не должно превышать 8 (это
+    ограничение Telegram), поэтому поставлено ограничение MAX_BUTTON_NUMBER.
+    Выходящие за ограничение кнопки переносятся на второй ряд.
     """
     keyboard = []
-    for label in buttons:
-        if label not in picked_choices:
-            keyboard.append(InlineKeyboardButton(label, callback_data=label))
-    return InlineKeyboardMarkup([keyboard])
+    row = []
+    for label in button_labels:
+        button = InlineKeyboardButton(label, callback_data=label)
+        row.append(button)
+        if len(row) == MAX_BUTTON_NUMBER:
+            keyboard.append(row)
+            row = []
+    if row:
+        keyboard.append(row)
+    return InlineKeyboardMarkup(keyboard)
 
 
 @dataclass
@@ -170,9 +207,14 @@ class BaseTaskConversation:
     # В task 2 и task 3 такой метод назывался start_question
     async def show_question(
         self,
-        update: Update, _context: ContextTypes.DEFAULT_TYPE, question_number: int = 1
+        update: Update,
+        _context: ContextTypes.DEFAULT_TYPE,
+        question_number: int = 1
     ) -> None:
-        """Начинает новый вопрос."""
+        """
+        Показывает очередной вопрос, относящийся к текущему заданию.
+        Формирует клавиатуру для ответа на вопрос.
+        """
         print("Метод show_question начал работу")
         # Добавление этой строки приводит к ошибке при запуске Задания 2:
         # telegram.error.BadRequest: Message is not modified: specified new
@@ -182,15 +224,19 @@ class BaseTaskConversation:
         # При этом кнопка Далее никуда не девается
         await update.callback_query.answer()
         messages = await api_service.get_messages_with_question(
-            task_number=2,
+            task_number=self.task_number,
             question_number=question_number,
         )
         await update.effective_message.reply_text(
             text=messages[0].content,
+            # reply_markup=get_default_inline_keyboard(list(self.choices)),
             reply_markup=get_default_inline_keyboard(self.choices),
             parse_mode=ParseMode.HTML,
         )
         await update.callback_query.answer()
+        print('I am at the end of showing question')
+        print(f"update.callback_query.data: {update.callback_query.data}")
+        print(f"update.callback_query.data: {type(update.callback_query.data)}")
 
 # В task 2 и task 3 этот метод назывался update_question
     async def handle_user_answer(
@@ -198,7 +244,10 @@ class BaseTaskConversation:
         update: Update, context: ContextTypes.DEFAULT_TYPE
     ) -> int:
         """
-        Обрабатывает ответ пользователя на вопрос.
+        Обрабатывает ответ пользователя на вопрос и вызывает метод show_question,
+        чтобы перейти к следующему вопросу. Если вопрос был последний,
+        вызывает show_result, чтобы вывести результат пользователя
+        и завершить диалог.
         """
         print("Я внутри метода handle_user_answer")
         picked_choice = update.callback_query.data
@@ -238,7 +287,7 @@ class BaseTaskConversation:
     ):
         """
         Выводит результаты пользователя и завершает диалог текущего задания,
-        после чего переходит к следующему.
+        после чего переходит к следующему заданию.
         """
         query = update.callback_query
         if self.result_intro:
@@ -249,6 +298,8 @@ class BaseTaskConversation:
         results = await api_service.get_messages_with_results(
             telegram_id=query.from_user.id, task_number=self.task_number
         )
+        print('РЕЗУЛЬТАТЫ')
+        print(results)
         for result in results[:-1]:
             await query.message.reply_text(
                 text=result.content,
@@ -268,7 +319,7 @@ class BaseTaskConversation:
     def set_entry_points(self):
         """
         Описывает entry_points для вхождения в диалог.
-        Нужно использовать при создании хэндлера для задания.
+        Используется при создании хэндлера для задания.
         """
         return [
             MessageHandler(
@@ -284,20 +335,21 @@ class BaseTaskConversation:
     def set_states(self):
         """
         Управляет ведением диалога.
-        Нужно использовать при создании хэндлера для задания.
+        Используется при создании хэндлера для задания.
         """
         return {
             CHOOSING: [
                 CallbackQueryHandler(self.question_method, pattern=r"^Далее$"),
                 CallbackQueryHandler(
-                    self.update_method, pattern=f"^([{self.choices}])$")
+                    # self.update_method, pattern=f"^([{self.choices}])$")
+                    self.update_method, pattern=r"^([1-9]|10|[А-Е])$")
             ]
         }
 
     def set_fallbacks(self):
         """
         Управляет выходом из диалога.
-        Нужно использовать при создании хэндлера для задания.
+        Используется при создании хэндлера для задания.
         """
         return [CommandHandler("cancel", self.cancel)]
 
@@ -329,9 +381,8 @@ class TaskOneConversation(BaseTaskConversation):
         print("Метод get_start_question начал работу")
         await update.callback_query.answer()
         context.user_data["picked_choices"] = ""
-        # Вытаскивает из базы данных первый вопрос
         messages = await api_service.get_messages_with_question(
-            task_number=1,
+            task_number=self.task_number,
             question_number=question_number,
         )
         await update.effective_message.reply_text(
@@ -409,7 +460,9 @@ class TaskOneConversation(BaseTaskConversation):
 task_one = TaskOneConversation(**TASK_ONE_DATA)
 task_two = BaseTaskConversation(**TASK_TWO_DATA)
 task_three = BaseTaskConversation(**TASK_THREE_DATA)
+task_four = BaseTaskConversation(**TASK_FOUR_DATA)
 
 task_one_handler = task_one.add_handlers()
 task_two_handler = task_two.add_handlers()
 task_three_handler = task_three.add_handlers()
+task_four_handler = task_four.add_handlers()
