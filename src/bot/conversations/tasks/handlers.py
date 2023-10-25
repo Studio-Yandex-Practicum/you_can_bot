@@ -17,9 +17,6 @@ from telegram.ext import (
 
 import internal_requests.service as api_service
 
-from conversations.task_1.keyboards import (
-    get_inline_keyboard,
-)
 from internal_requests.entities import Answer
 
 
@@ -31,6 +28,7 @@ START_QUESTION_NUMBER = 1
 
 # Константы, относящиеся к клавиатурам
 MAX_BUTTON_NUMBER = 5
+MAX_TELEGRAM_ROW_LENGTH = 8
 NEXT_KEYBOARD = InlineKeyboardMarkup(
     ((InlineKeyboardButton(text="Далее", callback_data="Далее"),),)
 )
@@ -126,22 +124,30 @@ TASK_FOUR_DATA = {
 
 
 def get_default_inline_keyboard(
-    button_labels: Tuple[str]
+    button_labels: Tuple[str],
+    picked_choices: str = ""
 ) -> InlineKeyboardMarkup:
     """
-    Добавляет кнопки в клавиатуре, принимая на вход кортеж кнопок.
-    Подходит для создания клавиатур в заданиях, где не требуется менять
-    состав кнопок в зависимости от ответа пользователя (для заданий 2, 3, 4).
-    Количество кнопок в одном ряду клавиатуры не должно превышать 8 (это
-    ограничение Telegram), поэтому поставлено ограничение MAX_BUTTON_NUMBER.
-    Выходящие за ограничение кнопки переносятся на второй ряд.
+    Формирует клавиатуру, принимая на вход кортеж кнопок. При формировании
+    учитывает уже выбранные пользователем ответы, исключая такие кнопки
+    из клавиатуры (за исключение ответственен аргумент picked_choices, по
+    умолчанию он является пустой строкой, не влияющей на формирование).
+    По ограничению Telegram, количество кнопок в одном ряду клавиатуры
+    не должно превышать 8, поэтому прописано ограничение MAX_BUTTON_NUMBER.
+    Если количество кнопок превышает 8, то кнопки ставятся в ряды,
+    содержащие MAX_BUTTON_NUMBER. Выходящие за ограничение кнопки
+    переносятся на следующий ряд.
     """
     keyboard = []
     row = []
     for label in button_labels:
-        button = InlineKeyboardButton(label, callback_data=label)
-        row.append(button)
-        if len(row) == MAX_BUTTON_NUMBER:
+        if label not in picked_choices:
+            button = InlineKeyboardButton(label, callback_data=label)
+            row.append(button)
+        if (
+            len(row) == MAX_BUTTON_NUMBER
+            and len(button_labels) > MAX_TELEGRAM_ROW_LENGTH
+        ):
             keyboard.append(row)
             row = []
     if row:
@@ -163,12 +169,6 @@ class BaseTaskConversation:
     result_intro: str
 
     def __post_init__(self):
-        # self.cancel_text: str = (
-        #     "Прохождение задания прервано. Если захочешь продолжить его"
-        #     ' выполнение, то можешь открыть меню, перейти в "Посмотреть'
-        #     ' все задания" или ввести команду /tasks и выбрать'
-        #     f" Задание {self.task_number}."
-        # )
         self.cancel_text: str = (
             TASK_CANCEL_TEXT + str(self.task_number) + "."
         )
@@ -392,7 +392,7 @@ class TaskOneConversation(BaseTaskConversation):
         )
         await update.effective_message.reply_text(
             text=messages[0].content,
-            reply_markup=get_inline_keyboard(self.choices),
+            reply_markup=get_default_inline_keyboard(self.choices),
             parse_mode=ParseMode.HTML,
         )
 
@@ -441,7 +441,7 @@ class TaskOneConversation(BaseTaskConversation):
         message = update.effective_message
         await update.effective_message.edit_text(
             self._get_question_text(message.text_html.split("\n\n"), picked_choices),
-            reply_markup=get_inline_keyboard(self.choices, picked_choices),
+            reply_markup=get_default_inline_keyboard(self.choices, picked_choices),
             parse_mode=ParseMode.HTML,
         )
 
