@@ -45,7 +45,6 @@ async def start_question(
     update: Update, _context: ContextTypes.DEFAULT_TYPE, question_number: int = 1
 ) -> None:
     """Начинает новый вопрос."""
-    print('Внутри функции start_question')
     await update.callback_query.answer()
     messages = await api_service.get_messages_with_question(
         task_number=CURRENT_TASK,

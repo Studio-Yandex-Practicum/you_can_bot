@@ -7,6 +7,14 @@ from .constants import (
     MAX_TELEGRAM_ROW_LENGTH
 )
 
+CHOICES_SIX_LETTERS = ("А", "Б", "В", "Г", "Д", "Е")
+CHOICES_TWO_LETTERS = ("А", "Б")
+CHOICES_TEN_NUMBERS = ("1", "2", "3", "4", "5", "6", "7", "8", "9", "10")
+
+NEXT_KEYBOARD = InlineKeyboardMarkup(
+    ((InlineKeyboardButton(text="Далее", callback_data="Далее"),),)
+)
+
 
 def get_default_inline_keyboard(
     button_labels: Tuple[str],

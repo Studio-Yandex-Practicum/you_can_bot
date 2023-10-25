@@ -31,7 +31,6 @@ LABEL_PATTERN = r"\[([А-Я])\]"
 async def start_task_1(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     """Выводит описание задания 1."""
     query = update.callback_query
-    print(query)
     if query is not None:
         await query.message.edit_reply_markup()
     context.user_data["current_question"] = START_QUESTION_NUMBER
@@ -84,7 +83,6 @@ async def end_task_1(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def get_answer_question(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Обработчик кнопок."""
-    print("Я внутри обработчика ответов для первого задания")
     choice = update.callback_query.data
     context.user_data["picked_choices"] += choice
     picked_choices = context.user_data.get("picked_choices")
