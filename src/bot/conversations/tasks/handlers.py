@@ -27,6 +27,8 @@ MAX_SCORE = 5
 START_QUESTION_NUMBER = 1
 
 # Константы, относящиеся к клавиатурам
+BUTTON_LABELS_PATTERN = r"^([1-9]|10|[А-Е])$"
+NEXT_BUTTON_PATTERN = r"^Далее$"
 MAX_BUTTON_NUMBER = 5
 MAX_TELEGRAM_ROW_LENGTH = 8
 NEXT_KEYBOARD = InlineKeyboardMarkup(
@@ -44,14 +46,19 @@ SCORES = {
     5: " 5️⃣ Баллов",
 }
 
+# номер задания добавляется при создании экземпляра класса
 TASK_CANCEL_TEXT = (
     "Прохождение задания прервано. Если захочешь продолжить его"
     ' выполнение, то можешь открыть меню, перейти в "Посмотреть'
     ' все задания" или ввести команду /tasks и выбрать'
     ' Задание '
 )
+# номер задания добавляется при создании экземпляра класса
+TASK_START_BUTTON_LABEL = "Задание "
 
 # Константы, относящиеся к Task 1
+TASK_ONE_NUMBER = 1
+TASK_ONE_NUM_OF_QUESTIONS = 10
 TASK_ONE_DESCRIPTION = (
     "Далее будет 10 вопросов, в каждом из них – шесть утверждений.\n"
     "Выбирай утверждения в каждом вопросе по степени привлекательности"
@@ -59,6 +66,8 @@ TASK_ONE_DESCRIPTION = (
 TASK_ONE_RESULT_INTRO = "<b>У тебя склонность к:</b>"
 
 # Константы, относящиеся к Task 2
+TASK_TWO_NUMBER = 2
+TASK_TWO_NUM_OF_QUESTIONS = 70
 TASK_TWO_DESCRIPTION = (
     "Ниже 70 вопросов, в каждом из них – два утверждения. Выбери то "
     "продолжение, которое свойственно тебе больше всего. Важно: подолгу не "
@@ -66,6 +75,8 @@ TASK_TWO_DESCRIPTION = (
 )
 
 # Константы, относящиеся к Task 3
+TASK_THREE_NUMBER = 3
+TASK_THREE_NUM_OF_QUESTIONS = 42
 TASK_THREE_DESCRIPTION = (
     "Сейчас тебе будут представлены 42 пары различных видов деятельности. "
     "Если бы тебе пришлось выбирать лишь одну работу из каждой пары, "
@@ -74,6 +85,8 @@ TASK_THREE_DESCRIPTION = (
 TASK_THREE_RESULT_INTRO = "<b>Твой тип личности:</b>"
 
 # Константы, относящиеся к Task 4
+TASK_FOUR_NUMBER = 4
+TASK_FOUR_NUM_OF_QUESTIONS = 41
 TASK_FOUR_DESCRIPTION = (
     "Насколько ты согласен с каждым из следующих утверждений? "
     "Варианты ответов:\n"
@@ -83,40 +96,32 @@ TASK_FOUR_DESCRIPTION = (
 TASK_FOUR_RESULT_INTRO = "Твои ценностные ориентации: \n\n"
 
 TASK_ONE_DATA = {
-    "task_number": 1,
-    # можно будет переписать, чтобы это считывалось из базы данных
-    "number_of_questions": 10,
-    "entry_point_button_label": "Задание 1",
+    "task_number": TASK_ONE_NUMBER,
+    "number_of_questions": TASK_ONE_NUM_OF_QUESTIONS,
     "description": TASK_ONE_DESCRIPTION,
     "choices": CHOICES_SIX_LETTERS,
     "result_intro": TASK_ONE_RESULT_INTRO
 }
 
 TASK_TWO_DATA = {
-    "task_number": 2,
-    # можно будет переписать, чтобы это считывалось из базы данных
-    "number_of_questions": 70,
-    "entry_point_button_label": "Задание 2",
+    "task_number": TASK_TWO_NUMBER,
+    "number_of_questions": TASK_TWO_NUM_OF_QUESTIONS,
     "description": TASK_TWO_DESCRIPTION,
     "choices": CHOICES_TWO_LETTERS,
     "result_intro": ""
 }
 
 TASK_THREE_DATA = {
-    "task_number": 3,
-    # можно будет переписать, чтобы это считывалось из базы данных
-    "number_of_questions": 42,
-    "entry_point_button_label": "Задание 3",
+    "task_number": TASK_THREE_NUMBER,
+    "number_of_questions": TASK_THREE_NUM_OF_QUESTIONS,
     "description": TASK_THREE_DESCRIPTION,
     "choices": CHOICES_TWO_LETTERS,
     "result_intro": TASK_THREE_RESULT_INTRO
 }
 
 TASK_FOUR_DATA = {
-    "task_number": 4,
-    # можно будет переписать, чтобы это считывалось из базы данных
-    "number_of_questions": 41,
-    "entry_point_button_label": "Задание 4",
+    "task_number": TASK_FOUR_NUMBER,
+    "number_of_questions": TASK_FOUR_NUM_OF_QUESTIONS,
     "description": TASK_FOUR_DESCRIPTION,
     "choices": CHOICES_TEN_NUMBERS,
     "result_intro": TASK_FOUR_RESULT_INTRO
@@ -163,12 +168,21 @@ class BaseTaskConversation:
     """
     task_number: int
     number_of_questions: int
-    entry_point_button_label: str
     description: str
     choices: str
     result_intro: str
 
     def __post_init__(self):
+        """
+        Формирует entry_point для задания, составляя его из номера задания и
+        шаблонного текста TASK_START_BUTTON_LABEL.
+        Формирует cancel_text для задания, составляя его из номера задания и
+        шаблонного текста TASK_CANCEL_TEXT.
+        Добавляет методы для отображения вопросов и обработки ответов.
+        """
+        self.entry_point_button_label: str = (
+            TASK_START_BUTTON_LABEL + str(self.task_number)
+        )
         self.cancel_text: str = (
             TASK_CANCEL_TEXT + str(self.task_number) + "."
         )
@@ -208,7 +222,6 @@ class BaseTaskConversation:
         context.user_data.clear()
         return ConversationHandler.END
 
-    # В task 2 и task 3 такой метод назывался start_question
     async def show_question(
         self,
         update: Update,
@@ -219,31 +232,19 @@ class BaseTaskConversation:
         Показывает очередной вопрос, относящийся к текущему заданию.
         Формирует клавиатуру для ответа на вопрос.
         """
-        print("Метод show_question начал работу")
-        # Добавление этой строки приводит к ошибке при запуске Задания 2:
-        # telegram.error.BadRequest: Message is not modified: specified new
-        # message content and reply markup are exactly the same as a current
-        # content and reply markup of the message
         if question_number == 1:
             await update.callback_query.edit_message_reply_markup()
-        # При этом кнопка Далее никуда не девается
-        # await update.callback_query.answer()
         messages = await api_service.get_messages_with_question(
             task_number=self.task_number,
             question_number=question_number,
         )
         await update.effective_message.reply_text(
             text=messages[0].content,
-            # reply_markup=get_default_inline_keyboard(list(self.choices)),
             reply_markup=get_default_inline_keyboard(self.choices),
             parse_mode=ParseMode.HTML,
         )
         await update.callback_query.answer()
-        print('I am at the end of showing question')
-        print(f"update.callback_query.data: {update.callback_query.data}")
-        print(f"update.callback_query.data: {type(update.callback_query.data)}")
 
-# В task 2 и task 3 этот метод назывался update_question
     async def handle_user_answer(
         self,
         update: Update, context: ContextTypes.DEFAULT_TYPE
@@ -254,18 +255,13 @@ class BaseTaskConversation:
         вызывает show_result, чтобы вывести результат пользователя
         и завершить диалог.
         """
-        print("Я внутри метода handle_user_answer")
         picked_choice = update.callback_query.data
         message = update.effective_message
-        print(f"picked_choice — {picked_choice}")
-        print(f"message — {message}")
         await message.edit_text(
             text=f"{message.text_html}\n\nОтвет: {picked_choice.upper()}",
             parse_mode=ParseMode.HTML,
         )
         current_question = context.user_data.get("current_question")
-        print(f"current_question: {current_question}")
-        print(f"task_number = {self.task_number}")
         await api_service.create_answer(
             Answer(
                 telegram_id=message.chat_id,
@@ -274,14 +270,10 @@ class BaseTaskConversation:
                 content=update.callback_query.data,
             )
         )
-        print("api_service worked successfully")
         if current_question == self.number_of_questions:
-            print('Это был последний вопрос')
             state = await self.show_result(update, context)
             return state
         context.user_data["current_question"] += 1
-        print("context.user_data:")
-        print(context.user_data)
         await self.show_question(
             update, context, context.user_data.get("current_question"))
         return CHOOSING
@@ -303,8 +295,6 @@ class BaseTaskConversation:
         results = await api_service.get_messages_with_results(
             telegram_id=query.from_user.id, task_number=self.task_number
         )
-        print('РЕЗУЛЬТАТЫ')
-        print(results)
         for result in results[:-1]:
             await query.message.reply_text(
                 text=result.content,
@@ -344,10 +334,10 @@ class BaseTaskConversation:
         """
         return {
             CHOOSING: [
-                CallbackQueryHandler(self.question_method, pattern=r"^Далее$"),
                 CallbackQueryHandler(
-                    # self.update_method, pattern=f"^([{self.choices}])$")
-                    self.update_method, pattern=r"^([1-9]|10|[А-Е])$")
+                    self.question_method, pattern=NEXT_BUTTON_PATTERN),
+                CallbackQueryHandler(
+                    self.update_method, pattern=BUTTON_LABELS_PATTERN)
             ]
         }
 
@@ -379,11 +369,9 @@ class TaskOneConversation(BaseTaskConversation):
         update: Update, context: ContextTypes.DEFAULT_TYPE, question_number: int = 1
     ) -> None:
         """
-        Выводит вопросы в Задании 1: текст вопроса + клавиатура
-        АБВГДЕ с вариантами ответов.
+        Выводит вопросы в Задании 1: текст вопроса + клавиатура с исходными
+        вариантами ответов: А Б В Г Д Е.
         """
-        # Эта строка печатается, когда нажимаешь кнопку Далее, прочитав описание задания
-        print("Метод get_start_question начал работу")
         await update.callback_query.answer()
         context.user_data["picked_choices"] = ""
         messages = await api_service.get_messages_with_question(
@@ -432,9 +420,9 @@ class TaskOneConversation(BaseTaskConversation):
         """
         Обрабатывает ответ пользователя на вопрос: при нажатии на вариант
         ответа, записывает этот вариант и убирает его из списка вариантов на
-        клавиатуре.
+        клавиатуре. Для контроля вариантов ответа используется переменная
+        picked_choices.
         """
-        print("Я внутри метода handle_user_answer")
         choice = update.callback_query.data
         context.user_data["picked_choices"] += choice
         picked_choices = context.user_data.get("picked_choices")
@@ -444,7 +432,6 @@ class TaskOneConversation(BaseTaskConversation):
             reply_markup=get_default_inline_keyboard(self.choices, picked_choices),
             parse_mode=ParseMode.HTML,
         )
-
         current_question = context.user_data.get("current_question")
         if len(picked_choices) == len(self.choices):
             await self._save_answer(
