@@ -24,12 +24,19 @@ from internal_requests.entities import Answer
 
 
 CHOOSING = 1
-CHOICES_SIX_LETTERS = ("А", "Б", "В", "Г", "Д", "Е")
-CHOICES_TWO_LETTERS = ("А", "Б")
-CHOICES_TEN_NUMBERS = ("1", "2", "3", "4", "5", "6", "7", "8", "9", "10")
 LABEL_PATTERN = r"\[([А-Я])\]"
 IDX_IN_STR = 4
 MAX_SCORE = 5
+START_QUESTION_NUMBER = 1
+
+# Константы, относящиеся к клавиатурам
+MAX_BUTTON_NUMBER = 5
+NEXT_KEYBOARD = InlineKeyboardMarkup(
+    ((InlineKeyboardButton(text="Далее", callback_data="Далее"),),)
+)
+CHOICES_SIX_LETTERS = ("А", "Б", "В", "Г", "Д", "Е")
+CHOICES_TWO_LETTERS = ("А", "Б")
+CHOICES_TEN_NUMBERS = ("1", "2", "3", "4", "5", "6", "7", "8", "9", "10")
 SCORES = {
     0: " 0️⃣ Баллов",
     1: " 1️⃣ Балл",
@@ -38,11 +45,12 @@ SCORES = {
     4: " 4️⃣ Баллa",
     5: " 5️⃣ Баллов",
 }
-# Константы, относящиеся ко всем заданиям
-MAX_BUTTON_NUMBER = 5
-START_QUESTION_NUMBER = 1
-NEXT_KEYBOARD = InlineKeyboardMarkup(
-    ((InlineKeyboardButton(text="Далее", callback_data="Далее"),),)
+
+TASK_CANCEL_TEXT = (
+    "Прохождение задания прервано. Если захочешь продолжить его"
+    ' выполнение, то можешь открыть меню, перейти в "Посмотреть'
+    ' все задания" или ввести команду /tasks и выбрать'
+    ' Задание '
 )
 
 # Константы, относящиеся к Task 1
@@ -66,10 +74,6 @@ TASK_THREE_DESCRIPTION = (
     "что бы ты предпочёл?\n\n"
 )
 TASK_THREE_RESULT_INTRO = "<b>Твой тип личности:</b>"
-TASK_THREE_CANCELLATION_TEXT = (
-    "Прохождение задания прервано. Если хочешь начать его сначала,"
-    ' то ты можешь открыть меню, перейти в "Мои задания" и выбрать Задание 3.'
-)
 
 # Константы, относящиеся к Task 4
 TASK_FOUR_DESCRIPTION = (
@@ -79,51 +83,43 @@ TASK_FOUR_DESCRIPTION = (
     "10 – полностью согласен\n\n"
 )
 TASK_FOUR_RESULT_INTRO = "Твои ценностные ориентации: \n\n"
-TASK_FOUR_CANCELLATION_TEXT = (
-    "Прохождение задания прервано. Если хочешь начать его сначала,"
-    ' то ты можешь открыть меню, перейти в "Мои задания" и выбрать Задание 4.'
-)
 
 TASK_ONE_DATA = {
     "task_number": 1,
-    # нужно будет переписать, чтобы это считывалось из базы данных
+    # можно будет переписать, чтобы это считывалось из базы данных
     "number_of_questions": 10,
     "entry_point_button_label": "Задание 1",
     "description": TASK_ONE_DESCRIPTION,
-    "cancel_text": "Выполнение задания 1 было пропущено",
     "choices": CHOICES_SIX_LETTERS,
     "result_intro": TASK_ONE_RESULT_INTRO
 }
 
 TASK_TWO_DATA = {
     "task_number": 2,
-    # нужно будет переписать, чтобы это считывалось из базы данных
+    # можно будет переписать, чтобы это считывалось из базы данных
     "number_of_questions": 70,
     "entry_point_button_label": "Задание 2",
     "description": TASK_TWO_DESCRIPTION,
-    "cancel_text": "Выполнение задания 2 было пропущено",
     "choices": CHOICES_TWO_LETTERS,
     "result_intro": ""
 }
 
 TASK_THREE_DATA = {
     "task_number": 3,
-    # нужно будет переписать, чтобы это считывалось из базы данных
+    # можно будет переписать, чтобы это считывалось из базы данных
     "number_of_questions": 42,
     "entry_point_button_label": "Задание 3",
     "description": TASK_THREE_DESCRIPTION,
-    "cancel_text": TASK_THREE_CANCELLATION_TEXT,
     "choices": CHOICES_TWO_LETTERS,
     "result_intro": TASK_THREE_RESULT_INTRO
 }
 
 TASK_FOUR_DATA = {
     "task_number": 4,
-    # нужно будет переписать, чтобы это считывалось из базы данных
+    # можно будет переписать, чтобы это считывалось из базы данных
     "number_of_questions": 41,
     "entry_point_button_label": "Задание 4",
     "description": TASK_FOUR_DESCRIPTION,
-    "cancel_text": TASK_FOUR_CANCELLATION_TEXT,
     "choices": CHOICES_TEN_NUMBERS,
     "result_intro": TASK_FOUR_RESULT_INTRO
 }
@@ -163,11 +159,19 @@ class BaseTaskConversation:
     number_of_questions: int
     entry_point_button_label: str
     description: str
-    cancel_text: str
     choices: str
     result_intro: str
 
     def __post_init__(self):
+        # self.cancel_text: str = (
+        #     "Прохождение задания прервано. Если захочешь продолжить его"
+        #     ' выполнение, то можешь открыть меню, перейти в "Посмотреть'
+        #     ' все задания" или ввести команду /tasks и выбрать'
+        #     f" Задание {self.task_number}."
+        # )
+        self.cancel_text: str = (
+            TASK_CANCEL_TEXT + str(self.task_number) + "."
+        )
         self.question_method = self.show_question
         self.update_method = self.handle_user_answer
 
@@ -220,9 +224,10 @@ class BaseTaskConversation:
         # telegram.error.BadRequest: Message is not modified: specified new
         # message content and reply markup are exactly the same as a current
         # content and reply markup of the message
-        # await update.callback_query.edit_message_reply_markup()
+        if question_number == 1:
+            await update.callback_query.edit_message_reply_markup()
         # При этом кнопка Далее никуда не девается
-        await update.callback_query.answer()
+        # await update.callback_query.answer()
         messages = await api_service.get_messages_with_question(
             task_number=self.task_number,
             question_number=question_number,
