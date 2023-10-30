@@ -109,6 +109,7 @@ async def _get_user_info_and_set_in_context(update, context):
         await update.message.reply_text(templates.CONNECTION_ERROR_MESSAGE)
     except (HTTPStatusError, PostAPIError):
         await update.message.reply_text(templates.SERVER_ERROR_MESSAGE)
-    except Exception:
+    except Exception as e:
+        print(str(e))
         await update.message.reply_text(templates.INTERNAL_ERROR_MESSAGE)
         raise Exception

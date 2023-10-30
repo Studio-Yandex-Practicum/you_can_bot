@@ -151,3 +151,7 @@ LOGGING = {
 REST_FRAMEWORK = {
     "TEST_REQUEST_DEFAULT_FORMAT": "json",
 }
+
+MAIN_MENTOR_ID = os.getenv(
+    "MAIN_MENTOR_ID"
+)  # id телеграма ментора, которому будут приходить вопросы, если пользователю еще не назначен ментор

@@ -1,8 +1,11 @@
+from unittest.mock import patch
+
 from django.urls import reverse
 from rest_framework import status
 
 from api.models import Problem
 from api.tests.test_problem.fixtures import BaseCaseForProblemTests
+from api.views.problems import PROBLEM_TEXT
 
 
 class ProblemTests(BaseCaseForProblemTests):
@@ -31,7 +34,8 @@ class ProblemTests(BaseCaseForProblemTests):
         self.assertIn("POST", allowed_methods_list)
         self.assertIn("OPTIONS", allowed_methods_list)
 
-    def test_db_problem(self):
+    @patch("api.views.problems.non_context_send_message")
+    def test_db_problem(self, mock_send_message):
         """
         Проверка занесения данных в таблицу Problems.
         """
@@ -53,6 +57,14 @@ class ProblemTests(BaseCaseForProblemTests):
             True,
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(mock_send_message.called, True)
+        mock_send_message.assert_called_with(
+            text=PROBLEM_TEXT.format(
+                question=self.MESSAGE,
+                user=self.user_from_telegram.name,
+            ),
+            user_id=self.MENTOR_TELEGRAM_ID,
+        )
 
     def test_problem_from_unknown_user(self):
         """
