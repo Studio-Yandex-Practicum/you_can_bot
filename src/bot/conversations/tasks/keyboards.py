@@ -2,10 +2,7 @@ from typing import Tuple
 
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 
-from .constants import (
-    MAX_BUTTON_NUMBER,
-    MAX_TELEGRAM_ROW_LENGTH
-)
+from conversations.tasks.constants import MAX_BUTTON_NUMBER, MAX_TELEGRAM_ROW_LENGTH
 
 CHOICES_SIX_LETTERS = ("А", "Б", "В", "Г", "Д", "Е")
 CHOICES_TWO_LETTERS = ("А", "Б")
@@ -17,8 +14,7 @@ NEXT_KEYBOARD = InlineKeyboardMarkup(
 
 
 def get_default_inline_keyboard(
-    button_labels: Tuple[str],
-    picked_choices: str = ""
+    button_labels: Tuple[str], picked_choices: str = ""
 ) -> InlineKeyboardMarkup:
     """
     Формирует клавиатуру, принимая на вход кортеж кнопок. При формировании

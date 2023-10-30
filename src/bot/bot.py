@@ -1,12 +1,10 @@
 from telegram.ext import ApplicationBuilder
 
 from conversations.general.handlers import acquaintance_handler
-from conversations.tasks.handlers import (
-    task_one_handler,
-    task_two_handler,
-    task_three_handler,
-    task_four_handler,
-)
+from conversations.task_1.handlers import task_one_handler
+from conversations.task_2.handlers import task_two_handler
+from conversations.task_3.handlers import task_three_handler
+from conversations.task_4.handlers import task_four_handler
 from utils.configs import TOKEN
 
 
