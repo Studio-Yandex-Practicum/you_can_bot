@@ -1,35 +1,20 @@
-from telegram.ext import (
-    CallbackQueryHandler,
-    CommandHandler,
-    ConversationHandler,
-    MessageHandler,
-    filters,
-)
+from conversations.tasks.base import BaseTaskConversation
+from conversations.tasks.keyboards import CHOICES_TWO_LETTERS
 
-from conversations.task_3.callback_funcs import (
-    CHOOSING,
-    cancel,
-    show_start_of_task_3,
-    start_question,
-    update_question,
+TASK_THREE_NUMBER = 3
+TASK_THREE_NUM_OF_QUESTIONS = 42
+TASK_THREE_DESCRIPTION = (
+    "Сейчас тебе будут представлены 42 пары различных видов деятельности. "
+    "Если бы тебе пришлось выбирать лишь одну работу из каждой пары, "
+    "что бы ты предпочёл?\n\n"
 )
-from conversations.task_3.keyboards import (
-    CANCEL_COMMAND,
-    TEXT_ENTRY_POINT_BUTTON_FOR_TASK_3,
-)
-
-task_3_handler: ConversationHandler = ConversationHandler(
-    entry_points=[
-        MessageHandler(
-            filters.Regex(TEXT_ENTRY_POINT_BUTTON_FOR_TASK_3), show_start_of_task_3
-        ),
-        CallbackQueryHandler(show_start_of_task_3, r"^start_task_3$"),
-    ],
-    states={
-        CHOOSING: [
-            CallbackQueryHandler(start_question, pattern=r"^Далее$"),
-            CallbackQueryHandler(update_question, pattern=r"^(а|б)$"),
-        ]
-    },
-    fallbacks=[CommandHandler(CANCEL_COMMAND, cancel)],
-)
+TASK_THREE_RESULT_INTRO = "<b>Твой тип личности:</b>"
+TASK_THREE_DATA = {
+    "task_number": TASK_THREE_NUMBER,
+    "number_of_questions": TASK_THREE_NUM_OF_QUESTIONS,
+    "description": TASK_THREE_DESCRIPTION,
+    "choices": CHOICES_TWO_LETTERS,
+    "result_intro": TASK_THREE_RESULT_INTRO,
+}
+task_three = BaseTaskConversation(**TASK_THREE_DATA)
+task_three_handler = task_three.add_handlers()

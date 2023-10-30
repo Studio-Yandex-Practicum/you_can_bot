@@ -1,35 +1,19 @@
-from telegram.ext import (
-    CallbackQueryHandler,
-    CommandHandler,
-    ConversationHandler,
-    MessageHandler,
-    filters,
-)
+from conversations.tasks.base import BaseTaskConversation
+from conversations.tasks.keyboards import CHOICES_TWO_LETTERS
 
-from conversations.task_2.callback_funcs import (
-    CHOOSING,
-    cancel,
-    show_start_of_task_2,
-    start_question,
-    update_question,
+TASK_TWO_NUMBER = 2
+TASK_TWO_NUM_OF_QUESTIONS = 70
+TASK_TWO_DESCRIPTION = (
+    "Ниже 70 вопросов, в каждом из них – два утверждения. Выбери то "
+    "продолжение, которое свойственно тебе больше всего. Важно: подолгу не "
+    "задумывайся над ответами!\n\n"
 )
-from conversations.task_2.keyboards import (
-    CANCEL_COMMAND,
-    TEXT_ENTRY_POINT_BUTTON_FOR_TASK_2,
-)
-
-task_2_handler: ConversationHandler = ConversationHandler(
-    entry_points=[
-        MessageHandler(
-            filters.Regex(TEXT_ENTRY_POINT_BUTTON_FOR_TASK_2), show_start_of_task_2
-        ),
-        CallbackQueryHandler(show_start_of_task_2, r"^start_task_2$"),
-    ],
-    states={
-        CHOOSING: [
-            CallbackQueryHandler(start_question, pattern=r"^Далее$"),
-            CallbackQueryHandler(update_question, pattern=r"^(а|б)$"),
-        ]
-    },
-    fallbacks=[CommandHandler(CANCEL_COMMAND, cancel)],
-)
+TASK_TWO_DATA = {
+    "task_number": TASK_TWO_NUMBER,
+    "number_of_questions": TASK_TWO_NUM_OF_QUESTIONS,
+    "description": TASK_TWO_DESCRIPTION,
+    "choices": CHOICES_TWO_LETTERS,
+    "result_intro": "",
+}
+task_two = BaseTaskConversation(**TASK_TWO_DATA)
+task_two_handler = task_two.add_handlers()

@@ -14,8 +14,11 @@ from conversations.menu.templates import (
 )
 
 # /profile
+entry_point_to_profile_handler = CommandHandler(
+    "profile", callback_funcs.get_user_profile
+)
 profile_handler = ConversationHandler(
-    entry_points=[CommandHandler("profile", callback_funcs.get_user_profile)],
+    entry_points=[entry_point_to_profile_handler],
     states={
         SHOW_MY_TASKS_STATE: [
             CallbackQueryHandler(
@@ -31,9 +34,12 @@ profile_handler = ConversationHandler(
     fallbacks=[],
 )
 # /tasks
+entry_point_to_tasks_handler = CommandHandler(
+    "tasks", callback_funcs.show_all_user_tasks
+)
 show_all_tasks_handler = ConversationHandler(
     entry_points=[
-        CommandHandler("tasks", callback_funcs.show_all_user_tasks),
+        entry_point_to_tasks_handler,
     ],
     states={
         TASKS_STATE: [
@@ -45,8 +51,9 @@ show_all_tasks_handler = ConversationHandler(
     fallbacks=[],
 )
 # /ask
+entry_point_to_ask_handler = CommandHandler("ask", callback_funcs.suggest_ask_question)
 ask_question_handler = ConversationHandler(
-    entry_points=[CommandHandler("ask", callback_funcs.suggest_ask_question)],
+    entry_points=[entry_point_to_ask_handler],
     states={
         WAITING_FOR_QUESTION_STATE: [
             MessageHandler(
