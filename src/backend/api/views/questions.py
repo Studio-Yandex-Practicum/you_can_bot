@@ -40,10 +40,14 @@ def get_question_for_task_8(request, question_number):
             questions.append(question.choices.last())
 
     result = {
-        "content": render_to_string(
-            "questions/task_8.html",
-            {"question_number": question_number, "choices": questions},
-        )
+        "result": [
+            {
+                "content": render_to_string(
+                    "questions/task_8.html",
+                    {"question_number": question_number, "choices": questions},
+                )
+            }
+        ]
     }
     return Response(result, status=status.HTTP_200_OK)
 
