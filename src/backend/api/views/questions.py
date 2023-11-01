@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.template.loader import render_to_string
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.exceptions import NotFound
@@ -21,6 +22,34 @@ def get_question(request, task_number, question_number):
         },
     )
     return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+@api_view(("GET",))
+def get_question_for_task_8(request, question_number):
+    """Получение оформленного сообщения Question для 8-го опроса."""
+    # [
+    #     {"question": 1, "choice": "а"}, {"question": 2, "choice": "б"}
+    # ]
+    task = Task.objects.get(number=8)
+    questions = []
+    print(request.data)
+    for value in request.data.values():
+        print(type(value))
+        print(value["question"])
+        print(value["choice"])
+        question = task.questions.get(number=value["question"])
+        if value["choice"] == "а":
+            questions.append(question.choices.first())
+        else:
+            questions.append(question.choices.last())
+
+    result = {
+        "content": render_to_string(
+            "questions/task_8.html",
+            {"question_number": question_number, "choices": questions},
+        )
+    }
+    return Response(result, status=status.HTTP_200_OK)
 
 
 def _get_questions_or_404(number, task):

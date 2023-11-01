@@ -21,20 +21,8 @@ CALCULATE_TASKS = {
 }
 
 
-@api_view(("GET",))
-def get_answers(request, telegram_id, task_number):
-    """
-    Получение ответа на вопрос по заданию.
-    """
-    pass
-
-
 @api_view(("POST",))
-def answer_create(request, telegram_id, task_number):
-    """
-    Создание записи в таблице Answer.
-    Изменение в таблице TaskStatus поля current_question для пользователя.
-    """
+def answers(request, telegram_id, task_number):
     task_status = _get_task_status_or_404(task_number, telegram_id)
     number = _get_and_validate_number_of_question(request)
     question = _get_question_or_404(number, task_number)

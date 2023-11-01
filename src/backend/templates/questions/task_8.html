@@ -1,0 +1,6 @@
+{% extends "questions/base.html" %}
+{% block number %}<b>{{ question_number }}-я пара</b>{% endblock number %}
+{% block content %}{% for choice in choices %}
+<b>[{{ forloop.counter | add:"1039" | stringformat:"c" }}]</b> {{ choice.title }}
+{% if choice.description %}{{ choice.description }}{% endif %}{% empty %}
+{% endfor %}{% endblock content %}

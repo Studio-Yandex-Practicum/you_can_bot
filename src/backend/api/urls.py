@@ -1,9 +1,9 @@
 from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
-from api.views.answer import answer_create
+from api.views.answer import answers
 from api.views.problems import problem_create
-from api.views.questions import get_question
+from api.views.questions import get_question, get_question_for_task_8
 from api.views.results import get_results_for_user_by_task
 from api.views.tasks import TaskStatusViewSet
 from api.views.users import UserFromTelegramViewSet
@@ -26,8 +26,8 @@ urlpatterns = [
     ),
     path(
         "v1/users/<int:telegram_id>/tasks/<int:task_number>/answers/",
-        answer_create,
-        name="answer_create",
+        answers,
+        name="answers",
     ),
     path(
         "v1/users/<int:telegram_id>/tasks/<int:task_number>/results/",
@@ -38,5 +38,10 @@ urlpatterns = [
         "v1/task/<int:task_number>/question/<int:question_number>/",
         get_question,
         name="get_question",
+    ),
+    path(
+        "v1/task_8_question/<int:question_number>/",
+        get_question_for_task_8,
+        name="get_question_for_task_8",
     ),
 ]
