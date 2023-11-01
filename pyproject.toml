@@ -20,7 +20,6 @@ pre-commit = "^3.4.0"
 flake8 = "^6.1.0"
 isort = "^5.12.0"
 black = "^23.7.0"
-python-dotenv = "^1.0.0"
 
 [tool.isort]
 profile = "black"
