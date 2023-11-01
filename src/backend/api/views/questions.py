@@ -32,11 +32,7 @@ def get_question_for_task_8(request, question_number):
     # ]
     task = Task.objects.get(number=8)
     questions = []
-    print(request.data)
-    for value in request.data.values():
-        print(type(value))
-        print(value["question"])
-        print(value["choice"])
+    for value in request.data:
         question = task.questions.get(number=value["question"])
         if value["choice"] == "а":
             questions.append(question.choices.first())

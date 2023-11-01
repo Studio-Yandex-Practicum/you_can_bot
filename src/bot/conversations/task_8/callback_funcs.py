@@ -49,7 +49,6 @@ async def start_question(
         messages = await api_service.get_task_8_question(
             question_number=question_number,
         )
-        print(messages)
         await update.effective_message.reply_text(
             text=messages.content,
             reply_markup=REPLY_KEYBOARD,

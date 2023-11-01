@@ -100,7 +100,7 @@ async def get_task_8_question(question_number: int) -> Response:
     #     {"question": 2, "choice": "б"}
     # ]
     response = await _get_request_with_params(endpoint_urn, params)
-    return response
+    return response.content
 
 
 async def _get_request_with_params(endpoint_urn: str, params) -> Response:
