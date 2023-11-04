@@ -141,7 +141,7 @@ class Question(models.Model):
         ]
 
     def __str__(self):
-        return str(self.number)
+        return self.content
 
 
 class Choice(models.Model):
@@ -157,6 +157,9 @@ class Choice(models.Model):
         default="",
         blank=True,
     )
+
+    def __str__(self):
+        return self.title
 
 
 class Result(models.Model):
@@ -184,6 +187,9 @@ class Result(models.Model):
         verbose_name = "результат"
         verbose_name_plural = "Результаты заданий"
         unique_together = ("task", "key")
+
+    def __str__(self):
+        return self.title
 
 
 class TaskStatus(models.Model):
@@ -222,6 +228,9 @@ class TaskStatus(models.Model):
         verbose_name_plural = "Статусы заданий"
         unique_together = ("user", "task")
 
+    def __str__(self):
+        return f"Сводка пользователя {self.user}. {self.task}"
+
 
 class Answer(models.Model):
     """Модель ответов на вопросы."""
@@ -246,7 +255,7 @@ class Answer(models.Model):
         verbose_name_plural = "Ответы на задания"
 
     def __str__(self):
-        return f"Ответ {self.question}"
+        return f"На вопрос {self.question.number}"
 
 
 class ResultStatus(models.Model):
@@ -270,6 +279,13 @@ class ResultStatus(models.Model):
         "Баллы",
         default=0,
     )
+
+    class Meta:
+        verbose_name = "Результат пользователя"
+        verbose_name_plural = "Результаты пользователя"
+
+    def __str__(self):
+        return f"{self.result} ({self.score} б.)"
 
 
 class Problem(models.Model):
