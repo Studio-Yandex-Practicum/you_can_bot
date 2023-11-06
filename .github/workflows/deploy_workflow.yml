@@ -1,4 +1,4 @@
-name: Prod backend and bot build and deploy
+name: Deploy project to test server
 
 on:
   pull_request:
