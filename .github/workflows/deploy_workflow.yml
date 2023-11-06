@@ -111,7 +111,6 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           script: |
             cd ${{ env.DEPLOY_PATH }}
-            rm .env
             
             echo POSTGRES_DB=${{ secrets.POSTGRES_DB }} > .env
             echo POSTGRES_USER=${{ secrets.POSTGRES_USER }} >> .env
