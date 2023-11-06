@@ -14,6 +14,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
+  REP_OWNER: studio-yandex-practicum
   IMAGE_NAME: you_can_bot
   DEPLOY_PATH: ~/you_can_bot
 
@@ -66,9 +67,6 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: develop
-      - name: Set variables
-        run: |
-          echo REP_OWNER=$(echo ${{ github.repository_owner }} | tr '[:upper:]' '[:lower:]') >> $GITHUB_ENV
       - name: GitHub Packages login
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -96,7 +94,7 @@ jobs:
         with:
           ref: develop
 
-      - name: copy docker compose file to server
+      - name: Copy docker compose file to server
         uses: appleboy/scp-action@master
         with:
           host: ${{ secrets.HOST }}
@@ -105,7 +103,7 @@ jobs:
           source: "./infra/docker-compose.test.yml, ./infra/default.conf"
           target: ${{ env.DEPLOY_PATH }}
 
-      - name: executing remote ssh commands to deploy
+      - name: Executing remote ssh commands to deploy
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.HOST }}
@@ -117,7 +115,7 @@ jobs:
             echo POSTGRES_DB=${{ secrets.POSTGRES_DB }} > .env
             echo POSTGRES_USER=${{ secrets.POSTGRES_USER }} >> .env
             echo POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }} >> .env
-
+            
             echo SECRET_KEY=${{ secrets.SECRET_KEY }} >> .env
             echo DEBUG=${{ vars.DEBUG }} >> .env
             echo DJANGO_ALLOWED_HOSTS=${{ secrets.DJANGO_ALLOWED_HOSTS }} >> .env
@@ -133,11 +131,11 @@ jobs:
             echo TOKEN=${{ secrets.TOKEN }} >> .env
             echo EXTERNAL_REQUESTS_ARE_MOCK=${{ vars.EXTERNAL_REQUESTS_ARE_MOCK }} >> .env
             echo MAIN_MENTOR_ID=${{ secrets.MAIN_MENTOR_ID }} >> .env
-
+            
             sudo docker pull ${{ env.REGISTRY }}/${{ env.REP_OWNER }}/${{ env.IMAGE_NAME }}:latest
-
+            
             docker image prune -f
-
+            
             docker compose -f infra/docker-compose.test.yml stop
             docker compose -f infra/docker-compose.test.yml rm backend -f
             docker compose -f infra/docker-compose.test.yml rm bot -f
