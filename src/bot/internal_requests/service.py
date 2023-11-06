@@ -93,15 +93,6 @@ async def create_answer(answer: Answer) -> Response:
     """Запрос на занесение ответа от пользователя на вопрос задания."""
     endpoint_urn = f"users/{answer.telegram_id}/tasks/{answer.task_number}/answers/"
     response = await _post_request(
-        {"number": answer.number, "content": answer.content.lower()}, endpoint_urn
-    )
-    return response
-
-
-async def create_answer_raw(answer: Answer) -> Response:
-    """Запрос на занесение raw-ответа от пользователя на вопрос задания."""
-    endpoint_urn = f"users/{answer.telegram_id}/tasks/{answer.task_number}/answers/"
-    response = await _post_request(
         {"number": answer.number, "content": answer.content}, endpoint_urn
     )
     return response

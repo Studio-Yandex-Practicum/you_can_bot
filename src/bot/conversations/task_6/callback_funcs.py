@@ -29,6 +29,8 @@ class TaskSixConversation(BaseTaskConversation):
         """
         Показывает очередной вопрос, относящийся к текущему заданию.
         """
+        if question_number == 1:
+            await update.callback_query.edit_message_reply_markup()
         messages = await api_service.get_messages_with_question(
             task_number=self.task_number,
             question_number=question_number,
@@ -70,7 +72,7 @@ class TaskSixConversation(BaseTaskConversation):
         и завершить диалог.
         """
         current_question = context.user_data.get("current_question")
-        await api_service.create_answer_raw(
+        await api_service.create_answer(
             Answer(
                 telegram_id=update.effective_message.chat_id,
                 task_number=self.task_number,
