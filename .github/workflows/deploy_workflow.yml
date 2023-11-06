@@ -15,7 +15,7 @@ on:
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: you_can_bot
-  DEPLOY_PATH: /you_can_bot
+  DEPLOY_PATH: ~/you_can_bot
 
 defaults:
   run:
@@ -55,6 +55,7 @@ jobs:
       run: |
         cd src/bot
         poetry run python -m unittest
+
   build-and-push-image-to-github-packages:
     environment:
       name: test
@@ -88,6 +89,7 @@ jobs:
           push: true
           tags: |
             ${{ env.REGISTRY }}/${{ env.REP_OWNER }}/${{ env.IMAGE_NAME }}:latest
+
   deploy:
     name: Deploy changes on server
     runs-on: ubuntu-latest
@@ -108,34 +110,30 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
           script: |
-            touch .env
-
-            # PostgreSQL environment variables
             echo POSTGRES_DB=${{ secrets.POSTGRES_DB }} > .env
             echo POSTGRES_USER=${{ secrets.POSTGRES_USER }} >> .env
             echo POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }} >> .env
-            echo POSTGRES_HOST=${{ secrets.POSTGRES_HOST }} >> .env
-            echo POSTGRES_PORT=${{ secrets.POSTGRES_PORT }} >> .env
 
-            # Django environment variables
             echo SECRET_KEY=${{ secrets.SECRET_KEY }} >> .env
+            echo DEBUG=${{ vars.DEBUG }} >> .env
             echo DJANGO_ALLOWED_HOSTS=${{ secrets.DJANGO_ALLOWED_HOSTS }} >> .env
-            echo INTERNAL_API_URL=${{ secrets.INTERNAL_API_URL }} >> .env
-            echo TOKEN=${{ secrets.TOKEN }} >> .env
-            echo MAIN_MENTOR_ID=${{ secrets.MAIN_MENTOR_ID }} >> .env
-            echo ENGINE=${{ secrets.ENGINE }} >> .env
+            
+            echo DB_ENGINE=${{ secrets.ENGINE }} >> .env
             echo DB_PORT=${{ secrets.DB_PORT }} >> .env
             echo DB_HOST=${{ secrets.DB_HOST }} >> .env
+            
+            echo INTERNAL_API_URL=${{ secrets.INTERNAL_API_URL }} >> .env
             echo YOUCANBY_TOKEN=${{ secrets.YOUCANBY_TOKEN }} >> .env
             echo YOUCANBY_API_URL=${{ secrets.YOUCANBY_API_URL }} >> .env
-
-            echo DEBUG=${{ vars.DEBUG }} >> .env
+            
+            echo TOKEN=${{ secrets.TOKEN }} >> .env
             echo EXTERNAL_REQUESTS_ARE_MOCK=${{ vars.EXTERNAL_REQUESTS_ARE_MOCK }} >> .env
+            echo MAIN_MENTOR_ID=${{ secrets.MAIN_MENTOR_ID }} >> .env
 
             sudo docker pull ${{ env.REGISTRY }}/${{ env.REP_OWNER }}/${{ env.IMAGE_NAME }}:latest
 
-            # Очистка неиспользуемых контейнеров, образов
             sudo docker system prune --force
 
             sudo docker-compose you_can_bot/infra/docker-compose.yaml up -d
             sudo docker-compose exec -T backend python manage.py migrate
+            sudo docker-compose exec -T backend python manage.py collectstatic
