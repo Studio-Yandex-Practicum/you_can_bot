@@ -84,7 +84,8 @@ def _create_result_status(task_status, task_number, end_question):
     task_status.is_done = True
     task_status.pass_date = timezone.now()
     task_status.save()
-    CALCULATE_TASKS.get(task_number)(answers)
+    if task_number in CALCULATE_TASKS:
+        CALCULATE_TASKS.get(task_number)(answers)
 
 
 def _check_all_answers_exist(task_status, end_question):
