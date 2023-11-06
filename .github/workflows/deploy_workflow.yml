@@ -102,7 +102,7 @@ jobs:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
-          source: "./infra/docker-compose.yml, ./infra/default.conf"
+          source: "./infra/docker-compose.test.yml, ./infra/default.conf"
           target: ${{ env.DEPLOY_PATH }}
 
       - name: executing remote ssh commands to deploy
@@ -138,10 +138,10 @@ jobs:
 
             docker image prune -f
 
-            docker compose -f infra/docker-compose.yml stop
-            docker compose -f infra/docker-compose.yml rm backend -f
-            docker compose -f infra/docker-compose.yml rm bot -f
-            docker compose --env-file .env -f infra/docker-compose.yml up -d
+            docker compose -f infra/docker-compose.test.yml stop
+            docker compose -f infra/docker-compose.test.yml rm backend -f
+            docker compose -f infra/docker-compose.test.yml rm bot -f
+            docker compose --env-file .env -f infra/docker-compose.test.yml up -d
             
             docker exec backend python backend/manage.py migrate
             docker exec backend python backend/manage.py collectstatic --noinput
