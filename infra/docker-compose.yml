@@ -2,11 +2,19 @@ version: '3.8'
 
 services:
     db:
-      image: postgres:15.0-alpine
+      image: postgres:16
+      container_name: db
+      restart: always
       volumes:
-        - /var/lib/postgresql/data/
+        - db_data:/var/lib/postgresql/data/
+      environment:
+        LANG: ru_RU.UTF-8
+        POSTGRES_INITDB_ARGS: '--locale-provider=icu --icu-locale=ru-RU'
+      ports:
+        - "5432:5432"
       env_file:
         - ../.env
+
 
     backend:
       build:
