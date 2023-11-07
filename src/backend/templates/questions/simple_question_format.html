@@ -1,0 +1,3 @@
+{% extends "questions/base.html" %}
+{% block number %}<b>{{ question.number }}. </b>{% endblock number %}
+{% block title %}{{ question.content | safe }}{% endblock title %}

@@ -41,6 +41,8 @@ class QuestionSerializer(serializers.ModelSerializer):
     def _get_template_name_by_task_number(task_number):
         if task_number == 3 or task_number == 8:
             template_name = "questions/question_with_pairs_format.html"
+        elif task_number == 6:
+            template_name = "questions/simple_question_format.html"
         else:
             template_name = "questions/standard_question_format.html"
         return template_name
