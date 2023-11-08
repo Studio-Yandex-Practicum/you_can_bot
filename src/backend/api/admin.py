@@ -168,6 +168,9 @@ class UserFromTelegramAdmin(admin.ModelAdmin):
 
 @admin.register(Question)
 class QuestionAdmin(admin.ModelAdmin):
+    list_display = ("number", "content",)
+    list_display_links = ("number", "content",)
+    list_filter = ("task",)
     inlines = (ChoiceInline,)
 
 

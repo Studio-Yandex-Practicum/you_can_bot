@@ -85,6 +85,11 @@ class Task(models.Model):
         "Последний номер задания",
     )
 
+    class Meta:
+        verbose_name = "Задание"
+        verbose_name_plural = "Задания"
+        ordering = ("number",)
+
     def __str__(self):
         return f"Задание {self.number}"
 
@@ -103,6 +108,10 @@ class Photo(models.Model):
         "Картинка",
         upload_to="questions/",
     )
+
+    class Meta:
+        verbose_name = "Картинка"
+        verbose_name_plural = "Картинки"
 
 
 class Question(models.Model):
@@ -139,6 +148,7 @@ class Question(models.Model):
                 fields=("task", "number"), name="unique_task_question_number"
             ),
         ]
+        ordering = ("number",)
 
     def __str__(self):
         return self.content
