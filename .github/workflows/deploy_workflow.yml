@@ -111,32 +111,32 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           script: |
             cd ${{ env.DEPLOY_PATH }}
-            
+
             echo POSTGRES_DB=${{ secrets.POSTGRES_DB }} > .env
             echo POSTGRES_USER=${{ secrets.POSTGRES_USER }} >> .env
             echo POSTGRES_PASSWORD='${{ secrets.POSTGRES_PASSWORD }}' >> .env
-            
+
             echo SECRET_KEY='${{ secrets.SECRET_KEY }}' >> .env
             echo DEBUG=${{ vars.DEBUG }} >> .env
             echo ALLOWED_HOSTS=${{ secrets.DJANGO_ALLOWED_HOSTS }} >> .env
             echo HOST=${{ secrets.HOST }} >> .env
-            
+
             echo INTERNAL_API_URL=${{ secrets.INTERNAL_API_URL }} >> .env
             echo YOUCANBY_TOKEN=${{ secrets.YOUCANBY_TOKEN }} >> .env
             echo YOUCANBY_URL=${{ secrets.YOUCANBY_API_URL }} >> .env
-            
+
             echo TOKEN=${{ secrets.TOKEN }} >> .env
             echo EXTERNAL_REQUESTS_ARE_MOCK=${{ vars.EXTERNAL_REQUESTS_ARE_MOCK }} >> .env
             echo MAIN_MENTOR_ID=${{ secrets.MAIN_MENTOR_ID }} >> .env
-            
+
             docker pull ${{ env.REGISTRY }}/${{ env.REP_OWNER }}/${{ env.IMAGE_NAME }}:latest
-            
+
             docker image prune -f
-            
+
             docker compose -f infra/docker-compose.test.yml stop
             docker compose -f infra/docker-compose.test.yml rm backend -f
             docker compose -f infra/docker-compose.test.yml rm bot -f
             docker compose --env-file .env -f infra/docker-compose.test.yml up -d
-            
+
             docker exec backend python backend/manage.py migrate
             docker exec backend python backend/manage.py collectstatic --noinput
