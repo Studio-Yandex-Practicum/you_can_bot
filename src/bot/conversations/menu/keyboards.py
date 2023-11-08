@@ -3,7 +3,6 @@ from telegram import (
     InlineKeyboardButton,
     InlineKeyboardMarkup,
     KeyboardButton,
-    WebAppInfo,
 )
 
 import conversations.menu.templates as templates
