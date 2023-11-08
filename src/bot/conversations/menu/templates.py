@@ -1,6 +1,5 @@
 # Main menu button commands
 COMMANDS = {
-    "profile": "Профиль",
     "tasks": "Посмотреть все задания",
     "ask": "Задать вопрос",
     "info": "Перейти на сайт/инфо",
