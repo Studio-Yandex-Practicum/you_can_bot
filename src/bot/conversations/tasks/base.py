@@ -120,7 +120,7 @@ class BaseTaskConversation:
                 telegram_id=message.chat_id,
                 task_number=self.task_number,
                 number=current_question,
-                content=update.callback_query.data,
+                content=update.callback_query.data.lower(),
             )
         )
         if current_question == self.number_of_questions:
