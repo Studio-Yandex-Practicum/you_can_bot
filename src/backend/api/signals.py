@@ -34,4 +34,5 @@ def create_task_statuses(sender, instance, created, **kwargs):
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
     if created is True:
-        MentorProfile.objects.create(user=instance)
+        telegram_id = getattr(instance, "_telegram_id", None)
+        MentorProfile.objects.create(user=instance, telegram_id=telegram_id)

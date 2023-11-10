@@ -12,12 +12,12 @@ class MentorProfile(models.Model):
     """Модель профиля психолога."""
 
     user = models.OneToOneField(
-        to=User,
-        on_delete=models.CASCADE,
+        to=User, on_delete=models.CASCADE, related_name="profile"
     )
     telegram_id = models.PositiveBigIntegerField(
         "Айди Telegram",
         help_text="На этот id в Telegram могут быть отправлены уведомления",
+        unique=True,
         null=True,
         blank=True,
     )

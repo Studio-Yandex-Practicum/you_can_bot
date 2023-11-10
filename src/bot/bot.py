@@ -1,6 +1,10 @@
 from telegram.ext import Application, ApplicationBuilder
 
 from conversations.general.handlers import acquaintance_handler
+from conversations.mentor_registration.handlers import (
+    mentor_registration_handler,
+    registration_confirmation_handler,
+)
 from conversations.menu.handlers import (
     ask_question_handler,
     entry_point_to_ask_handler,
@@ -40,6 +44,10 @@ def create_bot():
     bot_app.add_handler(handler=task_four_handler)
     bot_app.add_handler(handler=task_six_handler)
     bot_app.add_handler(handler=task_seven_handler)
+
+    # mentor registration handlers
+    bot_app.add_handler(handler=mentor_registration_handler)
+    bot_app.add_handler(handler=registration_confirmation_handler)
 
     # menu handlers
     bot_app.add_handler(handler=profile_handler)

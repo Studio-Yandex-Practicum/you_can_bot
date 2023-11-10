@@ -9,6 +9,9 @@ from httpx import AsyncClient, Response
 
 from internal_requests.entities import (
     Answer,
+    Mentor,
+    MentorRegistered,
+    MentorRegistrationStatus,
     Message,
     Problem,
     TaskStatus,
@@ -73,11 +76,44 @@ async def get_user_task_status_list(telegram_id: int) -> List[TaskStatus]:
     return task_statuses
 
 
+async def get_mentor_registration_status(telegram_id: int) -> MentorRegistrationStatus:
+    """Получение информации о статусе регистрации психолога."""
+    endpoint_urn = f"mentors/{telegram_id}/status/"
+    response = await _get_request(endpoint_urn)
+    registrations_status = await _parse_api_response_to_mentor_registration_status(
+        response
+    )
+    return registrations_status
+
+
 async def create_user(user: UserFromTelegram) -> Response:
     """Запрос на занесение пользователя в БД."""
     data = asdict(user)
     endpoint_urn = "users/"
     response = await _post_request(data, endpoint_urn)
+    return response
+
+
+async def create_mentor(mentor: Mentor) -> MentorRegistered:
+    """Запрос на создание учетной записи психолога в БД."""
+    data = asdict(mentor)
+    endpoint_urn = "mentors/"
+    response = await _post_request(data, endpoint_urn)
+    mentor_registered = await _parse_api_response_to_mentor_info(response)
+    return mentor_registered
+
+
+async def confirm_mentor_registration(telegram_id: int) -> Response:
+    """Запрос, подтверждающий учетную запись психолога."""
+    endpoint_urn = f"mentors/{telegram_id}/confirm/"
+    response = await _post_request(dict(), endpoint_urn)
+    return response
+
+
+async def delete_mentor(telegram_id: int) -> Response:
+    """Запрос на удаление учетной записи психолога."""
+    endpoint_urn = f"mentors/{telegram_id}/"
+    response = await _delete_request(endpoint_urn)
     return response
 
 
@@ -136,6 +172,18 @@ async def _patch_request(data: dict, endpoint_url: str) -> Response:
     return response
 
 
+async def _delete_request(endpoint_url: str) -> Response:
+    async with AsyncClient() as client:
+        response = await client.delete(
+            url=urljoin(
+                base=INTERNAL_API_URL,
+                url=endpoint_url,
+            )
+        )
+    response.raise_for_status()
+    return response
+
+
 async def _parse_api_response_to_messages(response: Response) -> List[Message]:
     json_response = response.json()
     result = json_response.get("result", [])
@@ -151,6 +199,18 @@ async def _parse_api_response_to_messages(response: Response) -> List[Message]:
 async def _parse_api_response_to_user_info(response: Response) -> UserFromTelegram:
     """Парсит полученный json из Response в датакласс UserFromTelegram."""
     return UserFromTelegram(**loads(response.text))
+
+
+async def _parse_api_response_to_mentor_info(response: Response) -> MentorRegistered:
+    """Парсит полученный json из Response в датакласс MentorRegistered."""
+    return MentorRegistered(**loads(response.text))
+
+
+async def _parse_api_response_to_mentor_registration_status(
+    response: Response,
+) -> MentorRegistrationStatus:
+    """Парсит полученный json из Response в датакласс MentorRegistrationStatus."""
+    return MentorRegistrationStatus(**loads(response.text))
 
 
 async def _parse_api_response_to_task_status(
