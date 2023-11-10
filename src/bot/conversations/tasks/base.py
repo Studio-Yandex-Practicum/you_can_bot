@@ -26,6 +26,10 @@ TASK_CANCEL_TEXT = (
     " Задание "
 )
 TASK_START_BUTTON_LABEL = "Задание "
+TASK_ALREADY_DONE_TEXT = (
+    "уже пройдено! 😎 Если ты хочешь повторно посмотреть результаты,"
+    " то используй команду /tasks."
+)
 
 
 @dataclass
@@ -65,6 +69,13 @@ class BaseTaskConversation:
         Возвращает CHOOSING (число, равное 1), чтобы диалог перешел
         в состояние CHOOSING.
         """
+        task_status = await api_service.get_user_task_status_by_number(
+            task_number=self.task_number, telegram_id=update.effective_user.id
+        )
+        if task_status.is_done:
+            text = f"{self.entry_point_button_label} {TASK_ALREADY_DONE_TEXT}"
+            await update.effective_message.reply_text(text=text)
+            return ConversationHandler.END
         description = self.description
         query = update.callback_query
         if query is not None:
