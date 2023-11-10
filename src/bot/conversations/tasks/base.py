@@ -184,10 +184,12 @@ class BaseTaskConversation:
         """
         return [
             MessageHandler(
-                filters.Regex(self.entry_point_button_label), self.show_task_description_with_number
+                filters.Regex(self.entry_point_button_label),
+                self.show_task_description_with_number
             ),
             CallbackQueryHandler(
-                self.show_task_description_with_number, pattern=rf"^start_task:{self.task_number}:with_choice$"
+                self.show_task_description_with_number,
+                pattern=rf"^start_task:{self.task_number}:with_choice$"
             ),
         ]
 
@@ -223,7 +225,8 @@ class BaseTaskConversation:
     async def show_task_description_with_number(
             self, update: Update, context: ContextTypes.DEFAULT_TYPE
     ) -> int:
-        """Показывает описание задание, но перед этим добавляет в предыдущее сообщение выбранный номер задания."""
+        """Показывает описание задание, но перед
+        этим добавляет в предыдущее сообщение выбранный номер задания."""
         query = update.callback_query
         if query is not None:
             await query.message.edit_reply_markup()
