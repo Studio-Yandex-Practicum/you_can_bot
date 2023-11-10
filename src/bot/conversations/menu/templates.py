@@ -24,7 +24,7 @@ NAME_PATTERN = "^[A-Za-zА-яЁё ]+$"
 TASKS_STATE = "TASKS"
 MY_TASKS = "Мои задания"
 TASKS_BUTTON_TEXT = "Задание"
-PATTERN_DONE = "result_task_"
+PATTERN_DONE = "start_task:{task_number}:with_choice"
 PATTERN_UNDONE = "start_task_"
 PICKED_TASK = "<b>Выбранное задание: {task_number}</b>"
 

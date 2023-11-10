@@ -48,14 +48,7 @@ def create_inline_tasks_keyboard(tasks):
                         f"{'✅' if info.is_done else '❌'} "
                         f"{templates.TASKS_BUTTON_TEXT + ' ' + str(info.number)}"
                     ),
-                    callback_data=(
-                        (
-                            templates.PATTERN_DONE
-                            if info.is_done
-                            else templates.PATTERN_UNDONE
-                        )
-                        + str(info.number)
-                    ),
+                    callback_data=f"start_task:{info.number}:with_choice",
                 )
             ]
             for info in tasks

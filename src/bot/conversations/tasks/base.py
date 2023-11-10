@@ -57,7 +57,7 @@ class BaseTaskConversation:
         self.update_method = self.handle_user_answer
 
     async def show_task_description(
-        self, update: Update, context: ContextTypes.DEFAULT_TYPE
+            self, update: Update, context: ContextTypes.DEFAULT_TYPE
     ) -> int:
         """
         Выводит инструкцию по прохождению задания.
@@ -77,10 +77,10 @@ class BaseTaskConversation:
         return CHOOSING
 
     async def show_question(
-        self,
-        update: Update,
-        _context: ContextTypes.DEFAULT_TYPE,
-        question_number: int = 1,
+            self,
+            update: Update,
+            _context: ContextTypes.DEFAULT_TYPE,
+            question_number: int = 1,
     ) -> None:
         """
         Показывает очередной вопрос, относящийся к текущему заданию.
@@ -100,7 +100,7 @@ class BaseTaskConversation:
         await update.callback_query.answer()
 
     async def handle_user_answer(
-        self, update: Update, context: ContextTypes.DEFAULT_TYPE
+            self, update: Update, context: ContextTypes.DEFAULT_TYPE
     ) -> int:
         """
         Обрабатывает ответ пользователя на вопрос и вызывает метод show_question,
@@ -184,10 +184,10 @@ class BaseTaskConversation:
         """
         return [
             MessageHandler(
-                filters.Regex(self.entry_point_button_label), self.show_task_description
+                filters.Regex(self.entry_point_button_label), self.show_task_description_with_number
             ),
             CallbackQueryHandler(
-                self.show_task_description, pattern=rf"^start_task_{self.task_number}$"
+                self.show_task_description_with_number, pattern=rf"^start_task:{self.task_number}:with_choice$"
             ),
         ]
 
@@ -219,3 +219,19 @@ class BaseTaskConversation:
             states=self.set_states(),
             fallbacks=self.set_fallbacks(),
         )
+
+    async def show_task_description_with_number(
+            self, update: Update, context: ContextTypes.DEFAULT_TYPE
+    ) -> int:
+        """Показывает описание задание, но перед этим добавляет в предыдущее сообщение выбранный номер задания."""
+        query = update.callback_query
+        if query is not None:
+            await query.message.edit_reply_markup()
+        task_number = self.task_number
+        description = f"Выбранное задание: {task_number}\n\n{self.description}"
+        context.user_data["current_question"] = START_QUESTION_NUMBER
+        await update.effective_message.reply_text(
+            text=description,
+            reply_markup=NEXT_KEYBOARD,
+        )
+        return CHOOSING
