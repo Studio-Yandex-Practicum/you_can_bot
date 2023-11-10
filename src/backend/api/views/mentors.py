@@ -24,10 +24,10 @@ class MentorViewSet(
     queryset = User.objects.all()
     serializer_class = MentorSerializer
     http_method_names = ("get", "head", "options", "post", "delete")
-    lookup_field = "profile__telegram_id"
+    lookup_field = "mentorprofile__telegram_id"
 
     @action(("get",), detail=True)
-    def status(self, request, profile__telegram_id):
+    def status(self, request, mentorprofile__telegram_id):
         """
         Эндпоинт для получения информации о статусе регистрации психолога.
 
@@ -38,7 +38,9 @@ class MentorViewSet(
         или False для пользователя с атрибутом is_staff=False (либо
         несуществующей учетной записи).
         """
-        mentor = User.objects.filter(profile__telegram_id=profile__telegram_id)
+        mentor = User.objects.filter(
+            mentorprofile__telegram_id=mentorprofile__telegram_id
+        )
         registered = mentor.exists()
         data = {
             "registered": registered,
@@ -47,12 +49,12 @@ class MentorViewSet(
         return Response(data=data, status=status.HTTP_200_OK)
 
     @action(("post",), detail=True)
-    def confirm(self, request, profile__telegram_id):
+    def confirm(self, request, mentorprofile__telegram_id):
         """
         Эндпоинт для подтверждения учетной записи пользователя.
         Устанваливает атрибут is_staff экземляра User в значение True.
         """
-        mentor = _get_mentor_or_404(profile__telegram_id)
+        mentor = _get_mentor_or_404(mentorprofile__telegram_id)
         if mentor.is_staff is False:
             mentor.is_staff = True
             mentor.save()
@@ -66,7 +68,7 @@ def _get_mentor_or_404(telegram_id):
     Если объект отсутствует, вызывается исключение NotFound.
     """
     try:
-        mentor = User.objects.get(profile__telegram_id=telegram_id)
+        mentor = User.objects.get(mentorprofile__telegram_id=telegram_id)
     except User.DoesNotExist:
         raise NotFound(detail=settings.NOT_FOUND_MENTOR_MESSAGE)
     return mentor

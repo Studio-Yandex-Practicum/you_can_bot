@@ -179,7 +179,7 @@ class MentorSerializer(serializers.ModelSerializer):
     - Создания учетной записи психолога.
     """
 
-    telegram_id = serializers.IntegerField(source="profile.telegram_id")
+    telegram_id = serializers.IntegerField(source="mentorprofile.telegram_id")
     username = serializers.ReadOnlyField()
     password = serializers.SerializerMethodField()
 
@@ -201,7 +201,7 @@ class MentorSerializer(serializers.ModelSerializer):
         """
         Проверяет отсутствие учетной записи психолога с указанным telegram_id.
         """
-        if User.objects.filter(profile__telegram_id=value).exists():
+        if User.objects.filter(mentorprofile__telegram_id=value).exists():
             raise serializers.ValidationError(detail=MENTOR_CREATE_ERROR)
         return value
 
@@ -219,7 +219,7 @@ class MentorSerializer(serializers.ModelSerializer):
         """
         Создает учетную запись психолога и добавляет ее в группу Mentor.
         """
-        profile = validated_data.get("profile")
+        profile = validated_data.get("mentorprofile")
         first_name = validated_data.get("first_name")
         last_name = validated_data.get("last_name")
         password = validated_data.get("password")
