@@ -94,9 +94,9 @@ class MentorRegistrationConversation:
             await update.effective_message.reply_text(LONG_LAST_NAME_MSG)
             return TYPING_LAST_NAME
         context.user_data["last_name"] = last_name
-        await self.finish_converstion(update, context)
+        await self.finish_conversation(update, context)
 
-    async def finish_converstion(
+    async def finish_conversation(
         self, update: Update, context: ContextTypes.DEFAULT_TYPE
     ) -> int:
         """
