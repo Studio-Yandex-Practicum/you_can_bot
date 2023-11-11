@@ -1,7 +1,6 @@
 import logging
 import os
 from dataclasses import asdict
-from json import loads
 from typing import List, Union
 from urllib.parse import urljoin
 
@@ -198,19 +197,19 @@ async def _parse_api_response_to_messages(response: Response) -> List[Message]:
 
 async def _parse_api_response_to_user_info(response: Response) -> UserFromTelegram:
     """Парсит полученный json из Response в датакласс UserFromTelegram."""
-    return UserFromTelegram(**loads(response.text))
+    return UserFromTelegram(**response.json())
 
 
 async def _parse_api_response_to_mentor_info(response: Response) -> MentorRegistered:
     """Парсит полученный json из Response в датакласс MentorRegistered."""
-    return MentorRegistered(**loads(response.text))
+    return MentorRegistered(**response.json())
 
 
 async def _parse_api_response_to_mentor_registration_status(
     response: Response,
 ) -> MentorRegistrationStatus:
     """Парсит полученный json из Response в датакласс MentorRegistrationStatus."""
-    return MentorRegistrationStatus(**loads(response.text))
+    return MentorRegistrationStatus(**response.json())
 
 
 async def _parse_api_response_to_task_status(
