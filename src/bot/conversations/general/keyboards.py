@@ -12,7 +12,12 @@ from .templates import (
 
 HELLO_KEYBOARD = InlineKeyboardMarkup(
     inline_keyboard=[
-        [InlineKeyboardButton(HELLO_BUTTON_LABEL, callback_data=START_ACQUAINTANCE)],
+        [
+            InlineKeyboardButton(
+                HELLO_BUTTON_LABEL,
+                callback_data=START_ACQUAINTANCE,
+            )
+        ],
         [InlineKeyboardButton(CANCEL_BUTTON_LABEL, callback_data=CANCEL)],
     ],
 )

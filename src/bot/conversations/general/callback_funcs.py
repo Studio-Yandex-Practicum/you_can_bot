@@ -38,7 +38,6 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
         templates.ALLOWED_TARIFFS_START_MESSAGE.format(name=context.user_info[NAME]),
         reply_markup=keyboards.HELLO_KEYBOARD,
     )
-
     return HELLO
 
 
@@ -51,6 +50,7 @@ async def start_acquaintance(update: Update, context: ContextTypes.DEFAULT_TYPE)
         templates.SKILL_SET_INFORMATION,
         reply_markup=keyboards.FIRST_TASK_KEYBOARD,
     )
+    await update.callback_query.edit_message_reply_markup()
     return ConversationHandler.END
 
 
