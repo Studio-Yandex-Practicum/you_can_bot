@@ -41,9 +41,10 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     return HELLO
 
 
-async def start_acquaintance(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    """Выдает краткое описание первого задания
-    и предлагает к нему приступить."""
+async def show_skill_set_info(
+    update: Update, context: ContextTypes.DEFAULT_TYPE
+) -> int:
+    """Выводит сообщение пользователю о том, зачем ему бот."""
     query = update.callback_query
     await query.answer()
     await update.effective_chat.send_message(

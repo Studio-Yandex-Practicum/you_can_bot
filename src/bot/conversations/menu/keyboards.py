@@ -3,7 +3,6 @@ from telegram import (
     InlineKeyboardButton,
     InlineKeyboardMarkup,
     KeyboardButton,
-    WebAppInfo,
 )
 
 import conversations.menu.templates as templates
@@ -25,9 +24,7 @@ MY_TASKS_KEYBOARD = InlineKeyboardMarkup(
 CONFIRMATION_BUTTONS = [[KeyboardButton(text=templates.CONFIRM)], CANCEL_BUTTON]
 
 URL_BUTTON = InlineKeyboardMarkup.from_button(
-    InlineKeyboardButton(
-        text=templates.URL_BUTTON_TEXT, web_app=WebAppInfo(url=templates.URL)
-    )
+    InlineKeyboardButton(text=templates.URL_BUTTON_TEXT, url=templates.URL)
 )
 
 

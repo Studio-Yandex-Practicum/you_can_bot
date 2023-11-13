@@ -8,8 +8,7 @@ INTERNAL_ERROR_MESSAGE = "Ошибка. Обратитесь к админист
 SERVER_ERROR_MESSAGE = "Сбой сервера. Попробуйте позже или обратитесь в поддержку."
 
 START = "start"
-START_ACQUAINTANCE = "start_acquaintance"
-START_SKILL_SETS = "start_skill_sets"
+SHOW_SKILL_SET_INFO = "show_skill_set_info"
 
 ALLOWED_TARIFFS_START_MESSAGE = (
     "Привет, {name}! Спасибо, что выбрал проект YOU CAN!\n\n"
