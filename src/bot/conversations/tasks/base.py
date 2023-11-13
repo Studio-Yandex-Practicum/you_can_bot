@@ -61,9 +61,7 @@ class BaseTaskConversation:
         self.question_method = self.show_question
         self.update_method = self.handle_user_answer
 
-    async def check_current_task_is_done(
-        self, update: Update, context: ContextTypes.DEFAULT_TYPE
-    ) -> bool:
+    async def check_current_task_is_done(self, update: Update) -> bool:
         """Проверяет, проходил ли пользователь текущее задание."""
         task_status = await api_service.get_user_task_status_by_number(
             task_number=self.task_number, telegram_id=update.effective_user.id
@@ -81,9 +79,7 @@ class BaseTaskConversation:
         """
         if update.callback_query:
             await update.callback_query.edit_message_reply_markup()
-        task_done = await self.check_current_task_is_done(
-            update=update, context=context
-        )
+        task_done = await self.check_current_task_is_done(update=update)
         if task_done:
             text = f"{self.entry_point_button_label} {TASK_ALREADY_DONE_TEXT}"
             await update.effective_message.reply_text(text=text)
@@ -251,9 +247,7 @@ class OneQuestionConversation(BaseTaskConversation):
         """Показывает единственный вопрос задания."""
         if update.callback_query:
             await update.callback_query.edit_message_reply_markup()
-        task_done = await self.check_current_task_is_done(
-            update=update, context=_context
-        )
+        task_done = await self.check_current_task_is_done(update=update)
         if task_done:
             text = f"{self.entry_point_button_label} {TASK_ALREADY_DONE_TEXT}"
             await update.effective_message.reply_text(text=text)
