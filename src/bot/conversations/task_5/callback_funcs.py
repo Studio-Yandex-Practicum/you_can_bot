@@ -35,7 +35,6 @@ class TaskFiveConversation(BaseTaskConversation):
             reply_markup=ForceReply(selective=True),
             parse_mode=ParseMode.HTML,
         )
-        await update.callback_query.answer()
         return TYPING_ANSWER
 
     async def handle_user_answer(
