@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
+from telegram import ForceReply, InlineKeyboardButton, InlineKeyboardMarkup, Update
 from telegram.constants import ParseMode
 from telegram.ext import (
     CallbackQueryHandler,
@@ -21,6 +21,7 @@ from internal_requests import service as api_service
 from internal_requests.entities import Answer
 
 CHOOSING = 1
+TYPING_ANSWER = 2
 START_QUESTION_NUMBER = 1
 BUTTON_LABELS_PATTERN = r"^([1-9]|10|[А-Е])$"
 NEXT_BUTTON_PATTERN = r"^Далее$"
@@ -31,6 +32,10 @@ TASK_CANCEL_TEXT = (
     " Задание "
 )
 TASK_START_BUTTON_LABEL = "Задание "
+TASK_ALREADY_DONE_TEXT = (
+    "уже пройдено! 😎 Если ты хочешь повторно посмотреть результаты,"
+    " то используй команду /tasks."
+)
 
 
 @dataclass
@@ -61,6 +66,13 @@ class BaseTaskConversation:
         self.question_method = self.show_question
         self.update_method = self.handle_user_answer
 
+    async def check_current_task_is_done(self, update: Update) -> bool:
+        """Проверяет, проходил ли пользователь текущее задание."""
+        task_status = await api_service.get_user_task_status_by_number(
+            task_number=self.task_number, telegram_id=update.effective_user.id
+        )
+        return task_status.is_done
+
     @not_in_conversation(ConversationHandler.END)
     @set_conversation_name(TASK_EXECUTION)
     async def show_task_description(
@@ -72,10 +84,16 @@ class BaseTaskConversation:
         Возвращает CHOOSING (число, равное 1), чтобы диалог перешел
         в состояние CHOOSING.
         """
+        if update.callback_query:
+            await update.callback_query.edit_message_reply_markup()
+        task_done = await self.check_current_task_is_done(update=update)
+        if task_done:
+            text = f"{self.entry_point_button_label} {TASK_ALREADY_DONE_TEXT}"
+            await update.effective_message.reply_text(text=text)
+            del context.user_data["current_conversation"]
+            return ConversationHandler.END
+
         description = self.description
-        query = update.callback_query
-        if query is not None:
-            await query.message.edit_reply_markup()
         context.user_data["current_question"] = START_QUESTION_NUMBER
         await update.effective_message.reply_text(
             text=description,
@@ -226,3 +244,91 @@ class BaseTaskConversation:
             states=self.set_states(),
             fallbacks=self.set_fallbacks(),
         )
+
+
+class OneQuestionConversation(BaseTaskConversation):
+    """Класс для общения по заданиям с одним вопросом и ответом в свободной форме."""
+
+    @not_in_conversation(ConversationHandler.END)
+    @set_conversation_name(TASK_EXECUTION)
+    async def show_question(
+        self, update: Update, context: ContextTypes.DEFAULT_TYPE
+    ) -> None:
+        """Показывает единственный вопрос задания."""
+        if update.callback_query:
+            await update.callback_query.edit_message_reply_markup()
+        task_done = await self.check_current_task_is_done(update=update)
+        if task_done:
+            text = f"{self.entry_point_button_label} {TASK_ALREADY_DONE_TEXT}"
+            await update.effective_message.reply_text(text=text)
+            del context.user_data["current_conversation"]
+            return ConversationHandler.END
+
+        messages = await api_service.get_messages_with_question(
+            task_number=self.task_number, question_number=self.number_of_questions
+        )
+        await update.effective_message.reply_text(
+            text=messages[0].content,
+            reply_markup=ForceReply(selective=True),
+            parse_mode=ParseMode.HTML,
+        )
+        await update.callback_query.answer()
+        return TYPING_ANSWER
+
+    async def handle_user_answer(
+        self, update: Update, _context: ContextTypes.DEFAULT_TYPE
+    ) -> int:
+        """
+        Принимает ответ пользователя, записывает ответ в БД и вызывает
+         show_notification для оповещения пользователя.
+        """
+        user_answer = update.message.text
+        await api_service.create_answer(
+            Answer(
+                telegram_id=update.effective_message.chat_id,
+                task_number=self.task_number,
+                number=self.number_of_questions,
+                content=user_answer,
+            )
+        )
+        return await self.show_notification(update, _context)
+
+    async def show_notification(
+        self, update: Update, _context: ContextTypes.DEFAULT_TYPE
+    ) -> int:
+        """
+        Оповещает пользователя об успешном сохранении ответа в БД в сообщении
+         с кнопкой перехода к следующему заданию и завершает диалог.
+        """
+        await update.effective_message.reply_text(
+            text=self.result_intro,
+            parse_mode=ParseMode.HTML,
+            reply_markup=InlineKeyboardMarkup(
+                (
+                    (
+                        InlineKeyboardButton(
+                            text=f"Задание {self.task_number + 1}",
+                            callback_data=f"start_task_{self.task_number + 1}",
+                        ),
+                    ),
+                )
+            ),
+        )
+        _context.user_data.clear()
+        return ConversationHandler.END
+
+    def set_entry_points(self):
+        """Описывает entry_point для входа в диалог: кнопка 'Задача 5'."""
+        return [
+            CallbackQueryHandler(
+                self.show_question, pattern=f"start_task_{self.task_number}"
+            )
+        ]
+
+    def set_states(self):
+        """Управляет ведением диалога."""
+        return {
+            TYPING_ANSWER: [
+                MessageHandler(filters.TEXT & ~filters.COMMAND, self.handle_user_answer)
+            ],
+        }
