@@ -63,8 +63,8 @@ async def get_user_task_status_by_number(
     """Получение информации о конкретном статусе задания пользователя."""
     endpoint_urn = f"users/{telegram_id}/tasks/{task_number}/"
     response = await _get_request(endpoint_urn)
-    result = await _parse_api_response_to_task_status(response)
-    return result
+    results = await _parse_api_response_to_task_status(response)
+    return results[0]
 
 
 async def get_user_task_status_list(telegram_id: int) -> List[TaskStatus]:
@@ -218,7 +218,11 @@ async def _parse_api_response_to_task_status(
     """Парсит полученный json из Response в экземпляр(ы) TaskStatus."""
     json_response = response.json()
     tasks = []
-    for task_info in json_response:
-        task = TaskStatus(**task_info)
+    if isinstance(json_response, list):
+        for task_info in json_response:
+            task = TaskStatus(**task_info)
+            tasks.append(task)
+    else:
+        task = TaskStatus(**json_response)
         tasks.append(task)
     return tasks
