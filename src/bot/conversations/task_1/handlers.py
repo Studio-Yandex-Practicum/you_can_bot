@@ -1,31 +1,22 @@
-from telegram.ext import (
-    CallbackQueryHandler,
-    CommandHandler,
-    ConversationHandler,
-    MessageHandler,
-    filters,
-)
+from conversations.task_1.callback_funcs import TaskOneConversation
+from conversations.tasks.keyboards import CHOICES_SIX_LETTERS
 
-from conversations.general.templates import FIRST_TASK_BUTTON_LABEL
-from conversations.task_1.callback_funcs import (
-    CHOICES,
-    CHOOSING,
-    cancel,
-    get_answer_question,
-    get_start_question,
-    start_task_1,
+TASK_ONE_NUMBER = 1
+TASK_ONE_NUM_OF_QUESTIONS = 10
+TASK_ONE_DESCRIPTION = (
+    "Далее будет 10 вопросов, в каждом из них – шесть утверждений."
+    " Выбирай утверждения в каждом вопросе по степени"
+    " привлекательности (от самого привлекательного"
+    " варианта до самого непривлекательного варианта)."
 )
+TASK_ONE_RESULT_INTRO = "<b>У тебя склонность к:</b>"
+TASK_ONE_DATA = {
+    "task_number": TASK_ONE_NUMBER,
+    "number_of_questions": TASK_ONE_NUM_OF_QUESTIONS,
+    "description": TASK_ONE_DESCRIPTION,
+    "choices": CHOICES_SIX_LETTERS,
+    "result_intro": TASK_ONE_RESULT_INTRO,
+}
 
-task_1_handler = ConversationHandler(
-    entry_points=[
-        MessageHandler(filters.Regex(FIRST_TASK_BUTTON_LABEL), start_task_1),
-        CallbackQueryHandler(start_task_1, r"^start_task_1$"),
-    ],
-    states={
-        CHOOSING: [
-            CallbackQueryHandler(get_start_question, pattern=r"^Далее$"),
-            CallbackQueryHandler(get_answer_question, pattern=f"^([{CHOICES}])$"),
-        ],
-    },
-    fallbacks=[CommandHandler("cancel", cancel)],
-)
+task_one = TaskOneConversation(**TASK_ONE_DATA)
+task_one_handler = task_one.add_handlers()

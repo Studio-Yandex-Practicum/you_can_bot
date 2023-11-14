@@ -10,8 +10,7 @@ SECRET_KEY = os.getenv("SECRET_KEY", default="secret_key")
 DEBUG = os.getenv("DEBUG", default=False)
 
 ALLOWED_HOSTS = [os.getenv("ALLOWED_HOSTS", default="*")]
-
-CSRF_TRUSTED_ORIGINS = ("http://127.0.0.1",)
+CSRF_TRUSTED_ORIGINS = (f"http://{os.getenv('HOST', default='127.0.0.1')}",)
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -73,6 +72,7 @@ else:
             "PORT": os.getenv("DB_PORT", default=5432),
         }
     }
+
 AUTH_PASSWORD_VALIDATORS = [
     {
         "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
@@ -104,6 +104,7 @@ MAX_LENGTH_SURNAME = 150
 
 NOT_FOUND_QUESTION_ERROR_MESSAGE = "Не найден вопрос с таким номером."
 NOT_FOUND_TASK_ERROR_MESSAGE = "Не найдено задание с таким номером."
+NOT_FOUND_MENTOR_MESSAGE = "Не найдена учетная запись психолога."
 
 LOG_FILENAME = "backend.log"
 LOG_PATH = BASE_DIR.parent / ".data" / os.getenv("LOG_DIR", "logs")
@@ -151,3 +152,7 @@ LOGGING = {
 REST_FRAMEWORK = {
     "TEST_REQUEST_DEFAULT_FORMAT": "json",
 }
+
+MAIN_MENTOR_ID = os.getenv(
+    "MAIN_MENTOR_ID"
+)  # id телеграма ментора, которому будут приходить вопросы, если пользователю еще не назначен ментор

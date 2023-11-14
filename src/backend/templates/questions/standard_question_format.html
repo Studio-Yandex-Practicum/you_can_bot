@@ -5,5 +5,5 @@
 <b>[{{ forloop.counter | add:"1039" | stringformat:"c" }}]</b> {{ choice.title }}
 {% if choice.description %}
 {{ choice.description }}
-{% endif %}{% empty %}
-{% endfor %}{% endblock content %}
+{% endif %}{% empty %}{% endfor %}
+{% if question.example %}<b>Пример:</b> {{ question.example }}{% endif %}{% endblock content %}

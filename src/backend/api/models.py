@@ -12,18 +12,19 @@ class MentorProfile(models.Model):
     """Модель профиля психолога."""
 
     user = models.OneToOneField(
-        to=User,
-        on_delete=models.CASCADE,
+        to=User, on_delete=models.CASCADE, related_name="mentorprofile"
     )
-    telegram_username = models.CharField(
-        "Никнейм Telegram",
-        help_text="На этот никнейм в Telegram могут быть отправлены уведомления",
-        max_length=_MAX_LENGTH_OF_TELEGRAM_USERNAME,
+    telegram_id = models.PositiveBigIntegerField(
+        "Айди Telegram",
+        help_text="На этот id в Telegram могут быть отправлены уведомления",
         unique=True,
+        null=True,
+        blank=True,
     )
 
     class Meta:
-        verbose_name = "Профиль"
+        verbose_name = "Профиль психолога"
+        verbose_name_plural = "Профили психологов"
 
     def __str__(self):
         return f"{self.user}"
@@ -84,6 +85,11 @@ class Task(models.Model):
         "Последний номер задания",
     )
 
+    class Meta:
+        verbose_name = "Задание"
+        verbose_name_plural = "Задания"
+        ordering = ("number",)
+
     def __str__(self):
         return f"Задание {self.number}"
 
@@ -102,6 +108,10 @@ class Photo(models.Model):
         "Картинка",
         upload_to="questions/",
     )
+
+    class Meta:
+        verbose_name = "Картинка"
+        verbose_name_plural = "Картинки"
 
 
 class Question(models.Model):
@@ -138,9 +148,10 @@ class Question(models.Model):
                 fields=("task", "number"), name="unique_task_question_number"
             ),
         ]
+        ordering = ("number",)
 
     def __str__(self):
-        return str(self.number)
+        return self.content
 
 
 class Choice(models.Model):
@@ -156,6 +167,9 @@ class Choice(models.Model):
         default="",
         blank=True,
     )
+
+    def __str__(self):
+        return self.title
 
 
 class Result(models.Model):
@@ -183,6 +197,9 @@ class Result(models.Model):
         verbose_name = "результат"
         verbose_name_plural = "Результаты заданий"
         unique_together = ("task", "key")
+
+    def __str__(self):
+        return self.title
 
 
 class TaskStatus(models.Model):
@@ -221,6 +238,9 @@ class TaskStatus(models.Model):
         verbose_name_plural = "Статусы заданий"
         unique_together = ("user", "task")
 
+    def __str__(self):
+        return f"Сводка пользователя {self.user}. {self.task}"
+
 
 class Answer(models.Model):
     """Модель ответов на вопросы."""
@@ -245,7 +265,7 @@ class Answer(models.Model):
         verbose_name_plural = "Ответы на задания"
 
     def __str__(self):
-        return f"Ответ {self.question}"
+        return f"На вопрос {self.question.number}"
 
 
 class ResultStatus(models.Model):
@@ -269,6 +289,13 @@ class ResultStatus(models.Model):
         "Баллы",
         default=0,
     )
+
+    class Meta:
+        verbose_name = "Результат пользователя"
+        verbose_name_plural = "Результаты пользователя"
+
+    def __str__(self):
+        return f"{self.result} ({self.score} б.)"
 
 
 class Problem(models.Model):
@@ -295,7 +322,7 @@ class Problem(models.Model):
     )
 
     class Meta:
-        ordering = ("pk",)
+        ordering = ("-pk",)
         verbose_name = "вопрос"
         verbose_name_plural = "Вопросы от пользователей"
 

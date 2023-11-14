@@ -1,0 +1,22 @@
+[
+  {
+    "model": "auth.group",
+    "pk": 1,
+    "fields": {
+      "name": "Mentor",
+      "permissions": [
+        4,
+        60,
+        48,
+        66,
+        68,
+        44,
+        52,
+        64,
+        54,
+        56,
+        32
+      ]
+    }
+  }
+]

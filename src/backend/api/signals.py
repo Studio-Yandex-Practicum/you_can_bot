@@ -18,7 +18,7 @@ def create_task_statuses(sender, instance, created, **kwargs):
             Task.TaskNumber.FIFTH: 1,
             Task.TaskNumber.SIXTH: 3,
             Task.TaskNumber.SEVENTH: 1,
-            Task.TaskNumber.EIGHTH: 30,
+            Task.TaskNumber.EIGHTH: 1,
         }
         for task_number in Task.TaskNumber.values:
             task, created = Task.objects.get_or_create(
@@ -34,4 +34,5 @@ def create_task_statuses(sender, instance, created, **kwargs):
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
     if created is True:
-        MentorProfile.objects.create(user=instance)
+        telegram_id = getattr(instance, "_telegram_id", None)
+        MentorProfile.objects.create(user=instance, telegram_id=telegram_id)
