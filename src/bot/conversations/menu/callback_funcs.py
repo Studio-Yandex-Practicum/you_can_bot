@@ -4,6 +4,7 @@ from telegram.ext import ContextTypes, ConversationHandler
 
 import conversations.menu.templates as templates
 import internal_requests.service as api_service
+from conversations.general.decorators import not_in_conversation, set_conversation_name
 from conversations.menu.decorators import user_exists
 from conversations.menu.keyboards import (
     AGREE_OR_CANCEL_KEYBOARD,
@@ -34,6 +35,15 @@ async def show_done_tasks(update: Update, context: ContextTypes.DEFAULT_TYPE):
     for result in task_results:
         await query.message.reply_text(text=result.content, parse_mode=ParseMode.HTML)
 
+    del context.user_data["current_conversation"]
+
+    return ConversationHandler.END
+
+
+async def finish_tasks_conversation(
+    update: Update, context: ContextTypes.DEFAULT_TYPE
+) -> int:
+    context.user_data.clear()
     return ConversationHandler.END
 
 
@@ -51,6 +61,8 @@ async def get_user_profile(update: Update, context: ContextTypes.DEFAULT_TYPE) -
 
 
 @user_exists
+@not_in_conversation(ConversationHandler.END)
+@set_conversation_name("tasks")
 async def show_all_user_tasks(
     update: Update, context: ContextTypes.DEFAULT_TYPE
 ) -> None:
@@ -71,6 +83,8 @@ async def show_all_user_tasks(
 
 
 @user_exists
+@not_in_conversation(ConversationHandler.END)
+@set_conversation_name("ask")
 async def suggest_ask_question(
     update: Update, context: ContextTypes.DEFAULT_TYPE
 ) -> int:
@@ -111,6 +125,7 @@ async def cancel_save_question(
 
 
 @user_exists
+@not_in_conversation()
 async def show_url(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Перейти на сайт YouCan."""
     await update.message.reply_text(

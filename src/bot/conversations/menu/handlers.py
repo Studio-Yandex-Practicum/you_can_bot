@@ -46,6 +46,10 @@ show_all_tasks_handler = ConversationHandler(
             CallbackQueryHandler(
                 callback_funcs.show_done_tasks, pattern=r"^result_task_(?P<number>\d+)$"
             ),
+            CallbackQueryHandler(
+                callback_funcs.finish_tasks_conversation,
+                pattern=r"^start_task_(?P<number>\d+)$",
+            ),
         ]
     },
     fallbacks=[],
@@ -57,7 +61,7 @@ ask_question_handler = ConversationHandler(
     states={
         WAITING_FOR_QUESTION_STATE: [
             MessageHandler(
-                filters.TEXT,
+                filters.TEXT & (~filters.COMMAND),
                 callback_funcs.get_user_question,
             )
         ],

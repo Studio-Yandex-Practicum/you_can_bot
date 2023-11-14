@@ -11,6 +11,11 @@ from telegram.ext import (
     filters,
 )
 
+from conversations.general.decorators import (
+    TASK_EXECUTION,
+    not_in_conversation,
+    set_conversation_name,
+)
 from conversations.tasks.keyboards import NEXT_KEYBOARD, get_default_inline_keyboard
 from internal_requests import service as api_service
 from internal_requests.entities import Answer
@@ -56,6 +61,8 @@ class BaseTaskConversation:
         self.question_method = self.show_question
         self.update_method = self.handle_user_answer
 
+    @not_in_conversation(ConversationHandler.END)
+    @set_conversation_name(TASK_EXECUTION)
     async def show_task_description(
         self, update: Update, context: ContextTypes.DEFAULT_TYPE
     ) -> int:
