@@ -13,6 +13,7 @@ from conversations.task_8.templates import (
     RESULT_TEXT,
     TEXT_OF_START_TASK_8,
 )
+from conversations.tasks.base import TASK_ALREADY_DONE_TEXT
 from internal_requests.entities import Answer
 
 _LOGGER = logging.getLogger(__name__)
@@ -39,6 +40,13 @@ async def show_start_of_task_8(update: Update, context: CallbackContext) -> int:
     query = update.callback_query
     if query is not None:
         await query.message.edit_reply_markup()
+    task_status = await api_service.get_user_task_status_by_number(
+        task_number=CURRENT_TASK, telegram_id=update.effective_user.id
+    )
+    if task_status.is_done:
+        text = f"Задание 8 {TASK_ALREADY_DONE_TEXT}"
+        await update.effective_message.reply_text(text=text)
+        return ConversationHandler.END
     context.user_data["current_question"] = START_QUESTION_NUMBER
     context.user_data["picked_choices"] = []
     context.user_data["result"] = []
