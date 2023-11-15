@@ -22,6 +22,7 @@ from conversations.task_4.handlers import task_four_handler
 from conversations.task_5.handlers import task_five_handler
 from conversations.task_6.handlers import task_six_handler
 from conversations.task_7.handlers import task_seven_handler
+from conversations.task_8.handlers import task_8_handler
 from utils.configs import TOKEN
 
 
@@ -46,6 +47,7 @@ def create_bot():
     bot_app.add_handler(handler=task_five_handler)
     bot_app.add_handler(handler=task_six_handler)
     bot_app.add_handler(handler=task_seven_handler)
+    bot_app.add_handler(handler=task_8_handler)
 
     # mentor registration handlers
     bot_app.add_handler(handler=mentor_registration_handler)

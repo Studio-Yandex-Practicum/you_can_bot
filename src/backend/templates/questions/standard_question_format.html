@@ -3,5 +3,7 @@
 {% block title %}<b> {{ question.content }}</b>{% endblock title %}
 {% block content %}{% for choice in question.choices.all %}
 <b>[{{ forloop.counter | add:"1039" | stringformat:"c" }}]</b> {{ choice.title }}
-{% if choice.description %}{{ choice.description }}{% endif %}{% empty %}{% endfor %}
+{% if choice.description %}
+{{ choice.description }}
+{% endif %}{% empty %}{% endfor %}
 {% if question.example %}<b>Пример:</b> {{ question.example }}{% endif %}{% endblock content %}
