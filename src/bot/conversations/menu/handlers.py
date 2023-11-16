@@ -57,9 +57,12 @@ ask_question_handler = ConversationHandler(
     states={
         WAITING_FOR_QUESTION_STATE: [
             MessageHandler(
-                filters.TEXT,
-                callback_funcs.get_user_question,
-            )
+                filters=filters.TEXT, callback=callback_funcs.get_user_question
+            ),
+            MessageHandler(
+                filters=filters.UpdateType.EDITED_MESSAGE,
+                callback=callback_funcs.get_user_question,
+            ),
         ],
     },
     fallbacks=[

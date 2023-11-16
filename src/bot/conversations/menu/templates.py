@@ -31,7 +31,10 @@ PICKED_TASK = "<b>Выбранное задание: {task_number}</b>"
 # Ask question
 WAITING_FOR_QUESTION_STATE = "WAITING_FOR_QUESTION"
 ASK_ME_QUESTION_TEXT = "Отправь вопрос, который тебя интересует."
-SEND_QUESTION_TEXT = "Подтверди отправку вопроса психологу."
+SEND_QUESTION_TEXT = (
+    "После подтверждения этот вопрос будет отправлен психологу."
+    " До подтвержденя его всё ещё можно изменить. Текущий вопрос:"
+)
 QUESTION_CONFIRMATION_TEXT = (
     "Твой вопрос был сохранен. " "Чуть позже тебе ответит психолог."
 )
