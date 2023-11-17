@@ -1,4 +1,4 @@
-from conversations.task_7.callback_funcs import TaskSevenConversation
+from conversations.tasks.base import OneQuestionConversation
 
 TASK_SEVEN_NUMBER = 7
 TASK_SEVEN_NUM_OF_QUESTIONS = 1
@@ -15,5 +15,5 @@ TASK_SEVEN_DATA = {
     "result_intro": TAKS_SEVEN_RESULT_INTRO,
 }
 
-task_seven = TaskSevenConversation(**TASK_SEVEN_DATA)
+task_seven = OneQuestionConversation(**TASK_SEVEN_DATA)
 task_seven_handler = task_seven.add_handlers()

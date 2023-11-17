@@ -3,7 +3,6 @@ from telegram import (
     InlineKeyboardButton,
     InlineKeyboardMarkup,
     KeyboardButton,
-    WebAppInfo,
 )
 
 import conversations.menu.templates as templates
@@ -25,9 +24,7 @@ MY_TASKS_KEYBOARD = InlineKeyboardMarkup(
 CONFIRMATION_BUTTONS = [[KeyboardButton(text=templates.CONFIRM)], CANCEL_BUTTON]
 
 URL_BUTTON = InlineKeyboardMarkup.from_button(
-    InlineKeyboardButton(
-        text=templates.URL_BUTTON_TEXT, web_app=WebAppInfo(url=templates.URL)
-    )
+    InlineKeyboardButton(text=templates.URL_BUTTON_TEXT, url=templates.URL)
 )
 
 
@@ -48,7 +45,14 @@ def create_inline_tasks_keyboard(tasks):
                         f"{'✅' if info.is_done else '❌'} "
                         f"{templates.TASKS_BUTTON_TEXT + ' ' + str(info.number)}"
                     ),
-                    callback_data=f"start_task:{info.number}:with_choice",
+                    callback_data=(
+                        (
+                            templates.PATTERN_DONE
+                            if info.is_done
+                            else templates.PATTERN_UNDONE
+                        )
+                        + str(info.number)
+                    ),
                 )
             ]
             for info in tasks
