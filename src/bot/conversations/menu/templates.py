@@ -44,3 +44,6 @@ URL = "https://youcan.by/"
 
 CONFIRM = "Подтвердить"
 CANCEL = "Отменить"
+
+YOUR_ANSWER = "Твой ответ:\n\n{}"
+YOUR_ANSWERS = "Твои ответы:\n\n{}"

@@ -4,7 +4,7 @@ from rest_framework.exceptions import NotAcceptable, NotFound
 from rest_framework.response import Response
 
 from api.models import TaskStatus, UserFromTelegram
-from api.serializers import TaskResultsForUserSerializer
+from api.serializers import AnswerSerializer, TaskResultsForUserSerializer
 
 USER_404 = "Пользователь не найден."
 TASK_404 = "Задание не найдено."
@@ -28,8 +28,12 @@ def get_results_for_user_by_task(request, telegram_id, task_number):
     except TaskStatus.DoesNotExist:
         raise NotFound(TASK_404)
 
-    results = task_status.result.all()
+    if task_number in (5, 6, 7):
+        answers = task_status.answers.all()
+        serializer = AnswerSerializer(answers, context={"as_result": True})
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
+    results = task_status.result.all()
     serializer = TaskResultsForUserSerializer(
         results, context={"request": request, "task_number": task_number}
     )

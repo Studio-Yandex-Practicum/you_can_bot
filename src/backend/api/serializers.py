@@ -67,6 +67,12 @@ class AnswerSerializer(serializers.ModelSerializer):
         model = Answer
         fields = ("id", "number", "content")
 
+    def to_representation(self, obj):
+        if self.context.get("as_result"):
+            results = [{"content": answer.content} for answer in obj]
+            return {"count": len(results), "result": results}
+        return super().to_representation(obj)
+
 
 class UserFromTelegramRetrieveCreateSerializer(serializers.ModelSerializer):
     """
