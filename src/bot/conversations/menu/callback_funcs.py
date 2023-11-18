@@ -2,9 +2,8 @@ from typing import Callable
 
 from telegram import Update
 from telegram.constants import ParseMode
-from telegram.ext import ContextTypes, ConversationHandler, CallbackContext
+from telegram.ext import CallbackContext, ContextTypes, ConversationHandler
 
-from conversations.menu.templates import PICKED_TASK
 import conversations.menu.templates as templates
 import internal_requests.service as api_service
 from conversations.menu.decorators import user_exists
@@ -14,6 +13,7 @@ from conversations.menu.keyboards import (
     URL_BUTTON,
     create_inline_tasks_keyboard,
 )
+from conversations.menu.templates import PICKED_TASK
 from internal_requests.entities import Problem
 
 

@@ -7,13 +7,13 @@ from telegram.constants import ChatAction, ParseMode
 from telegram.ext import CallbackContext, ConversationHandler
 
 import internal_requests.service as api_service
+from conversations.menu.callback_funcs import add_task_number_to_prev_message
 from conversations.task_8.keyboards import NEXT_KEYBOARD, REPLY_KEYBOARD
 from conversations.task_8.templates import (
     FINAL_MESSAGE_TEXT,
     RESULT_TEXT,
     TEXT_OF_START_TASK_8,
 )
-from conversations.menu.callback_funcs import add_task_number_to_prev_message
 from conversations.tasks.base import TASK_ALREADY_DONE_TEXT
 from internal_requests.entities import Answer
 
@@ -37,7 +37,7 @@ class LocationOfChoiceInTask(TypedDict):
 
 
 async def show_start_of_task_8_with_task_number(
-        update: Update, context: CallbackContext
+    update: Update, context: CallbackContext
 ) -> int:
     return await add_task_number_to_prev_message(
         update=update,
@@ -70,7 +70,7 @@ async def show_start_of_task_8(update: Update, context: CallbackContext) -> int:
 
 
 async def start_question(
-        update: Update, context: CallbackContext, question_number: int = 1
+    update: Update, context: CallbackContext, question_number: int = 1
 ) -> int:
     """Начинает новый вопрос."""
     query = update.callback_query
@@ -79,7 +79,7 @@ async def start_question(
     if FIRST_STAGE_END < question_number:
         params = context.user_data["picked_choices"][
             question_number - FIRST_STAGE_END - 1
-            ]
+        ]
         messages = await api_service.get_task_8_question(
             question_number=question_number, params=params
         )
@@ -157,9 +157,9 @@ async def _validate_callback_data(update: Update) -> Literal["а"] | Literal["б
 
 
 async def _handle_first_stage_answer(
-        context: CallbackContext,
-        question_number: int,
-        picked_choice: Literal["а"] | Literal["б"],
+    context: CallbackContext,
+    question_number: int,
+    picked_choice: Literal["а"] | Literal["б"],
 ) -> None:
     """Сохраняет выбранные ответы для формирования пар на втором круге."""
     await _save_picked_choice_to_context(
@@ -172,9 +172,9 @@ async def _handle_first_stage_answer(
 
 
 async def _handle_second_stage_answer(
-        context: CallbackContext,
-        question_number: int,
-        picked_choice: Literal["а"] | Literal["б"],
+    context: CallbackContext,
+    question_number: int,
+    picked_choice: Literal["а"] | Literal["б"],
 ) -> None:
     """Сохраняет выбранные ответы для формирования пар на третьем круге."""
     picked_choice_on_second_stage = await _get_picked_choice_dict_from_context(
@@ -188,9 +188,9 @@ async def _handle_second_stage_answer(
 
 
 async def _handle_third_stage_answer(
-        context: CallbackContext,
-        question_number: int,
-        picked_choice: Literal["а"] | Literal["б"],
+    context: CallbackContext,
+    question_number: int,
+    picked_choice: Literal["а"] | Literal["б"],
 ) -> None:
     """Сохраняет выбранные ответы для формирования результатов."""
     hidden_talent = await _get_picked_choice_dict_from_context(
@@ -202,7 +202,7 @@ async def _handle_third_stage_answer(
 
 
 async def _save_picked_choice_to_context(
-        context: CallbackContext, question_number: int, picked_choice: dict
+    context: CallbackContext, question_number: int, picked_choice: dict
 ) -> None:
     """
     Сохраняет выбранный ответ в контекст, формируя пары для вопросов следующих кругов.
@@ -215,19 +215,19 @@ async def _save_picked_choice_to_context(
 
 
 async def _get_picked_choice_dict_from_context(
-        context: CallbackContext,
-        question_number: int,
-        picked_choice: Literal["а"] | Literal["б"],
+    context: CallbackContext,
+    question_number: int,
+    picked_choice: Literal["а"] | Literal["б"],
 ) -> LocationOfChoiceInTask:
     """Возвращает ответ из прошлых кругов."""
     if picked_choice == "а":
         picked_choice_dict = context.user_data["picked_choices"][
             question_number - FIRST_STAGE_END - 1
-            ][0]
+        ][0]
     else:
         picked_choice_dict = context.user_data["picked_choices"][
             question_number - FIRST_STAGE_END - 1
-            ][1]
+        ][1]
     return picked_choice_dict
 
 

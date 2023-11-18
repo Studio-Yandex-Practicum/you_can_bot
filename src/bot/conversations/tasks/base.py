@@ -41,11 +41,6 @@ class BaseTaskConversation:
     прохождение заданий.
     """
 
-    def __post_init__(self):
-        """..."""
-        # Остальной код
-        # Добавляем сюда эту строку
-
     task_number: int
     number_of_questions: int
     description: str
@@ -76,7 +71,7 @@ class BaseTaskConversation:
         return task_status.is_done
 
     async def show_task_description(
-            self, update: Update, context: ContextTypes.DEFAULT_TYPE
+        self, update: Update, context: ContextTypes.DEFAULT_TYPE
     ) -> int:
         """
         Выводит инструкцию по прохождению задания.
@@ -101,10 +96,10 @@ class BaseTaskConversation:
         return CHOOSING
 
     async def show_question(
-            self,
-            update: Update,
-            _context: ContextTypes.DEFAULT_TYPE,
-            question_number: int = 1,
+        self,
+        update: Update,
+        _context: ContextTypes.DEFAULT_TYPE,
+        question_number: int = 1,
     ) -> None:
         """
         Показывает очередной вопрос, относящийся к текущему заданию.
@@ -124,7 +119,7 @@ class BaseTaskConversation:
         await update.callback_query.answer()
 
     async def handle_user_answer(
-            self, update: Update, context: ContextTypes.DEFAULT_TYPE
+        self, update: Update, context: ContextTypes.DEFAULT_TYPE
     ) -> int:
         """
         Обрабатывает ответ пользователя на вопрос и вызывает метод show_question,
@@ -193,7 +188,7 @@ class BaseTaskConversation:
         return ConversationHandler.END
 
     async def show_task_description_with_number(
-            self, update: Update, context: ContextTypes.DEFAULT_TYPE
+        self, update: Update, context: ContextTypes.DEFAULT_TYPE
     ) -> int:
         """
         Показывает описание задание, но перед этим добавляет
@@ -268,7 +263,7 @@ class OneQuestionConversation(BaseTaskConversation):
         self.start_method = self.show_question
 
     async def show_question(
-            self, update: Update, _context: ContextTypes.DEFAULT_TYPE
+        self, update: Update, _context: ContextTypes.DEFAULT_TYPE
     ) -> int:
         """Показывает единственный вопрос задания."""
         if update.callback_query:
@@ -291,7 +286,7 @@ class OneQuestionConversation(BaseTaskConversation):
         return TYPING_ANSWER
 
     async def handle_user_answer(
-            self, update: Update, _context: ContextTypes.DEFAULT_TYPE
+        self, update: Update, _context: ContextTypes.DEFAULT_TYPE
     ) -> int:
         """
         Принимает ответ пользователя, записывает ответ в БД и вызывает
@@ -309,7 +304,7 @@ class OneQuestionConversation(BaseTaskConversation):
         return await self.show_notification(update, _context)
 
     async def show_notification(
-            self, update: Update, _context: ContextTypes.DEFAULT_TYPE
+        self, update: Update, _context: ContextTypes.DEFAULT_TYPE
     ) -> int:
         """
         Оповещает пользователя об успешном сохранении ответа в БД в сообщении
