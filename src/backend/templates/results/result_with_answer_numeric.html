@@ -1,0 +1,4 @@
+{% extends "results/result_with_answer.html" %}
+{% block title %}
+  <b>Вопрос {{ answer.question.number }}: </b>{{ answer.question.content | safe }}
+{% endblock title %}
