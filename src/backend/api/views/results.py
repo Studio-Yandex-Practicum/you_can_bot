@@ -30,7 +30,9 @@ def get_results_for_user_by_task(request, telegram_id, task_number):
 
     if task_number in (5, 6, 7):
         answers = task_status.answers.all()
-        serializer = AnswerSerializer(answers, context={"as_result": True})
+        serializer = AnswerSerializer(
+            answers, context={"as_result": True, "task_number": task_number}
+        )
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     results = task_status.result.all()

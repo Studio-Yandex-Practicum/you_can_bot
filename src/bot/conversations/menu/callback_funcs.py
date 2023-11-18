@@ -31,23 +31,9 @@ async def show_done_tasks(update: Update, context: ContextTypes.DEFAULT_TYPE):
     task_results = await api_service.get_messages_with_results(
         query.message.chat.id, task_number
     )
+    for result in task_results:
+        await query.message.reply_text(text=result.content, parse_mode=ParseMode.HTML)
 
-    if task_number in (5, 6, 7):
-        if len(task_results) == 1:
-            await query.message.reply_text(
-                text=templates.YOUR_ANSWER.format(task_results[0].content)
-            )
-        else:
-            await query.message.reply_text(
-                text=templates.YOUR_ANSWERS.format(task_results[0].content)
-            )
-            for result in task_results[1:]:
-                await query.message.reply_text(text=result.content)
-    else:
-        for result in task_results:
-            await query.message.reply_text(
-                text=result.content, parse_mode=ParseMode.HTML
-            )
     return ConversationHandler.END
 
 
