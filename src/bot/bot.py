@@ -22,6 +22,7 @@ from conversations.task_4.handlers import task_four_handler
 from conversations.task_5.handlers import task_five_handler
 from conversations.task_6.handlers import task_six_handler
 from conversations.task_7.handlers import task_seven_handler
+from conversations.task_8.handlers import task_8_handler
 from utils.configs import TOKEN
 
 
@@ -48,6 +49,7 @@ def create_bot():
             task_five_handler,
             task_six_handler,
             task_seven_handler,
+            task_8_handler,
         ],
         group=2,
     )

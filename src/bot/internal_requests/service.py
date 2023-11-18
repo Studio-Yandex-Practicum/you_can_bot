@@ -133,6 +133,28 @@ async def create_answer(answer: Answer) -> Response:
     return response
 
 
+async def get_task_8_question(question_number: int, params: List) -> List[Message]:
+    """Запрос на получение вопроса по 8-му заданию."""
+    endpoint_urn = f"task_8_question/{question_number}/"
+    response = await _get_request_with_params(endpoint_urn, params)
+    messages = await _parse_api_response_to_messages(response=response)
+    return messages
+
+
+async def _get_request_with_params(endpoint_url: str, params) -> Response:
+    async with AsyncClient() as client:
+        response = await client.request(
+            method="GET",
+            url=urljoin(
+                base=INTERNAL_API_URL,
+                url=endpoint_url,
+            ),
+            json=params,
+        )
+    response.raise_for_status()
+    return response
+
+
 async def _get_request(endpoint_url: str) -> Response:
     async with AsyncClient() as client:
         response = await client.get(

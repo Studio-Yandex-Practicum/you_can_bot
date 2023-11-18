@@ -48,7 +48,7 @@ show_all_tasks_handler = ConversationHandler(
             ),
             CallbackQueryHandler(
                 callback_funcs.finish_tasks_conversation,
-                pattern=r"^start_task_(?P<number>\d+)$",
+                pattern=r"^with_choice_start_task_(?P<number>\d+)$",
             ),
         ]
     },
