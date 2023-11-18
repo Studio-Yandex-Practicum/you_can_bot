@@ -5,7 +5,6 @@ from telegram.ext import ContextTypes, ConversationHandler
 import conversations.general.keyboards as keyboards
 import conversations.general.templates as templates
 import internal_requests.service as api_service
-from conversations import CANCEL_ACQUAINTANCE, START_MESSAGE
 from external_requests import NAME, SURNAME, TARIFF, get_user_info_from_lk
 from external_requests.exceptions import (
     APIDataError,
@@ -52,15 +51,6 @@ async def show_skill_set_info(
         reply_markup=keyboards.FIRST_TASK_KEYBOARD,
     )
     await update.callback_query.edit_message_reply_markup()
-    return ConversationHandler.END
-
-
-async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    """Завершает диалог с пользователем."""
-    query = update.callback_query
-    await query.answer(CANCEL_ACQUAINTANCE)
-    await query.edit_message_text(START_MESSAGE)
-    context.user_data.clear()
     return ConversationHandler.END
 
 
