@@ -11,6 +11,11 @@ from telegram.ext import (
     filters,
 )
 
+from conversations.general.decorators import (
+    TASK_EXECUTION,
+    not_in_conversation,
+    set_conversation_name,
+)
 from conversations.menu.callback_funcs import add_task_number_to_prev_message
 from conversations.tasks.keyboards import NEXT_KEYBOARD, get_default_inline_keyboard
 from internal_requests import service as api_service
@@ -70,6 +75,8 @@ class BaseTaskConversation:
         )
         return task_status.is_done
 
+    @not_in_conversation(ConversationHandler.END)
+    @set_conversation_name(TASK_EXECUTION)
     async def show_task_description(
         self, update: Update, context: ContextTypes.DEFAULT_TYPE
     ) -> int:
@@ -85,6 +92,7 @@ class BaseTaskConversation:
         if task_done:
             text = f"{self.entry_point_button_label} {TASK_ALREADY_DONE_TEXT}"
             await update.effective_message.reply_text(text=text)
+            del context.user_data["current_conversation"]
             return ConversationHandler.END
 
         description = self.description
@@ -262,8 +270,10 @@ class OneQuestionConversation(BaseTaskConversation):
         super().__post_init__()
         self.start_method = self.show_question
 
+    @not_in_conversation(ConversationHandler.END)
+    @set_conversation_name(TASK_EXECUTION)
     async def show_question(
-        self, update: Update, _context: ContextTypes.DEFAULT_TYPE
+        self, update: Update, context: ContextTypes.DEFAULT_TYPE
     ) -> int:
         """Показывает единственный вопрос задания."""
         if update.callback_query:
@@ -272,6 +282,7 @@ class OneQuestionConversation(BaseTaskConversation):
         if task_done:
             text = f"{self.entry_point_button_label} {TASK_ALREADY_DONE_TEXT}"
             await update.effective_message.reply_text(text=text)
+            del context.user_data["current_conversation"]
             return ConversationHandler.END
 
         messages = await api_service.get_messages_with_question(

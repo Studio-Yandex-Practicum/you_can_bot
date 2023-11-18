@@ -6,6 +6,7 @@ import conversations.general.keyboards as keyboards
 import conversations.general.templates as templates
 import internal_requests.service as api_service
 from conversations import CANCEL_ACQUAINTANCE, START_MESSAGE
+from conversations.general.decorators import not_in_conversation, set_conversation_name
 from external_requests import NAME, SURNAME, TARIFF, get_user_info_from_lk
 from external_requests.exceptions import (
     APIDataError,
@@ -20,6 +21,8 @@ from utils.configs import ALLOWED_TARIFFS
 HELLO = 0
 
 
+@not_in_conversation(ConversationHandler.END)
+@set_conversation_name("start")
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     """Первое сообщение от бота при вводе команды /start."""
     await _get_user_info_and_set_in_context(update, context)
@@ -52,6 +55,7 @@ async def show_skill_set_info(
         reply_markup=keyboards.FIRST_TASK_KEYBOARD,
     )
     await update.callback_query.edit_message_reply_markup()
+    del context.user_data["current_conversation"]
     return ConversationHandler.END
 
 
