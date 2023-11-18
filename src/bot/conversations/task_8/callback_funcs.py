@@ -7,6 +7,7 @@ from telegram.constants import ChatAction, ParseMode
 from telegram.ext import CallbackContext, ConversationHandler
 
 import internal_requests.service as api_service
+from conversations.menu.callback_funcs import add_task_number_to_prev_message
 from conversations.task_8.keyboards import NEXT_KEYBOARD, REPLY_KEYBOARD
 from conversations.task_8.templates import (
     FINAL_MESSAGE_TEXT,
@@ -33,6 +34,17 @@ TASK_END = 35
 class LocationOfChoiceInTask(TypedDict):
     question: int
     choice: Literal["а"] | Literal["б"]
+
+
+async def show_start_of_task_8_with_task_number(
+    update: Update, context: CallbackContext
+) -> int:
+    return await add_task_number_to_prev_message(
+        update=update,
+        context=context,
+        task_number=CURRENT_TASK,
+        start_task_method=show_start_of_task_8,
+    )
 
 
 async def show_start_of_task_8(update: Update, context: CallbackContext) -> int:

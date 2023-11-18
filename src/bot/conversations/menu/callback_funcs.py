@@ -1,6 +1,8 @@
+from typing import Callable
+
 from telegram import Update
 from telegram.constants import ParseMode
-from telegram.ext import ContextTypes, ConversationHandler
+from telegram.ext import CallbackContext, ContextTypes, ConversationHandler
 
 import conversations.menu.templates as templates
 import internal_requests.service as api_service
@@ -11,6 +13,7 @@ from conversations.menu.keyboards import (
     URL_BUTTON,
     create_inline_tasks_keyboard,
 )
+from conversations.menu.templates import PICKED_TASK
 from internal_requests.entities import Problem
 
 
@@ -35,6 +38,21 @@ async def show_done_tasks(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await query.message.reply_text(text=result.content, parse_mode=ParseMode.HTML)
 
     return ConversationHandler.END
+
+
+async def add_task_number_to_prev_message(
+    update: Update,
+    context: CallbackContext,
+    task_number: int,
+    start_task_method: Callable,
+) -> int:
+    message = update.effective_message
+    await message.edit_text(
+        text=f"{message.text_html}\n\n{PICKED_TASK.format(task_number=task_number)}",
+        parse_mode=ParseMode.HTML,
+        reply_markup=message.reply_markup,
+    )
+    return await start_task_method(update, context)
 
 
 @user_exists

@@ -11,6 +11,7 @@ from telegram.ext import (
     filters,
 )
 
+from conversations.menu.callback_funcs import add_task_number_to_prev_message
 from conversations.tasks.keyboards import NEXT_KEYBOARD, get_default_inline_keyboard
 from internal_requests import service as api_service
 from internal_requests.entities import Answer
@@ -58,6 +59,7 @@ class BaseTaskConversation:
             self.task_number
         )
         self.cancel_text: str = TASK_CANCEL_TEXT + str(self.task_number) + "."
+        self.start_method = self.show_task_description
         self.question_method = self.show_question
         self.update_method = self.handle_user_answer
 
@@ -185,6 +187,20 @@ class BaseTaskConversation:
         context.user_data.clear()
         return ConversationHandler.END
 
+    async def show_task_description_with_number(
+        self, update: Update, context: ContextTypes.DEFAULT_TYPE
+    ) -> int:
+        """
+        Показывает описание задание, но перед этим добавляет
+        в предыдущее сообщение выбранный номер задания.
+        """
+        return await add_task_number_to_prev_message(
+            update=update,
+            context=context,
+            task_number=self.task_number,
+            start_task_method=self.start_method,
+        )
+
     async def cancel(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
         """
         Прерывает выполнение задания и выводит сообщение об этом.
@@ -200,11 +216,12 @@ class BaseTaskConversation:
         Используется при создании хэндлера для задания.
         """
         return [
-            MessageHandler(
-                filters.Regex(self.entry_point_button_label), self.show_task_description
+            CallbackQueryHandler(
+                self.start_method, pattern=rf"^start_task_{self.task_number}$"
             ),
             CallbackQueryHandler(
-                self.show_task_description, pattern=rf"^start_task_{self.task_number}$"
+                self.show_task_description_with_number,
+                pattern=rf"^with_choice_start_task_{self.task_number}$",
             ),
         ]
 
@@ -241,9 +258,13 @@ class BaseTaskConversation:
 class OneQuestionConversation(BaseTaskConversation):
     """Класс для общения по заданиям с одним вопросом и ответом в свободной форме."""
 
+    def __post_init__(self):
+        super().__post_init__()
+        self.start_method = self.show_question
+
     async def show_question(
         self, update: Update, _context: ContextTypes.DEFAULT_TYPE
-    ) -> None:
+    ) -> int:
         """Показывает единственный вопрос задания."""
         if update.callback_query:
             await update.callback_query.edit_message_reply_markup()
@@ -305,14 +326,6 @@ class OneQuestionConversation(BaseTaskConversation):
         )
         _context.user_data.clear()
         return ConversationHandler.END
-
-    def set_entry_points(self):
-        """Описывает entry_point для входа в диалог: кнопка 'Задача 5'."""
-        return [
-            CallbackQueryHandler(
-                self.show_question, pattern=f"start_task_{self.task_number}"
-            )
-        ]
 
     def set_states(self):
         """Управляет ведением диалога."""
