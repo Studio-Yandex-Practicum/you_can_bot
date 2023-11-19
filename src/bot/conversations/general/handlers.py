@@ -12,4 +12,5 @@ acquaintance_handler: ConversationHandler = ConversationHandler(
             ),
         ],
     },
+    fallbacks=[],
 )
