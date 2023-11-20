@@ -101,7 +101,7 @@ async def get_user_question(update: Update, context: ContextTypes.DEFAULT_TYPE) 
         await context.bot.edit_message_text(
             chat_id=update.effective_chat.id,
             message_id=context.user_data.get("confirmation_message_id"),
-            text="\n".join((templates.SEND_QUESTION_TEXT, question_text)),
+            text=templates.SEND_QUESTION_TEXT + '"' + question_text + '"',
             reply_markup=AGREE_OR_CANCEL_KEYBOARD,
         )
     else:  # иные случаи
@@ -110,14 +110,12 @@ async def get_user_question(update: Update, context: ContextTypes.DEFAULT_TYPE) 
     if question_text and question_id:
         context.user_data["question"] = question_text
         context.user_data["question_id"] = question_id
-        if not context.user_data.get("confirmation_message_id") and update.message:
-            confirmation_message = await update.message.reply_text(
-                text="\n".join((templates.SEND_QUESTION_TEXT, question_text)),
-                reply_markup=AGREE_OR_CANCEL_KEYBOARD,
-            )
-            context.user_data[
-                "confirmation_message_id"
-            ] = confirmation_message.message_id
+    if not context.user_data.get("confirmation_message_id") and update.message:
+        confirmation_message = await update.message.reply_text(
+            text=templates.SEND_QUESTION_TEXT + '"' + question_text + '"',
+            reply_markup=AGREE_OR_CANCEL_KEYBOARD,
+        )
+        context.user_data["confirmation_message_id"] = confirmation_message.message_id
 
 
 async def confirm_saving_question(
