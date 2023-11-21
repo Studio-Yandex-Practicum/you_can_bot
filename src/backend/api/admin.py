@@ -149,6 +149,7 @@ class TaskStatusAdmin(admin.ModelAdmin):
     date_hierarchy = "pass_date"
     readonly_fields = ["user", "task", "pass_date"]
 
+
 @admin.register(UserFromTelegram)
 class UserFromTelegramAdmin(admin.ModelAdmin):
     list_display = (
