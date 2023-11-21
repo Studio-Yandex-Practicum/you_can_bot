@@ -168,6 +168,9 @@ class Choice(models.Model):
         blank=True,
     )
 
+    class Meta:
+        ordering = ("pk",)
+
     def __str__(self):
         return self.title
 
