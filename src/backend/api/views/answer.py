@@ -9,6 +9,7 @@ from api.calculation_service.task_1 import calculate_task_1_result
 from api.calculation_service.task_2 import calculate_task_2_result
 from api.calculation_service.task_3 import calculate_task_3_result
 from api.calculation_service.task_4 import calculate_task_4_result
+from api.calculation_service.task_8 import calculate_task_8_result
 from api.models import Answer, Question, TaskStatus
 from api.serializers import AnswerSerializer
 
@@ -18,15 +19,12 @@ CALCULATE_TASKS = {
     2: calculate_task_2_result,
     3: calculate_task_3_result,
     4: calculate_task_4_result,
+    8: calculate_task_8_result,
 }
 
 
 @api_view(("POST",))
 def answer_create(request, telegram_id, task_number):
-    """
-    Создание записи в таблице Answer.
-    Изменение в таблице TaskStatus поля current_question для пользователя.
-    """
     task_status = _get_task_status_or_404(task_number, telegram_id)
     number = _get_and_validate_number_of_question(request)
     question = _get_question_or_404(number, task_number)

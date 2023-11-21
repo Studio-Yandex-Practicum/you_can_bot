@@ -36,3 +36,22 @@ class Message:
     content: str
     photo: str
     telegram_id: Optional[int] = None
+
+
+@dataclass
+class Mentor:
+    first_name: str
+    last_name: str
+    telegram_id: int
+
+
+@dataclass
+class MentorRegistered(Mentor):
+    username: str
+    password: str
+
+
+@dataclass
+class MentorRegistrationStatus:
+    registered: bool
+    confirmed: bool

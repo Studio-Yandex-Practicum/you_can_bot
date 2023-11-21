@@ -30,7 +30,7 @@ class TestTask3(TestCase):
         }
         # fmt: on
         questions = [
-            Question(task=Task.objects.get(number=2), number=question_number)
+            Question(task=Task.objects.get(number=3), number=question_number)
             for question_number in test_user_answers.keys()
         ]
         Question.objects.bulk_create(questions)

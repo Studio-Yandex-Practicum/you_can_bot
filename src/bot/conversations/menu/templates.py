@@ -24,7 +24,7 @@ TASKS_STATE = "TASKS"
 MY_TASKS = "Мои задания"
 TASKS_BUTTON_TEXT = "Задание"
 PATTERN_DONE = "result_task_"
-PATTERN_UNDONE = "start_task_"
+PATTERN_UNDONE = "with_choice_start_task_"
 PICKED_TASK = "<b>Выбранное задание: {task_number}</b>"
 
 # Ask question
@@ -43,3 +43,6 @@ URL = "https://youcan.by/"
 
 CONFIRM = "Подтвердить"
 CANCEL = "Отменить"
+
+YOUR_ANSWER = "Твой ответ:\n\n{}"
+YOUR_ANSWERS = "Твои ответы:\n\n{}"

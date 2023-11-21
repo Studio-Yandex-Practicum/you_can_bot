@@ -1,3 +1,5 @@
+from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Group
 from django.template.loader import render_to_string
 from rest_framework import serializers
 
@@ -9,6 +11,12 @@ from api.models import (
     TaskStatus,
     UserFromTelegram,
 )
+from api.utils import create_available_username
+
+User = get_user_model()
+
+
+MENTOR_CREATE_ERROR = "Учетная запись с указанным telegram_id уже существует."
 
 
 class QuestionSerializer(serializers.ModelSerializer):
@@ -58,6 +66,28 @@ class AnswerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Answer
         fields = ("id", "number", "content")
+
+    def to_representation(self, obj):
+        if self.context.get("as_result"):
+            results = []
+            task_number = self.context["task_number"]
+            template_name = self._get_template_name_by_task_number(task_number)
+            for answer in obj:
+                results.append(
+                    {"content": render_to_string(template_name, {"answer": answer})}
+                )
+            return {"count": len(results), "result": results}
+        return super().to_representation(obj)
+
+    @staticmethod
+    def _get_template_name_by_task_number(task_number):
+        if task_number == 6:
+            template_name = "results/result_with_answer_numeric.html"
+        elif task_number == 7:
+            template_name = "results/result_with_answer_line_break.html"
+        else:
+            template_name = "results/result_with_answer.html"
+        return template_name
 
 
 class UserFromTelegramRetrieveCreateSerializer(serializers.ModelSerializer):
@@ -162,3 +192,64 @@ class ProblemSerializer(serializers.ModelSerializer):
         model = Problem
         fields = ("id", "user", "message", "answer", "create_date")
         read_only_fields = ("user", "answer")
+
+
+class MentorSerializer(serializers.ModelSerializer):
+    """
+    Сериализатор модели 'User'.
+    Используется для:
+    - Создания учетной записи психолога.
+    """
+
+    telegram_id = serializers.IntegerField(source="mentorprofile.telegram_id")
+    username = serializers.ReadOnlyField()
+    password = serializers.SerializerMethodField()
+
+    class Meta:
+        model = User
+        fields = (
+            "first_name",
+            "last_name",
+            "telegram_id",
+            "username",
+            "password",
+        )
+        extra_kwargs = {
+            "first_name": {"required": True},
+            "last_name": {"required": True},
+        }
+
+    def validate_telegram_id(self, value):
+        """
+        Проверяет отсутствие учетной записи психолога с указанным telegram_id.
+        """
+        if User.objects.filter(mentorprofile__telegram_id=value).exists():
+            raise serializers.ValidationError(detail=MENTOR_CREATE_ERROR)
+        return value
+
+    def validate(self, attrs):
+        """
+        Добавляет случайно сгенерированный пароль в словарь validated_data.
+        """
+        attrs["password"] = User.objects.make_random_password()
+        return attrs
+
+    def get_password(self, obj):
+        return self.validated_data.get("password")
+
+    def create(self, validated_data):
+        """
+        Создает учетную запись психолога и добавляет ее в группу Mentor.
+        """
+        profile = validated_data.get("mentorprofile")
+        first_name = validated_data.get("first_name")
+        last_name = validated_data.get("last_name")
+        password = validated_data.get("password")
+        username = create_available_username(first_name=first_name, last_name=last_name)
+        mentor = User(username=username, first_name=first_name, last_name=last_name)
+        mentor.set_password(password)
+        mentor._telegram_id = profile.get("telegram_id")
+        mentor.save()
+        mentor_group = Group.objects.get(name="Mentor")
+        mentor.groups.add(mentor_group)
+        return mentor
