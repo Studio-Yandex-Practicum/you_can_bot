@@ -315,7 +315,7 @@ class OneQuestionConversation(BaseTaskConversation):
         return await self.show_notification(update, _context)
 
     async def show_notification(
-        self, update: Update, _context: ContextTypes.DEFAULT_TYPE
+        self, update: Update, context: ContextTypes.DEFAULT_TYPE
     ) -> int:
         """
         Оповещает пользователя об успешном сохранении ответа в БД в сообщении
@@ -335,7 +335,7 @@ class OneQuestionConversation(BaseTaskConversation):
                 )
             ),
         )
-        _context.user_data.clear()
+        context.user_data.clear()
         return ConversationHandler.END
 
     def set_states(self):
