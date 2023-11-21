@@ -10,7 +10,6 @@ from conversations.general.decorators import not_in_conversation, set_conversati
 from conversations.menu.decorators import user_exists
 from conversations.menu.keyboards import (
     AGREE_OR_CANCEL_KEYBOARD,
-    MY_TASKS_KEYBOARD,
     URL_BUTTON,
     create_inline_tasks_keyboard,
 )
