@@ -7,7 +7,7 @@ from telegram.ext import (
 )
 
 import conversations.menu.callback_funcs as callback_funcs
-from conversations.menu.templates import (TASKS_STATE, WAITING_FOR_QUESTION_STATE)
+from conversations.menu.templates import TASKS_STATE, WAITING_FOR_QUESTION_STATE
 
 # /tasks
 entry_point_to_tasks_handler = CommandHandler(
