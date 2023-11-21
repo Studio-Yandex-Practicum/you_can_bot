@@ -219,6 +219,8 @@ class TaskStatus(models.Model):
     is_done = models.BooleanField(
         "Выполнено",
         default=False,
+        help_text="Чтобы сбросить выполнение задания и дать подростку пройти его заново, уберите здесь галочку. Также "
+                  "выставите в поле 'Текущий вопрос' значение 0. "
     )
     pass_date = models.DateTimeField(
         "Дата выполнения",
