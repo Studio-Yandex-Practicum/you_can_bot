@@ -1,9 +1,12 @@
+from typing import Callable
+
 from telegram import Update
 from telegram.constants import ParseMode
-from telegram.ext import ContextTypes, ConversationHandler
+from telegram.ext import CallbackContext, ContextTypes, ConversationHandler
 
 import conversations.menu.templates as templates
 import internal_requests.service as api_service
+from conversations.general.decorators import not_in_conversation, set_conversation_name
 from conversations.menu.decorators import user_exists
 from conversations.menu.keyboards import (
     AGREE_OR_CANCEL_KEYBOARD,
@@ -11,6 +14,7 @@ from conversations.menu.keyboards import (
     URL_BUTTON,
     create_inline_tasks_keyboard,
 )
+from conversations.menu.templates import PICKED_TASK
 from internal_requests.entities import Problem
 
 
@@ -34,7 +38,31 @@ async def show_done_tasks(update: Update, context: ContextTypes.DEFAULT_TYPE):
     for result in task_results:
         await query.message.reply_text(text=result.content, parse_mode=ParseMode.HTML)
 
+    del context.user_data["current_conversation"]
+
     return ConversationHandler.END
+
+
+async def finish_tasks_conversation(
+    update: Update, context: ContextTypes.DEFAULT_TYPE
+) -> int:
+    context.user_data.clear()
+    return ConversationHandler.END
+
+
+async def add_task_number_to_prev_message(
+    update: Update,
+    context: CallbackContext,
+    task_number: int,
+    start_task_method: Callable,
+) -> int:
+    message = update.effective_message
+    await message.edit_text(
+        text=f"{message.text_html}\n\n{PICKED_TASK.format(task_number=task_number)}",
+        parse_mode=ParseMode.HTML,
+        reply_markup=message.reply_markup,
+    )
+    return await start_task_method(update, context)
 
 
 @user_exists
@@ -51,6 +79,8 @@ async def get_user_profile(update: Update, context: ContextTypes.DEFAULT_TYPE) -
 
 
 @user_exists
+@not_in_conversation(ConversationHandler.END)
+@set_conversation_name("tasks")
 async def show_all_user_tasks(
     update: Update, context: ContextTypes.DEFAULT_TYPE
 ) -> None:
@@ -71,6 +101,8 @@ async def show_all_user_tasks(
 
 
 @user_exists
+@not_in_conversation(ConversationHandler.END)
+@set_conversation_name("ask")
 async def suggest_ask_question(
     update: Update, context: ContextTypes.DEFAULT_TYPE
 ) -> int:
@@ -111,6 +143,7 @@ async def cancel_save_question(
 
 
 @user_exists
+@not_in_conversation()
 async def show_url(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Перейти на сайт YouCan."""
     await update.message.reply_text(

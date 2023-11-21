@@ -67,6 +67,28 @@ class AnswerSerializer(serializers.ModelSerializer):
         model = Answer
         fields = ("id", "number", "content")
 
+    def to_representation(self, obj):
+        if self.context.get("as_result"):
+            results = []
+            task_number = self.context["task_number"]
+            template_name = self._get_template_name_by_task_number(task_number)
+            for answer in obj:
+                results.append(
+                    {"content": render_to_string(template_name, {"answer": answer})}
+                )
+            return {"count": len(results), "result": results}
+        return super().to_representation(obj)
+
+    @staticmethod
+    def _get_template_name_by_task_number(task_number):
+        if task_number == 6:
+            template_name = "results/result_with_answer_numeric.html"
+        elif task_number == 7:
+            template_name = "results/result_with_answer_line_break.html"
+        else:
+            template_name = "results/result_with_answer.html"
+        return template_name
+
 
 class UserFromTelegramRetrieveCreateSerializer(serializers.ModelSerializer):
     """

@@ -40,14 +40,19 @@ def create_bot():
     bot_app.add_handler(handler=acquaintance_handler)
 
     # task handlers
-    bot_app.add_handler(handler=task_one_handler)
-    bot_app.add_handler(handler=task_two_handler)
-    bot_app.add_handler(handler=task_three_handler)
-    bot_app.add_handler(handler=task_four_handler)
-    bot_app.add_handler(handler=task_five_handler)
-    bot_app.add_handler(handler=task_six_handler)
-    bot_app.add_handler(handler=task_seven_handler)
-    bot_app.add_handler(handler=task_8_handler)
+    bot_app.add_handlers(
+        handlers=[
+            task_one_handler,
+            task_two_handler,
+            task_three_handler,
+            task_four_handler,
+            task_five_handler,
+            task_six_handler,
+            task_seven_handler,
+            task_8_handler,
+        ],
+        group=2,
+    )
 
     # mentor registration handlers
     bot_app.add_handler(handler=mentor_registration_handler)

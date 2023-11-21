@@ -8,9 +8,11 @@ from telegram.ext import (
     filters,
 )
 
-from conversations.tasks.base import CHOOSING, NEXT_BUTTON_PATTERN, BaseTaskConversation
+from conversations.tasks.base import NEXT_BUTTON_PATTERN, BaseTaskConversation
 from internal_requests import service as api_service
 from internal_requests.entities import Answer
+
+TYPING_ANSWER = 1
 
 
 class TaskSixConversation(BaseTaskConversation):
@@ -30,6 +32,7 @@ class TaskSixConversation(BaseTaskConversation):
         Показывает очередной вопрос, относящийся к текущему заданию.
         """
         if question_number == 1:
+            await update.callback_query.answer()
             await update.callback_query.edit_message_reply_markup()
         messages = await api_service.get_messages_with_question(
             task_number=self.task_number,
@@ -87,7 +90,7 @@ class TaskSixConversation(BaseTaskConversation):
         await self.show_question(
             update, context, context.user_data.get("current_question")
         )
-        return CHOOSING
+        return TYPING_ANSWER
 
     def set_states(self):
         """
@@ -95,7 +98,7 @@ class TaskSixConversation(BaseTaskConversation):
         Используется при создании хэндлера для задания.
         """
         return {
-            CHOOSING: [
+            TYPING_ANSWER: [
                 CallbackQueryHandler(self.question_method, pattern=NEXT_BUTTON_PATTERN),
                 MessageHandler(filters.TEXT & (~filters.COMMAND), self.update_method),
             ]

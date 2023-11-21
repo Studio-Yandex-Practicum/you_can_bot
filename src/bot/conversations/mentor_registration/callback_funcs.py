@@ -8,6 +8,7 @@ from telegram.ext import (
     filters,
 )
 
+from conversations.general.decorators import not_in_conversation, set_conversation_name
 from conversations.mentor_registration.templates import (
     ASK_FIRST_NAME,
     ASK_LAST_NAME,
@@ -42,6 +43,8 @@ class MentorRegistrationConversation:
     Класс для управления диалогом регистрации психолога.
     """
 
+    @not_in_conversation(ConversationHandler.END)
+    @set_conversation_name("mentor_registration")
     async def start(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
         """
         Начало диалога. Проверяет, не был ли пользователь зарегистрирован ранее.
@@ -181,7 +184,7 @@ class MentorRegistrationConversation:
         """
         Управляет выходом из диалога.
         """
-        return [MessageHandler(filters.COMMAND, self.cancel)]
+        return [MessageHandler(filters.Regex("/reg"), self.cancel)]
 
     def add_handlers(self):
         """

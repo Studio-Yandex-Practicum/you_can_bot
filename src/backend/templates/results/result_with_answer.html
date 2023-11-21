@@ -1,0 +1,5 @@
+{% extends "results/base.html" %}
+{% block title %}
+  <b>Вопрос: </b>{{ answer.question.content }}
+{% endblock title %}
+{% block content %}<b>Твой ответ: </b>{{answer.content}}{% endblock content %}
