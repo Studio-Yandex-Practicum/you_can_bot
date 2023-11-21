@@ -13,26 +13,6 @@ from conversations.menu.templates import (
     WAITING_FOR_QUESTION_STATE,
 )
 
-# /profile
-entry_point_to_profile_handler = CommandHandler(
-    "profile", callback_funcs.get_user_profile
-)
-profile_handler = ConversationHandler(
-    entry_points=[entry_point_to_profile_handler],
-    states={
-        SHOW_MY_TASKS_STATE: [
-            CallbackQueryHandler(
-                callback_funcs.show_all_user_tasks, pattern=r"^my_tasks$"
-            )
-        ],
-        TASKS_STATE: [
-            CallbackQueryHandler(
-                callback_funcs.show_done_tasks, pattern=r"^result_task_(?P<number>\d+)$"
-            ),
-        ],
-    },
-    fallbacks=[],
-)
 # /tasks
 entry_point_to_tasks_handler = CommandHandler(
     "tasks", callback_funcs.show_all_user_tasks

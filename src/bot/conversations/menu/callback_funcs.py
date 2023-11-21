@@ -36,20 +36,6 @@ async def show_done_tasks(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     return ConversationHandler.END
 
-
-@user_exists
-async def get_user_profile(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    """Посмотреть профиль."""
-    user_info = await api_service.get_info_about_user(update.effective_user.id)
-    text = templates.USER_PROFILE_TEXT.format(
-        name=user_info.name, surname=user_info.surname
-    )
-    await update.message.reply_text(
-        text=text, reply_markup=MY_TASKS_KEYBOARD, parse_mode=ParseMode.HTML
-    )
-    return templates.SHOW_MY_TASKS_STATE
-
-
 @user_exists
 async def show_all_user_tasks(
     update: Update, context: ContextTypes.DEFAULT_TYPE
