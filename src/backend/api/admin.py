@@ -77,6 +77,7 @@ class TaskStatusInline(admin.TabularInline):
     extra = 0
     show_change_link = True
     can_delete = False
+    readonly_fields = ["user", "task", "pass_date", "is_done", "current_question"]
 
 
 @admin.register(Problem)
@@ -146,6 +147,7 @@ class TaskStatusAdmin(admin.ModelAdmin):
         "is_done",
     )
     date_hierarchy = "pass_date"
+    readonly_fields = ["user", "task", "pass_date"]
 
 
 @admin.register(UserFromTelegram)
