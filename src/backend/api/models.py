@@ -12,12 +12,12 @@ class MentorProfile(models.Model):
     """Модель профиля психолога."""
 
     user = models.OneToOneField(
-        to=User,
-        on_delete=models.CASCADE,
+        to=User, on_delete=models.CASCADE, related_name="mentorprofile"
     )
     telegram_id = models.PositiveBigIntegerField(
         "Айди Telegram",
         help_text="На этот id в Telegram могут быть отправлены уведомления",
+        unique=True,
         null=True,
         blank=True,
     )
@@ -168,6 +168,9 @@ class Choice(models.Model):
         blank=True,
     )
 
+    class Meta:
+        ordering = ("pk",)
+
     def __str__(self):
         return self.title
 
@@ -220,8 +223,8 @@ class TaskStatus(models.Model):
         "Выполнено",
         default=False,
         help_text="Чтобы сбросить выполнение задания и дать подростку пройти его"
-                  " заново, уберите здесь галочку. Также выставите в поле"
-                  " 'Текущий вопрос' значение 0."
+        " заново, уберите здесь галочку. Также выставите в поле"
+        " 'Текущий вопрос' значение 0.",
     )
     pass_date = models.DateTimeField(
         "Дата выполнения",

@@ -1,4 +1,4 @@
-from typing import Tuple
+from typing import Tuple, Union
 
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 
@@ -14,7 +14,7 @@ NEXT_KEYBOARD = InlineKeyboardMarkup(
 
 
 def get_default_inline_keyboard(
-    button_labels: Tuple[str], picked_choices: str = ""
+    button_labels: Union[Tuple[str], str], picked_choices: str = ""
 ) -> InlineKeyboardMarkup:
     """
     Формирует клавиатуру, принимая на вход кортеж кнопок. При формировании

@@ -5,7 +5,7 @@ from telegram.ext import ContextTypes, ConversationHandler
 import conversations.general.keyboards as keyboards
 import conversations.general.templates as templates
 import internal_requests.service as api_service
-from conversations import CANCEL_ACQUAINTANCE, START_MESSAGE
+from conversations.general.decorators import not_in_conversation, set_conversation_name
 from external_requests import NAME, SURNAME, TARIFF, get_user_info_from_lk
 from external_requests.exceptions import (
     APIDataError,
@@ -20,13 +20,15 @@ from utils.configs import ALLOWED_TARIFFS
 HELLO = 0
 
 
+@not_in_conversation(ConversationHandler.END)
+@set_conversation_name("start")
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     """Первое сообщение от бота при вводе команды /start."""
     await _get_user_info_and_set_in_context(update, context)
     if not context.user_info:
         return ConversationHandler.END
     if context.user_info[TARIFF] not in ALLOWED_TARIFFS:
-        await update.message.reply_text(
+        await update.effective_chat.send_message(
             templates.NOT_ALLOWED_TARIFFS_START_MESSAGE.format(
                 name=context.user_info[NAME]
             )
@@ -34,43 +36,25 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
         return ConversationHandler.END
 
     await _get_or_create_user_from_telegram(update, context)
-    await update.message.reply_text(
+    await update.effective_chat.send_message(
         templates.ALLOWED_TARIFFS_START_MESSAGE.format(name=context.user_info[NAME]),
         reply_markup=keyboards.HELLO_KEYBOARD,
     )
-
     return HELLO
 
 
-async def start_acquaintance(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    """Знакомит пользователя со скиллсетами."""
+async def show_skill_set_info(
+    update: Update, context: ContextTypes.DEFAULT_TYPE
+) -> int:
+    """Выводит сообщение пользователю о том, зачем ему бот."""
     query = update.callback_query
     await query.answer()
-    await query.edit_message_text(
+    await update.effective_chat.send_message(
         templates.SKILL_SET_INFORMATION,
-        reply_markup=keyboards.START_SKILL_SETS_KEYBOARD,
-    )
-    return HELLO
-
-
-async def start_skill_sets(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    """Выдает краткое описание первого задания
-    и предлагает к нему приступить."""
-    query = update.callback_query
-    await query.answer()
-    await query.edit_message_text(
-        templates.FIRST_SKILL_SET_INFORMATION,
         reply_markup=keyboards.FIRST_TASK_KEYBOARD,
     )
-    return ConversationHandler.END
-
-
-async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    """Завершает диалог с пользователем."""
-    query = update.callback_query
-    await query.answer(CANCEL_ACQUAINTANCE)
-    await query.edit_message_text(START_MESSAGE)
-    context.user_data.clear()
+    await update.callback_query.edit_message_reply_markup()
+    del context.user_data["current_conversation"]
     return ConversationHandler.END
 
 

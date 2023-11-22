@@ -1,6 +1,10 @@
 from telegram.ext import Application, ApplicationBuilder
 
 from conversations.general.handlers import acquaintance_handler
+from conversations.mentor_registration.handlers import (
+    mentor_registration_handler,
+    registration_confirmation_handler,
+)
 from conversations.menu.handlers import (
     ask_question_handler,
     entry_point_to_ask_handler,
@@ -18,6 +22,7 @@ from conversations.task_4.handlers import task_four_handler
 from conversations.task_5.handlers import task_five_handler
 from conversations.task_6.handlers import task_six_handler
 from conversations.task_7.handlers import task_seven_handler
+from conversations.task_8.handlers import task_8_handler
 from utils.configs import TOKEN
 
 
@@ -35,13 +40,23 @@ def create_bot():
     bot_app.add_handler(handler=acquaintance_handler)
 
     # task handlers
-    bot_app.add_handler(handler=task_one_handler)
-    bot_app.add_handler(handler=task_two_handler)
-    bot_app.add_handler(handler=task_three_handler)
-    bot_app.add_handler(handler=task_four_handler)
-    bot_app.add_handler(handler=task_five_handler)
-    bot_app.add_handler(handler=task_six_handler)
-    bot_app.add_handler(handler=task_seven_handler)
+    bot_app.add_handlers(
+        handlers=[
+            task_one_handler,
+            task_two_handler,
+            task_three_handler,
+            task_four_handler,
+            task_five_handler,
+            task_six_handler,
+            task_seven_handler,
+            task_8_handler,
+        ],
+        group=2,
+    )
+
+    # mentor registration handlers
+    bot_app.add_handler(handler=mentor_registration_handler)
+    bot_app.add_handler(handler=registration_confirmation_handler)
 
     # menu handlers
     bot_app.add_handler(handler=profile_handler)
