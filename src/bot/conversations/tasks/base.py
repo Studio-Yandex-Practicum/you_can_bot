@@ -4,7 +4,6 @@ from telegram import ForceReply, InlineKeyboardButton, InlineKeyboardMarkup, Upd
 from telegram.constants import ParseMode
 from telegram.ext import (
     CallbackQueryHandler,
-    CommandHandler,
     ContextTypes,
     ConversationHandler,
     MessageHandler,
@@ -26,12 +25,6 @@ TYPING_ANSWER = 2
 START_QUESTION_NUMBER = 1
 BUTTON_LABELS_PATTERN = r"^([1-9]|10|[А-Е])$"
 NEXT_BUTTON_PATTERN = r"^Далее$"
-TASK_CANCEL_TEXT = (
-    "Прохождение задания прервано. Если захочешь продолжить его"
-    ' выполнение, то можешь открыть меню, перейти в "Посмотреть'
-    ' все задания" или ввести команду /tasks и выбрать'
-    " Задание "
-)
 TASK_START_BUTTON_LABEL = "Задание "
 TASK_ALREADY_DONE_TEXT = (
     "уже пройдено! 😎 Если ты хочешь повторно посмотреть результаты,"
@@ -63,7 +56,6 @@ class BaseTaskConversation:
         self.entry_point_button_label: str = TASK_START_BUTTON_LABEL + str(
             self.task_number
         )
-        self.cancel_text: str = TASK_CANCEL_TEXT + str(self.task_number) + "."
         self.start_method = self.show_task_description
         self.question_method = self.show_question
         self.update_method = self.handle_user_answer
@@ -209,15 +201,6 @@ class BaseTaskConversation:
             start_task_method=self.start_method,
         )
 
-    async def cancel(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-        """
-        Прерывает выполнение задания и выводит сообщение об этом.
-        Вызывается из CallbackQueryHandler в методе set_fallbacks.
-        """
-        await update.message.reply_text(self.cancel_text)
-        context.user_data.clear()
-        return ConversationHandler.END
-
     def set_entry_points(self):
         """
         Описывает entry_points для вхождения в диалог.
@@ -250,7 +233,7 @@ class BaseTaskConversation:
         Управляет выходом из диалога.
         Используется при создании хэндлера для задания.
         """
-        return [CommandHandler("cancel", self.cancel)]
+        return []
 
     def add_handlers(self):
         """
