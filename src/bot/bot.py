@@ -8,10 +8,8 @@ from conversations.mentor_registration.handlers import (
 from conversations.menu.handlers import (
     ask_question_handler,
     entry_point_to_ask_handler,
-    entry_point_to_profile_handler,
     entry_point_to_tasks_handler,
     info_handler,
-    profile_handler,
     show_all_tasks_handler,
 )
 from conversations.menu.keyboards import get_main_menu_commands
@@ -59,14 +57,12 @@ def create_bot():
     bot_app.add_handler(handler=registration_confirmation_handler)
 
     # menu handlers
-    bot_app.add_handler(handler=profile_handler)
     bot_app.add_handler(handler=ask_question_handler)
     bot_app.add_handler(handler=show_all_tasks_handler)
     bot_app.add_handler(handler=info_handler)
     bot_app.add_handlers(
         handlers=[
             entry_point_to_tasks_handler,
-            entry_point_to_profile_handler,
             entry_point_to_ask_handler,
         ]
     )

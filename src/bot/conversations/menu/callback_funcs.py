@@ -10,7 +10,6 @@ from conversations.general.decorators import not_in_conversation, set_conversati
 from conversations.menu.decorators import user_exists
 from conversations.menu.keyboards import (
     AGREE_OR_CANCEL_KEYBOARD,
-    MY_TASKS_KEYBOARD,
     URL_BUTTON,
     create_inline_tasks_keyboard,
 )
@@ -63,19 +62,6 @@ async def add_task_number_to_prev_message(
         reply_markup=message.reply_markup,
     )
     return await start_task_method(update, context)
-
-
-@user_exists
-async def get_user_profile(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    """Посмотреть профиль."""
-    user_info = await api_service.get_info_about_user(update.effective_user.id)
-    text = templates.USER_PROFILE_TEXT.format(
-        name=user_info.name, surname=user_info.surname
-    )
-    await update.message.reply_text(
-        text=text, reply_markup=MY_TASKS_KEYBOARD, parse_mode=ParseMode.HTML
-    )
-    return templates.SHOW_MY_TASKS_STATE
 
 
 @user_exists
