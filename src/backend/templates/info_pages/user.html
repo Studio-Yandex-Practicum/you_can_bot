@@ -1,0 +1,70 @@
+{% extends "info_pages/base.html" %}
+
+{% block content %}
+  <div class="container text-right">
+    <div class="row align-items-center">
+      <div><strong class="fs-2">{{ object.name }} {{ object.surname }}</strong></div>
+      <div class="col-sm"><strong>Telegram: </strong>@{{ object.telegram_username }}</div>
+      <div class="col-sm"><strong>Психолог: </strong>{{ object.mentor.user.first_name }} {{ object.mentor.user.last_name }}</div>
+    </div>
+    <div class="row align-items-center">
+      <div class="col-sm">
+      {% if passed_tasks %}
+        <strong>Пройденные задания: </strong>{{ passed_tasks }}
+      {% else %}
+        <strong>Нет пройденных заданий</strong>
+      {% endif %}
+      </div>
+      <div class="col-sm">
+      {% if unfinished_tasks %}
+        <strong>Незавершённые задания: </strong>{{ unfinished_tasks }}
+      {% else %}
+        <strong>Все задания пройдены</strong>
+      {% endif %}
+      </div>
+    </div>
+    <hr>
+  {% for task_status in tasks %}
+  {% if task_status.is_done %}
+  {% if forloop.first %}
+    <div class="row g-2">
+  {% else %}
+    <div class="row g-2 page-break">
+  {% endif %}
+      <div class="fs-2"><strong>Задание №{{ task_status.task.number }}</strong></div>
+      <div class="pb-2"><strong>Тест пройден:</strong> {{ task_status.pass_date }}</div>
+    {% if task_status.task.number >= 5 and task_status.task.number <= 7 %}
+    {% for answer in task_status.answers.all %}
+      <div class="col-sm">
+        <div class="border-dotted">
+          <div class="pb-2 fs-2"><strong>Вопрос №{{ answer.question.number }}</strong></div>
+          <div class="pb-2">{{ answer.question.content | safe }}</div>
+          <div class="pb-2 fs-2"><strong>Ответ</strong></div>
+          <div class="pb-2">{{ answer.content }}</div>
+        </div>
+      </div>
+    {% endfor %}
+    {% else %}
+    {% for result in task_status.result.all %}
+      <div class="col-sm">
+        <div class="border-dotted">
+          <div class="pb-2 fs-2"><strong>
+          {% if result.score != 0 %}
+            {{ result.top }}.
+          {% endif %}
+            {{ result.result.title | capfirst }}
+          </strong></div>
+          <div class="pb-2">{{ result.result.description | safe }}</div>
+          {% if result.score != 0 %}
+            <div class="pb-2"><strong>Набрано баллов:</strong> {{ result.score }}</div>
+          {% endif %}
+        </div>
+      </div>
+    {% endfor %}
+    {% endif %}
+    </div>
+    <hr>
+  {% endif %}
+  {% endfor %}
+  </div>
+{% endblock %}
