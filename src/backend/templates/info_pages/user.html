@@ -45,6 +45,28 @@
       </div>
     {% endfor %}
     {% else %}
+    {% if request.GET.questions and task_status.task.number != 8 %}
+      <div class="pb-2 fs-2"><strong>Ответы</strong></div>
+      {% for answer in task_status.answers.all %}
+      <div class="row">
+      {% if answer.question.content == 'пара' %}
+        <div class="pb-2 fs-5">{{ answer.question.number }}-я пара</div>
+      {% else %}
+        <div class="pb-2 fs-5">Вопрос №{{ answer.question.number }} {{ answer.question.content }}</div>
+      {% endif %}
+        <div class="m-2">
+        {% for choice in answer.question.choices.all %}
+          <div class="pb-2"><strong>[{{ forloop.counter | add:"1039" | stringformat:"c" }}]</strong> {{ choice.title }}</div>
+        {% if choice.description %}
+          <div class="pb-2 pt-2">{{ choice.description }}</div>
+        {% endif %}
+        {% endfor %}
+        </div>
+        <div class="pb-2"><strong>Ответ:</strong> {{ answer.content }}</div>
+      </div>
+      {% endfor %}
+      <div class="pb-2 fs-2"><strong>Результаты</strong></div>
+    {% endif %}
     {% for result in task_status.result.all %}
       <div class="col-sm">
         <div class="border-dotted">

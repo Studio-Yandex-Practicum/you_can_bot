@@ -299,6 +299,7 @@ class ResultStatus(models.Model):
     class Meta:
         verbose_name = "Результат пользователя"
         verbose_name_plural = "Результаты пользователя"
+        ordering = ("top",)
 
     def __str__(self):
         return f"{self.result} ({self.score} б.)"
