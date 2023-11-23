@@ -22,7 +22,9 @@ class UserDetailView(DetailView):
                 ),
                 Prefetch(
                     "answers",
-                    queryset=Answer.objects.select_related("question"),
+                    queryset=Answer.objects.select_related("question").prefetch_related(
+                        "question__choices",
+                    ),
                 ),
             )
             .all()
