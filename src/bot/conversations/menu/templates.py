@@ -16,6 +16,10 @@ TASKS_BUTTON_TEXT = "Задание"
 PATTERN_DONE = "result_task_"
 PATTERN_UNDONE = "with_choice_start_task_"
 PICKED_TASK = "<b>Выбранное задание: {task_number}</b>"
+TASKS_LIST_TEXT = (
+    "Нажав на кнопку с заданием, ты можешь начать, или продолжить его выполнение, "
+    "или посмотреть результаты."
+)
 
 # Ask question
 WAITING_FOR_QUESTION_STATE = "WAITING_FOR_QUESTION"
