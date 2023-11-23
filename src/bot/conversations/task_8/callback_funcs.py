@@ -153,7 +153,8 @@ async def update_question(update: Update, context: CallbackContext) -> int:
         )
         return CHOOSING
     elif current_question == TASK_END:
-        # После завершения задания, добавляем кнопку "Ура! Все задания выполнены. Что дальше?"
+        # После завершения задания, добавляем кнопку "Ура!
+        # Все задания выполнены. Что дальше?"
         await update.effective_message.edit_reply_markup(
             reply_markup=FURTHER_ACTIONS_KEYBOARD,
         )
