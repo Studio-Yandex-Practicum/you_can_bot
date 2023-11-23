@@ -28,6 +28,10 @@ def problem_create(request, telegram_id):
         except AttributeError as err:
             if str(err) == "'NoneType' object has no attribute 'telegram_id'":
                 user_id = MAIN_MENTOR_ID
+        # если у психолога, назначенного пользователю, не указан telegram_id,
+        # сообщение отправляется главному психологу
+        if user_id is None:
+            user_id = MAIN_MENTOR_ID
         asyncio.run(
             non_context_send_message(
                 text=PROBLEM_TEXT.format(
