@@ -4,6 +4,8 @@ from django import forms
 from django.contrib import admin
 from django.contrib.auth import get_user_model
 from django.contrib.auth.admin import UserAdmin
+from django.urls import reverse
+from django.utils.html import format_html
 
 from api.models import (
     Answer,
@@ -157,6 +159,7 @@ class UserFromTelegramAdmin(admin.ModelAdmin):
         "name",
         "surname",
         "mentor",
+        "info_page",
     )
     search_fields = (
         "name",
@@ -166,6 +169,13 @@ class UserFromTelegramAdmin(admin.ModelAdmin):
     list_filter = ("mentor",)
     empty_value_display = "-пусто-"
     inlines = (ProblemInline, TaskStatusInline)
+
+    @admin.display(description="Общая сводка")
+    def info_page(self, obj):
+        user_url = reverse(
+            "info_pages:taskstatus-list", kwargs=dict(telegram_id=obj.telegram_id)
+        )
+        return format_html('<a href="{url}">Перейти</a>', url=user_url)
 
 
 @admin.register(Question)
