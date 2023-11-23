@@ -15,11 +15,11 @@ from conversations.general.decorators import (
 from conversations.menu.callback_funcs import add_task_number_to_prev_message
 from conversations.task_8.keyboards import (
     FIRST_STAGE_END_KEYBOARD,
+    FURTHER_ACTIONS_KEYBOARD,
     NEXT_KEYBOARD,
     REPLY_KEYBOARD,
     SECOND_STAGE_END_KEYBOARD,
     TASK_END_KEYBOARD,
-    FURTHER_ACTIONS_KEYBOARD,
 )
 from conversations.task_8.templates import (
     FINAL_MESSAGE_TEXT,
