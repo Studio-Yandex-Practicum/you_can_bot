@@ -21,6 +21,7 @@ from internal_requests.entities import Answer
 
 CHOOSING = 1
 TYPING_ANSWER = 2
+CONFIRMING = 3
 START_QUESTION_NUMBER = 1
 BUTTON_LABELS_PATTERN = r"^([1-9]|10|[А-Е])$"
 NEXT_BUTTON_PATTERN = r"^Далее$"
@@ -273,49 +274,51 @@ class OneQuestionConversation(BaseTaskConversation):
         await update.callback_query.answer()
         return TYPING_ANSWER
 
-    async def handle_user_answer(
+    async def handle_typed_answer(
         self, update: Update, context: ContextTypes.DEFAULT_TYPE
     ) -> int:
         """
-        Принимает текстовый ответ пользователя или его изменение, запрашвает
-        подтверждение от пользователя перед сохранением ответа.
+        Принимает текстовый ответ пользователя на текущий вопрос и запрашивает у
+        пользователя подтверждение на сохранение текущего варианта ответа.
         """
-        original_answer_id = context.user_data.get("answer_id")
-        answer_text = None
-        answer_id = None
-
-        if update.message:
-            answer_text = update.message.text
-            answer_id = update.message.message_id
-
-        elif (
-            update.edited_message
-            and update.edited_message.message_id == original_answer_id
-        ):
-            answer_text = update.edited_message.text
-            answer_id = update.edited_message.message_id
-            await context.bot.edit_message_text(
-                chat_id=update.effective_chat.id,
-                message_id=context.user_data.get("confirmation_message_id"),
-                text=SEND_ANSWER_TEXT + '"' + answer_text + '"',
-                reply_markup=CONFIRM_KEYBOARD,
-            )
-
-        else:
-            return
+        answer_text = update.message.text
+        answer_id = update.message.message_id
+        confirmation_message = await update.effective_message.reply_text(
+            text=SEND_ANSWER_TEXT + '"' + answer_text + '"',
+            reply_markup=CONFIRM_KEYBOARD,
+        )
+        context.user_data["confirmation_message_id"] = confirmation_message.message_id
 
         if answer_text and answer_id:
             context.user_data["answer_text"] = answer_text
             context.user_data["answer_id"] = answer_id
+        return CONFIRMING
 
-        if not context.user_data.get("confirmation_message_id") and update.message:
-            confirmation_message = await update.effective_message.reply_text(
-                text=SEND_ANSWER_TEXT + '"' + answer_text + '"',
-                reply_markup=CONFIRM_KEYBOARD,
-            )
-            context.user_data[
-                "confirmation_message_id"
-            ] = confirmation_message.message_id
+    async def handle_answer_editing(
+        self, update: Update, context: ContextTypes.DEFAULT_TYPE
+    ) -> int:
+        """
+        Обрабатывает редактирование ответа пользователя. Если пользователь редактирует
+        сообщение с ответом на текущий вопрос, то сохраняет новый текст ответа и
+        запрашивает подтверждение.
+        """
+        original_answer_id = context.user_data.get("answer_id")
+        if update.edited_message.message_id == original_answer_id:
+            answer_text = update.edited_message.text
+            answer_id = update.edited_message.message_id
+            confirmation_message_id = context.user_data.get("confirmation_message_id")
+            if confirmation_message_id:
+                await context.bot.edit_message_text(
+                    chat_id=update.effective_chat.id,
+                    message_id=confirmation_message_id,
+                    text=SEND_ANSWER_TEXT + '"' + answer_text + '"',
+                    reply_markup=CONFIRM_KEYBOARD,
+                )
+
+            if answer_text and answer_id:
+                context.user_data["answer_text"] = answer_text
+                context.user_data["answer_id"] = answer_id
+        return CONFIRMING
 
     async def confirm_saving_answer(
         self, update: Update, context: ContextTypes.DEFAULT_TYPE
@@ -370,14 +373,16 @@ class OneQuestionConversation(BaseTaskConversation):
             TYPING_ANSWER: [
                 MessageHandler(
                     filters=filters.TEXT & ~filters.COMMAND,
-                    callback=self.handle_user_answer,
+                    callback=self.handle_typed_answer,
+                )
+            ],
+            CONFIRMING: [
+                CallbackQueryHandler(
+                    callback=self.confirm_saving_answer, pattern=CONFIRM_BUTTON_PATTERN
                 ),
                 MessageHandler(
                     filters=filters.UpdateType.EDITED_MESSAGE,
-                    callback=self.handle_user_answer,
-                ),
-                CallbackQueryHandler(
-                    callback=self.confirm_saving_answer, pattern=CONFIRM_BUTTON_PATTERN
+                    callback=self.handle_answer_editing,
                 ),
             ],
         }

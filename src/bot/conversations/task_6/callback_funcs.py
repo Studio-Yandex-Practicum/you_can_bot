@@ -11,8 +11,10 @@ from telegram.ext import (
 from conversations.tasks.base import (
     CHOOSING,
     CONFIRM_BUTTON_PATTERN,
+    CONFIRMING,
     NEXT_BUTTON_PATTERN,
     SEND_ANSWER_TEXT,
+    TYPING_ANSWER,
     BaseTaskConversation,
 )
 from conversations.tasks.keyboards import CONFIRM_KEYBOARD
@@ -32,7 +34,7 @@ class TaskSixConversation(BaseTaskConversation):
         update: Update,
         _context: ContextTypes.DEFAULT_TYPE,
         question_number: int = 1,
-    ) -> None:
+    ) -> int:
         """
         Показывает очередной вопрос, относящийся к текущему заданию.
         """
@@ -47,6 +49,7 @@ class TaskSixConversation(BaseTaskConversation):
             parse_mode=ParseMode.HTML,
         )
         await update.callback_query.answer()
+        return TYPING_ANSWER
 
     async def show_result(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         """
@@ -70,32 +73,36 @@ class TaskSixConversation(BaseTaskConversation):
         context.user_data.clear()
         return ConversationHandler.END
 
-    async def handle_user_answer(
+    async def handle_typed_answer(
         self, update: Update, context: ContextTypes.DEFAULT_TYPE
-    ) -> None:
+    ) -> int:
         """
-        Принимает текстовый ответ или изменение ответа пользователя на текущий вопрос.
-        Запрашивает у пользователя подтверждение на сохранение текущего варианта
-        ответа.
+        Принимает текстовый ответ пользователя на текущий вопрос и запрашивает у
+        пользователя подтверждение на сохранение текущего варианта ответа.
+        """
+        answer_text = update.message.text
+        answer_id = update.message.message_id
+        confirmation_message = await update.effective_message.reply_text(
+            text=SEND_ANSWER_TEXT + '"' + answer_text + '"',
+            reply_markup=CONFIRM_KEYBOARD,
+        )
+        context.user_data["confirmation_message_id"] = confirmation_message.message_id
+
+        if answer_text and answer_id:
+            context.user_data["answer_text"] = answer_text
+            context.user_data["answer_id"] = answer_id
+        return CONFIRMING
+
+    async def handle_answer_editing(
+        self, update: Update, context: ContextTypes.DEFAULT_TYPE
+    ) -> int:
+        """
+        Обрабатывает редактирование ответа пользователя. Если пользователь редактирует
+        сообщение с ответом на текущий вопрос, то сохраняет новый текст ответа и
+        запрашивает подтверждение.
         """
         original_answer_id = context.user_data.get("answer_id")
-        answer_text = None
-        answer_id = None
-
-        if update.message:
-            answer_text = update.message.text
-            answer_id = update.message.message_id
-            confirmation_message = await update.effective_message.reply_text(
-                text=SEND_ANSWER_TEXT + '"' + answer_text + '"',
-                reply_markup=CONFIRM_KEYBOARD,
-            )
-            context.user_data[
-                "confirmation_message_id"
-            ] = confirmation_message.message_id
-        elif (
-            update.edited_message
-            and update.edited_message.message_id == original_answer_id
-        ):
+        if update.edited_message.message_id == original_answer_id:
             answer_text = update.edited_message.text
             answer_id = update.edited_message.message_id
             confirmation_message_id = context.user_data.get("confirmation_message_id")
@@ -106,12 +113,11 @@ class TaskSixConversation(BaseTaskConversation):
                     text=SEND_ANSWER_TEXT + '"' + answer_text + '"',
                     reply_markup=CONFIRM_KEYBOARD,
                 )
-        else:
-            return
 
-        if answer_text and answer_id:
-            context.user_data["answer_text"] = answer_text
-            context.user_data["answer_id"] = answer_id
+            if answer_text and answer_id:
+                context.user_data["answer_text"] = answer_text
+                context.user_data["answer_id"] = answer_id
+        return CONFIRMING
 
     async def save_answer(
         self, update: Update, context: ContextTypes.DEFAULT_TYPE
@@ -147,7 +153,7 @@ class TaskSixConversation(BaseTaskConversation):
             _context=context,
             question_number=context.user_data.get("current_question"),
         )
-        return CHOOSING
+        return TYPING_ANSWER
 
     def set_states(self):
         """
@@ -158,17 +164,21 @@ class TaskSixConversation(BaseTaskConversation):
             CHOOSING: [
                 CallbackQueryHandler(
                     callback=self.question_method, pattern=NEXT_BUTTON_PATTERN
-                ),
+                )
+            ],
+            TYPING_ANSWER: [
                 MessageHandler(
                     filters=filters.TEXT & ~filters.COMMAND,
-                    callback=self.handle_user_answer,
+                    callback=self.handle_typed_answer,
+                )
+            ],
+            CONFIRMING: [
+                CallbackQueryHandler(
+                    callback=self.save_answer, pattern=CONFIRM_BUTTON_PATTERN
                 ),
                 MessageHandler(
                     filters=filters.UpdateType.EDITED_MESSAGE,
-                    callback=self.handle_user_answer,
-                ),
-                CallbackQueryHandler(
-                    callback=self.save_answer, pattern=CONFIRM_BUTTON_PATTERN
+                    callback=self.handle_answer_editing,
                 ),
             ],
         }
