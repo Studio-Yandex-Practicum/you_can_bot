@@ -25,6 +25,7 @@ task_8_handler: ConversationHandler = ConversationHandler(
             CallbackQueryHandler(update_question, pattern=r"^(а|б)$"),
             CallbackQueryHandler(start_question, pattern=r"^next_stage$"),
             CallbackQueryHandler(show_result, pattern=r"^finish_task_8$"),
+            CallbackQueryHandler(show_result, pattern=r"^further_actions$"),
         ],
     },
     fallbacks=[],

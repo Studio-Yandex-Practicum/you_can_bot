@@ -32,6 +32,17 @@ TASK_END_KEYBOARD = InlineKeyboardMarkup(
         ),
     )
 )
+FURTHER_ACTIONS_KEYBOARD = InlineKeyboardMarkup(
+    (
+        (
+            InlineKeyboardButton(
+                text="Ура! Все задания выполнены. Что дальше?",
+                callback_data="further_actions"
+            ),
+        ),
+    )
+)
+
 REPLY_KEYBOARD = InlineKeyboardMarkup.from_row(
     (
         InlineKeyboardButton(text="А", callback_data="а"),

@@ -19,6 +19,7 @@ from conversations.task_8.keyboards import (
     REPLY_KEYBOARD,
     SECOND_STAGE_END_KEYBOARD,
     TASK_END_KEYBOARD,
+    FURTHER_ACTIONS_KEYBOARD,
 )
 from conversations.task_8.templates import (
     FINAL_MESSAGE_TEXT,
@@ -48,7 +49,7 @@ class LocationOfChoiceInTask(TypedDict):
 
 
 async def show_start_of_task_8_with_task_number(
-    update: Update, context: CallbackContext
+        update: Update, context: CallbackContext
 ) -> int:
     return await add_task_number_to_prev_message(
         update=update,
@@ -92,7 +93,7 @@ async def start_question(update: Update, context: CallbackContext) -> int:
     if FIRST_STAGE_END < question_number:
         params = context.user_data["picked_choices"][
             question_number - FIRST_STAGE_END - 1
-        ]
+            ]
         if question_number > SECOND_STAGE_END:
             offset = SECOND_STAGE_END
         else:
@@ -151,6 +152,12 @@ async def update_question(update: Update, context: CallbackContext) -> int:
             reply_markup=SECOND_STAGE_END_KEYBOARD,
         )
         return CHOOSING
+    elif current_question == TASK_END:
+        # После завершения задания, добавляем кнопку "Ура! Все задания выполнены. Что дальше?"
+        await update.effective_message.edit_reply_markup(
+            reply_markup=FURTHER_ACTIONS_KEYBOARD,
+        )
+        return CHOOSING
     context.user_data["current_question"] += 1
     state = await start_question(update, context)
     return state
@@ -158,10 +165,16 @@ async def update_question(update: Update, context: CallbackContext) -> int:
 
 async def show_result(update: Update, context: CallbackContext) -> int:
     """Отправляет результаты прохождения задания."""
-    context.user_data.clear()
     query = update.callback_query
     if query is not None:
         await query.message.edit_reply_markup()
+
+    if "finish_task_8" in context.user_data:
+        # Вывод финального сообщения
+        await _send_final_message(update, context)
+        del context.user_data["finish_task_8"]
+        return ConversationHandler.END
+
     messages = await api_service.get_messages_with_results(
         telegram_id=update.effective_chat.id, task_number=CURRENT_TASK
     )
@@ -174,8 +187,20 @@ async def show_result(update: Update, context: CallbackContext) -> int:
             text=message.content,
             parse_mode=ParseMode.HTML,
         )
-    await _send_final_message(update)
-    return ConversationHandler.END
+
+    # Добавляем информацию о том, что пользователь закончил задание 8
+    context.user_data["finish_task_8"] = True
+
+    # Выводим новую кнопку "Ура! Все задания выполнены. Что дальше?"
+    await update.effective_message.reply_text(
+        text="Поздравляем! Все задания выполнены. Что дальше?",
+        reply_markup=FURTHER_ACTIONS_KEYBOARD,
+    )
+
+    # Восстанавливаем ключ "finish_task_8" в контексте
+    context.user_data["finish_task_8"] = True
+
+    return CHOOSING
 
 
 async def _validate_callback_data(update: Update) -> Literal["а"] | Literal["б"]:
@@ -187,9 +212,9 @@ async def _validate_callback_data(update: Update) -> Literal["а"] | Literal["б
 
 
 async def _handle_first_stage_answer(
-    context: CallbackContext,
-    question_number: int,
-    picked_choice: Literal["а"] | Literal["б"],
+        context: CallbackContext,
+        question_number: int,
+        picked_choice: Literal["а"] | Literal["б"],
 ) -> None:
     """Сохраняет выбранные ответы для формирования пар на втором круге."""
     await _save_picked_choice_to_context(
@@ -202,9 +227,9 @@ async def _handle_first_stage_answer(
 
 
 async def _handle_second_stage_answer(
-    context: CallbackContext,
-    question_number: int,
-    picked_choice: Literal["а"] | Literal["б"],
+        context: CallbackContext,
+        question_number: int,
+        picked_choice: Literal["а"] | Literal["б"],
 ) -> None:
     """Сохраняет выбранные ответы для формирования пар на третьем круге."""
     picked_choice_on_second_stage = await _get_picked_choice_dict_from_context(
@@ -218,9 +243,9 @@ async def _handle_second_stage_answer(
 
 
 async def _handle_third_stage_answer(
-    context: CallbackContext,
-    question_number: int,
-    picked_choice: Literal["а"] | Literal["б"],
+        context: CallbackContext,
+        question_number: int,
+        picked_choice: Literal["а"] | Literal["б"],
 ) -> None:
     """Сохраняет выбранные ответы для формирования результатов."""
     hidden_talent = await _get_picked_choice_dict_from_context(
@@ -232,7 +257,7 @@ async def _handle_third_stage_answer(
 
 
 async def _save_picked_choice_to_context(
-    context: CallbackContext, question_number: int, picked_choice: dict
+        context: CallbackContext, question_number: int, picked_choice: dict
 ) -> None:
     """
     Сохраняет выбранный ответ в контекст, формируя пары для вопросов следующих кругов.
@@ -245,19 +270,19 @@ async def _save_picked_choice_to_context(
 
 
 async def _get_picked_choice_dict_from_context(
-    context: CallbackContext,
-    question_number: int,
-    picked_choice: Literal["а"] | Literal["б"],
+        context: CallbackContext,
+        question_number: int,
+        picked_choice: Literal["а"] | Literal["б"],
 ) -> LocationOfChoiceInTask:
     """Возвращает ответ из прошлых кругов."""
     if picked_choice == "а":
         picked_choice_dict = context.user_data["picked_choices"][
             question_number - FIRST_STAGE_END - 1
-        ][0]
+            ][0]
     else:
         picked_choice_dict = context.user_data["picked_choices"][
             question_number - FIRST_STAGE_END - 1
-        ][1]
+            ][1]
     return picked_choice_dict
 
 
@@ -272,13 +297,12 @@ async def _save_answer_to_db(context: CallbackContext, message: Message):
     )
 
 
-async def _send_final_message(update: Update) -> None:
+async def _send_final_message(update: Update, context: CallbackContext) -> None:
     """Отправляет сообщение - поздравление о прохождении всех заданий."""
     await update.effective_chat.send_action(ChatAction.TYPING)
     user_info = await api_service.get_info_about_user(
         telegram_id=update.effective_chat.id
     )
-    await sleep(DELAY_BEFORE_THE_FINAL_MESSAGE)
     await update.effective_chat.send_message(
         text=FINAL_MESSAGE_TEXT.substitute(name=user_info.name),
         parse_mode=ParseMode.HTML,
