@@ -10,6 +10,7 @@ import conversations.menu.callback_funcs as callback_funcs
 from conversations.menu.templates import (
     SHOW_MY_TASKS_STATE,
     TASKS_STATE,
+    WAITING_FOR_CONFIRMATION_STATE,
     WAITING_FOR_QUESTION_STATE,
 )
 
@@ -57,11 +58,13 @@ ask_question_handler = ConversationHandler(
     states={
         WAITING_FOR_QUESTION_STATE: [
             MessageHandler(
-                filters=filters.TEXT, callback=callback_funcs.get_user_question
-            ),
+                filters=filters.TEXT, callback=callback_funcs.handle_user_question
+            )
+        ],
+        WAITING_FOR_CONFIRMATION_STATE: [
             MessageHandler(
                 filters=filters.UpdateType.EDITED_MESSAGE,
-                callback=callback_funcs.get_user_question,
+                callback=callback_funcs.handle_user_question_edit,
             ),
         ],
     },
