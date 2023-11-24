@@ -8,6 +8,7 @@ from conversations.task_8.callback_funcs import (
     show_start_of_task_8_with_task_number,
     start_question,
     update_question,
+    send_final_message,
 )
 
 task_8_handler: ConversationHandler = ConversationHandler(
@@ -25,7 +26,7 @@ task_8_handler: ConversationHandler = ConversationHandler(
             CallbackQueryHandler(update_question, pattern=r"^(а|б)$"),
             CallbackQueryHandler(start_question, pattern=r"^next_stage$"),
             CallbackQueryHandler(show_result, pattern=r"^finish_task_8$"),
-            CallbackQueryHandler(show_result, pattern=r"^further_actions$"),
+            CallbackQueryHandler(send_final_message, pattern=r"^further_actions$"),
         ],
     },
     fallbacks=[],

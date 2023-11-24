@@ -152,13 +152,6 @@ async def update_question(update: Update, context: CallbackContext) -> int:
             reply_markup=SECOND_STAGE_END_KEYBOARD,
         )
         return CHOOSING
-    elif current_question == TASK_END:
-        # После завершения задания, добавляем кнопку "Ура!
-        # Все задания выполнены. Что дальше?"
-        await update.effective_message.edit_reply_markup(
-            reply_markup=FURTHER_ACTIONS_KEYBOARD,
-        )
-        return CHOOSING
     context.user_data["current_question"] += 1
     state = await start_question(update, context)
     return state
@@ -170,12 +163,6 @@ async def show_result(update: Update, context: CallbackContext) -> int:
     if query is not None:
         await query.message.edit_reply_markup()
 
-    if "finish_task_8" in context.user_data:
-        # Вывод финального сообщения
-        await _send_final_message(update, context)
-        del context.user_data["finish_task_8"]
-        return ConversationHandler.END
-
     messages = await api_service.get_messages_with_results(
         telegram_id=update.effective_chat.id, task_number=CURRENT_TASK
     )
@@ -183,24 +170,16 @@ async def show_result(update: Update, context: CallbackContext) -> int:
         text=RESULT_TEXT,
         parse_mode=ParseMode.HTML,
     )
-    for message in messages:
+    for message in messages[:-1]:
         await query.message.reply_text(
             text=message.content,
             parse_mode=ParseMode.HTML,
         )
-
-    # Добавляем информацию о том, что пользователь закончил задание 8
-    context.user_data["finish_task_8"] = True
-
-    # Выводим новую кнопку "Ура! Все задания выполнены. Что дальше?"
-    await update.effective_message.reply_text(
-        text="Поздравляем! Все задания выполнены. Что дальше?",
+    await query.message.reply_text(
+        text=messages[-1].content,
+        parse_mode=ParseMode.HTML,
         reply_markup=FURTHER_ACTIONS_KEYBOARD,
     )
-
-    # Восстанавливаем ключ "finish_task_8" в контексте
-    context.user_data["finish_task_8"] = True
-
     return CHOOSING
 
 
@@ -298,8 +277,9 @@ async def _save_answer_to_db(context: CallbackContext, message: Message):
     )
 
 
-async def _send_final_message(update: Update, context: CallbackContext) -> None:
+async def send_final_message(update: Update, context: CallbackContext) -> int:
     """Отправляет сообщение - поздравление о прохождении всех заданий."""
+    await update.effective_message.edit_reply_markup()
     await update.effective_chat.send_action(ChatAction.TYPING)
     user_info = await api_service.get_info_about_user(
         telegram_id=update.effective_chat.id
@@ -308,3 +288,4 @@ async def _send_final_message(update: Update, context: CallbackContext) -> None:
         text=FINAL_MESSAGE_TEXT.substitute(name=user_info.name),
         parse_mode=ParseMode.HTML,
     )
+    return ConversationHandler.END
