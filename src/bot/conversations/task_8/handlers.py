@@ -3,12 +3,12 @@ from telegram.ext import CallbackQueryHandler, ConversationHandler
 from conversations.task_8.callback_funcs import (
     CHOOSING,
     NEXT,
+    send_final_message,
     show_result,
     show_start_of_task_8,
     show_start_of_task_8_with_task_number,
     start_question,
     update_question,
-    send_final_message,
 )
 
 task_8_handler: ConversationHandler = ConversationHandler(
