@@ -1,10 +1,11 @@
 from django.db.models import Prefetch
 from django.views.generic import DetailView
 
+from api.mixins import IsStaffMixin
 from api.models import Answer, ResultStatus, UserFromTelegram
 
 
-class UserDetailView(DetailView):
+class UserDetailView(IsStaffMixin, DetailView):
     queryset = UserFromTelegram.objects.select_related("mentor__user")
     slug_field = "telegram_id"
     slug_url_kwarg = "telegram_id"
