@@ -10,7 +10,8 @@ SECRET_KEY = os.getenv("SECRET_KEY", default="secret_key")
 DEBUG = os.getenv("DEBUG", default=False)
 
 ALLOWED_HOSTS = [os.getenv("ALLOWED_HOSTS", default="*")]
-CSRF_TRUSTED_ORIGINS = (f"http://{os.getenv('HOST', default='127.0.0.1')}",)
+DOMAIN = os.getenv("DOMAIN", default="127.0.0.1")
+CSRF_TRUSTED_ORIGINS = (f"http://{DOMAIN}", f"https://{DOMAIN}")
 
 INSTALLED_APPS = [
     "django.contrib.admin",
