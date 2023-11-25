@@ -23,7 +23,7 @@ services:
       restart: always
       volumes:
         - static_value:/app/backend/static/
-        - media_value:/app/media/
+        - media_value:/app/backend/media/
         - ../.data/logs/:/app/.data/logs/
       env_file:
         - ../.env
