@@ -1,8 +1,8 @@
 from django.db.models import Prefetch
 from django.views.generic import DetailView
 
-from api.mixins import IsStaffMixin
 from api.models import Answer, ResultStatus, UserFromTelegram
+from info_pages.mixins import IsStaffMixin
 
 
 class UserDetailView(IsStaffMixin, DetailView):
