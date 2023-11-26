@@ -8,6 +8,10 @@ CHOICES_SIX_LETTERS = ("А", "Б", "В", "Г", "Д", "Е")
 CHOICES_TWO_LETTERS = ("А", "Б")
 CHOICES_TEN_NUMBERS = ("1", "2", "3", "4", "5", "6", "7", "8", "9", "10")
 
+CONFIRM_KEYBOARD = InlineKeyboardMarkup(
+    ((InlineKeyboardButton(text="Подтвердить", callback_data="confirm_answer"),),)
+)
+
 NEXT_KEYBOARD = InlineKeyboardMarkup(
     ((InlineKeyboardButton(text="Далее", callback_data="Далее"),),)
 )

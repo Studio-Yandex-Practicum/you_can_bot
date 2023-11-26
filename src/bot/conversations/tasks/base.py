@@ -16,12 +16,17 @@ from conversations.general.decorators import (
     set_conversation_name,
 )
 from conversations.menu.callback_funcs import add_task_number_to_prev_message
-from conversations.tasks.keyboards import NEXT_KEYBOARD, get_default_inline_keyboard
+from conversations.tasks.keyboards import (
+    CONFIRM_KEYBOARD,
+    NEXT_KEYBOARD,
+    get_default_inline_keyboard,
+)
 from internal_requests import service as api_service
 from internal_requests.entities import Answer
 
 CHOOSING = 1
 TYPING_ANSWER = 2
+CONFIRMING = 3
 START_QUESTION_NUMBER = 1
 BUTTON_LABELS_PATTERN = r"^([1-9]|10|[А-Е])$"
 NEXT_BUTTON_PATTERN = r"^Далее$"
@@ -30,6 +35,11 @@ TASK_ALREADY_DONE_TEXT = (
     "уже пройдено! 😎 Если ты хочешь повторно посмотреть результаты,"
     " то используй команду /tasks."
 )
+SEND_ANSWER_TEXT = (
+    "После подтверждения этот ответ будет сохранён и отправлен."
+    " До подтверждения ты можешь его изменить.\n\n<b>Текущий ответ:</b> "
+)
+CONFIRM_BUTTON_PATTERN = r"^confirm_answer$"
 
 
 @dataclass
@@ -279,31 +289,76 @@ class OneQuestionConversation(BaseTaskConversation):
         await update.callback_query.answer()
         return TYPING_ANSWER
 
-    async def handle_user_answer(
-        self, update: Update, _context: ContextTypes.DEFAULT_TYPE
-    ) -> int:
-        """
-        Принимает ответ пользователя, записывает ответ в БД и вызывает
-         show_notification для оповещения пользователя.
-        """
-        user_answer = update.message.text
-        await api_service.create_answer(
-            Answer(
-                telegram_id=update.effective_message.chat_id,
-                task_number=self.task_number,
-                number=self.number_of_questions,
-                content=user_answer,
-            )
-        )
-        return await self.show_notification(update, _context)
-
-    async def show_notification(
+    async def handle_typed_answer(
         self, update: Update, context: ContextTypes.DEFAULT_TYPE
     ) -> int:
         """
-        Оповещает пользователя об успешном сохранении ответа в БД в сообщении
-         с кнопкой перехода к следующему заданию и завершает диалог.
+        Принимает текстовый ответ пользователя на текущий вопрос и запрашивает у
+        пользователя подтверждение на сохранение текущего варианта ответа.
         """
+        answer_text = update.message.text
+        answer_id = update.message.message_id
+        confirmation_message = await update.effective_message.reply_text(
+            text=SEND_ANSWER_TEXT + '"' + answer_text + '"',
+            reply_markup=CONFIRM_KEYBOARD,
+            parse_mode=ParseMode.HTML,
+        )
+        context.user_data["confirmation_message_id"] = confirmation_message.message_id
+
+        if answer_text and answer_id:
+            context.user_data["answer_text"] = answer_text
+            context.user_data["answer_id"] = answer_id
+        return CONFIRMING
+
+    async def handle_answer_editing(
+        self, update: Update, context: ContextTypes.DEFAULT_TYPE
+    ) -> int:
+        """
+        Обрабатывает редактирование ответа пользователя. Если пользователь редактирует
+        сообщение с ответом на текущий вопрос, то сохраняет новый текст ответа и
+        запрашивает подтверждение.
+        """
+        original_answer_id = context.user_data.get("answer_id")
+        if update.edited_message.message_id == original_answer_id:
+            answer_text = update.edited_message.text
+            answer_id = update.edited_message.message_id
+            confirmation_message_id = context.user_data.get("confirmation_message_id")
+            if confirmation_message_id:
+                await context.bot.edit_message_text(
+                    chat_id=update.effective_chat.id,
+                    message_id=confirmation_message_id,
+                    text=SEND_ANSWER_TEXT + '"' + answer_text + '"',
+                    reply_markup=CONFIRM_KEYBOARD,
+                    parse_mode=ParseMode.HTML,
+                )
+
+            if answer_text and answer_id:
+                context.user_data["answer_text"] = answer_text
+                context.user_data["answer_id"] = answer_id
+        return CONFIRMING
+
+    async def confirm_saving_answer(
+        self, update: Update, context: ContextTypes.DEFAULT_TYPE
+    ) -> int:
+        """
+        Сохраняет ответ в базу данных, уведомляет об этом пользователя сообщением с
+        кнопкой для перехода к следующему заданию и завершает диалог.
+        """
+        confirmation_message_id = context.user_data.get("confirmation_message_id")
+        if confirmation_message_id:
+            await context.bot.delete_message(
+                chat_id=update.effective_chat.id,
+                message_id=confirmation_message_id,
+            )
+        answer_text = context.user_data.get("answer_text")
+        await api_service.create_answer(
+            Answer(
+                telegram_id=update.effective_user.id,
+                task_number=self.task_number,
+                number=self.number_of_questions,
+                content=answer_text,
+            )
+        )
         await update.effective_message.reply_text(
             text=self.result_intro,
             parse_mode=ParseMode.HTML,
@@ -325,6 +380,18 @@ class OneQuestionConversation(BaseTaskConversation):
         """Управляет ведением диалога."""
         return {
             TYPING_ANSWER: [
-                MessageHandler(filters.TEXT & ~filters.COMMAND, self.handle_user_answer)
+                MessageHandler(
+                    filters=filters.TEXT & ~filters.COMMAND,
+                    callback=self.handle_typed_answer,
+                )
+            ],
+            CONFIRMING: [
+                CallbackQueryHandler(
+                    callback=self.confirm_saving_answer, pattern=CONFIRM_BUTTON_PATTERN
+                ),
+                MessageHandler(
+                    filters=filters.UpdateType.EDITED_MESSAGE,
+                    callback=self.handle_answer_editing,
+                ),
             ],
         }

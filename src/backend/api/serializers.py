@@ -198,7 +198,7 @@ class MentorSerializer(serializers.ModelSerializer):
     """
     Сериализатор модели 'User'.
     Используется для:
-    - Создания учетной записи психолога.
+    - Создания учетной записи профдизайнера.
     """
 
     telegram_id = serializers.IntegerField(source="mentorprofile.telegram_id")
@@ -221,7 +221,7 @@ class MentorSerializer(serializers.ModelSerializer):
 
     def validate_telegram_id(self, value):
         """
-        Проверяет отсутствие учетной записи психолога с указанным telegram_id.
+        Проверяет отсутствие учетной записи профдизайнера с указанным telegram_id.
         """
         if User.objects.filter(mentorprofile__telegram_id=value).exists():
             raise serializers.ValidationError(detail=MENTOR_CREATE_ERROR)
@@ -239,7 +239,7 @@ class MentorSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         """
-        Создает учетную запись психолога и добавляет ее в группу Mentor.
+        Создает учетную запись профдизайнера и добавляет ее в группу Mentor.
         """
         profile = validated_data.get("mentorprofile")
         first_name = validated_data.get("first_name")

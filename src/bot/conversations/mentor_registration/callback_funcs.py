@@ -40,7 +40,7 @@ REGISTRATION_REJECT = "registration_reject"
 
 class MentorRegistrationConversation:
     """
-    Класс для управления диалогом регистрации психолога.
+    Класс для управления диалогом регистрации профдизайнера.
     """
 
     @not_in_conversation(ConversationHandler.END)
@@ -126,7 +126,7 @@ class MentorRegistrationConversation:
         self, update: Update, context: ContextTypes.DEFAULT_TYPE
     ) -> None:
         """
-        Отправляет сообщение с запросом на подтверждение регистрации главному психологу.
+        Отправляет сообщение с запросом на подтверждение регистрации.
         """
         telegram_id = update.effective_user.id
         keyboard = (
@@ -188,7 +188,7 @@ class MentorRegistrationConversation:
 
     def add_handlers(self):
         """
-        Формирует хэндлер для диалога регистрации психолога.
+        Формирует хэндлер для диалога регистрации профдизайнера.
         """
         return ConversationHandler(
             entry_points=self.set_entry_points(),
@@ -203,7 +203,7 @@ async def registration_confirmation(
     """
     Обрабатывает ответ на запрос подтверждения регистрации.
     В зависимости от полученных в callback_query данных
-    либо подтверждает регистрацию психолога,
+    либо подтверждает регистрацию профдизайнера,
     либо отклоняет и удаляет его учетную запись.
     """
     await update.callback_query.answer()

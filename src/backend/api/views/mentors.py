@@ -17,7 +17,7 @@ class MentorViewSet(
     mixins.CreateModelMixin, mixins.DestroyModelMixin, viewsets.GenericViewSet
 ):
     """
-    Вьюсет для управления учетными записями психологов.
+    Вьюсет для управления учетными записями профдизайнеров.
     Поле для detail-запросов: telegram_id связанной модели MentorProfile.
     """
 
@@ -29,7 +29,7 @@ class MentorViewSet(
     @action(("get",), detail=True)
     def status(self, request, mentorprofile__telegram_id):
         """
-        Эндпоинт для получения информации о статусе регистрации психолога.
+        Эндпоинт для получения информации о статусе регистрации профдизайнера.
 
         В возращаемом эндпоинтом json содержится два поля с булевыми значениями:
         - registered: True для зарегистрированного пользователя;

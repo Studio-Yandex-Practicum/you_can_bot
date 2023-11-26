@@ -91,18 +91,53 @@ async def show_all_user_tasks(
 @set_conversation_name("ask")
 async def suggest_ask_question(
     update: Update, context: ContextTypes.DEFAULT_TYPE
-) -> int:
+) -> str:
     """Задать вопрос специалисту."""
     await update.message.reply_text(templates.ASK_ME_QUESTION_TEXT)
     return templates.WAITING_FOR_QUESTION_STATE
 
 
-async def get_user_question(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Подтвердить отправку вопроса"""
-    context.user_data["question"] = update.message.text
-    await update.message.reply_text(
-        text=templates.SEND_QUESTION_TEXT, reply_markup=AGREE_OR_CANCEL_KEYBOARD
-    )
+async def handle_user_question(
+    update: Update, context: ContextTypes.DEFAULT_TYPE
+) -> str:
+    """Принимает текстовый вопрос от пользователя и просит его подтвердить."""
+    question_text = update.message.text
+    question_id = update.message.message_id
+    if question_text and question_id:
+        context.user_data["question"] = question_text
+        context.user_data["question_id"] = question_id
+        confirmation_message = await update.message.reply_text(
+            text=templates.SEND_QUESTION_TEXT + '"' + question_text + '"',
+            reply_markup=AGREE_OR_CANCEL_KEYBOARD,
+            parse_mode=ParseMode.HTML,
+        )
+        context.user_data["confirmation_message_id"] = confirmation_message.message_id
+        return templates.WAITING_FOR_CONFIRMATION_STATE
+    return templates.WAITING_FOR_QUESTION_STATE
+
+
+async def handle_user_question_edit(
+    update: Update, context: ContextTypes.DEFAULT_TYPE
+) -> str:
+    """
+    Принимает измененный текстовый вопрос от пользователя и просит его подтвердить.
+    """
+    original_question_id = context.user_data.get("question_id")
+    confirmation_message_id = context.user_data.get("confirmation_message_id")
+    if (
+        update.edited_message.message_id == original_question_id
+        and confirmation_message_id
+    ):
+        question_text = update.edited_message.text
+        await context.bot.edit_message_text(
+            chat_id=update.effective_chat.id,
+            message_id=confirmation_message_id,
+            text=templates.SEND_QUESTION_TEXT + '"' + question_text + '"',
+            reply_markup=AGREE_OR_CANCEL_KEYBOARD,
+            parse_mode=ParseMode.HTML,
+        )
+        context.user_data["question"] = question_text
+    return templates.WAITING_FOR_CONFIRMATION_STATE
 
 
 async def confirm_saving_question(
