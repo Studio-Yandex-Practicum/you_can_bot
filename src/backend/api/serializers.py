@@ -44,9 +44,7 @@ class QuestionSerializer(serializers.ModelSerializer):
             )
             photo = question.photo
             if photo and photo.image:
-                photo_url = urljoin(
-                    f"http://{settings.DOMAIN}/{settings.MEDIA_URL}", str(photo.image)
-                )
+                photo_url = urljoin(f"http://{settings.DOMAIN}", photo.image.url)
                 content = f"<a href='{photo_url}'>&#8205;</a>" + content
             result.append({"content": content})
         return result
