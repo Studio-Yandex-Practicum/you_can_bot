@@ -67,6 +67,28 @@ class AnswerSerializer(serializers.ModelSerializer):
         model = Answer
         fields = ("id", "number", "content")
 
+    def to_representation(self, obj):
+        if self.context.get("as_result"):
+            results = []
+            task_number = self.context["task_number"]
+            template_name = self._get_template_name_by_task_number(task_number)
+            for answer in obj:
+                results.append(
+                    {"content": render_to_string(template_name, {"answer": answer})}
+                )
+            return {"count": len(results), "result": results}
+        return super().to_representation(obj)
+
+    @staticmethod
+    def _get_template_name_by_task_number(task_number):
+        if task_number == 6:
+            template_name = "results/result_with_answer_numeric.html"
+        elif task_number == 7:
+            template_name = "results/result_with_answer_line_break.html"
+        else:
+            template_name = "results/result_with_answer.html"
+        return template_name
+
 
 class UserFromTelegramRetrieveCreateSerializer(serializers.ModelSerializer):
     """
@@ -176,7 +198,7 @@ class MentorSerializer(serializers.ModelSerializer):
     """
     Сериализатор модели 'User'.
     Используется для:
-    - Создания учетной записи психолога.
+    - Создания учетной записи профдизайнера.
     """
 
     telegram_id = serializers.IntegerField(source="mentorprofile.telegram_id")
@@ -199,7 +221,7 @@ class MentorSerializer(serializers.ModelSerializer):
 
     def validate_telegram_id(self, value):
         """
-        Проверяет отсутствие учетной записи психолога с указанным telegram_id.
+        Проверяет отсутствие учетной записи профдизайнера с указанным telegram_id.
         """
         if User.objects.filter(mentorprofile__telegram_id=value).exists():
             raise serializers.ValidationError(detail=MENTOR_CREATE_ERROR)
@@ -217,7 +239,7 @@ class MentorSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         """
-        Создает учетную запись психолога и добавляет ее в группу Mentor.
+        Создает учетную запись профдизайнера и добавляет ее в группу Mentor.
         """
         profile = validated_data.get("mentorprofile")
         first_name = validated_data.get("first_name")

@@ -1,4 +1,4 @@
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
+from telegram import ForceReply, InlineKeyboardButton, InlineKeyboardMarkup, Update
 from telegram.constants import ParseMode
 from telegram.ext import (
     CallbackQueryHandler,
@@ -39,6 +39,7 @@ class TaskSixConversation(BaseTaskConversation):
         Показывает очередной вопрос, относящийся к текущему заданию.
         """
         if question_number == 1:
+            await update.callback_query.answer()
             await update.callback_query.edit_message_reply_markup()
         messages = await api_service.get_messages_with_question(
             task_number=self.task_number,
@@ -47,6 +48,7 @@ class TaskSixConversation(BaseTaskConversation):
         await update.effective_message.reply_text(
             text=messages[0].content,
             parse_mode=ParseMode.HTML,
+            reply_markup=ForceReply(selective=True),
         )
         await update.callback_query.answer()
         return TYPING_ANSWER
@@ -85,6 +87,7 @@ class TaskSixConversation(BaseTaskConversation):
         confirmation_message = await update.effective_message.reply_text(
             text=SEND_ANSWER_TEXT + '"' + answer_text + '"',
             reply_markup=CONFIRM_KEYBOARD,
+            parse_mode=ParseMode.HTML,
         )
         context.user_data["confirmation_message_id"] = confirmation_message.message_id
 
@@ -112,6 +115,7 @@ class TaskSixConversation(BaseTaskConversation):
                     message_id=confirmation_message_id,
                     text=SEND_ANSWER_TEXT + '"' + answer_text + '"',
                     reply_markup=CONFIRM_KEYBOARD,
+                    parse_mode=ParseMode.HTML,
                 )
 
             if answer_text and answer_id:
@@ -121,7 +125,7 @@ class TaskSixConversation(BaseTaskConversation):
 
     async def save_answer(
         self, update: Update, context: ContextTypes.DEFAULT_TYPE
-    ) -> None:
+    ) -> int:
         """
         Если до этого этапа пользователю отправлялось сообщение с запросом на
         подтверждение ответа, то удаляет это сообщение. Сохраняет ответ пользователя

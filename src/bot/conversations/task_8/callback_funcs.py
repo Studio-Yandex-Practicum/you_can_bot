@@ -7,7 +7,19 @@ from telegram.constants import ChatAction, ParseMode
 from telegram.ext import CallbackContext, ConversationHandler
 
 import internal_requests.service as api_service
-from conversations.task_8.keyboards import NEXT_KEYBOARD, REPLY_KEYBOARD
+from conversations.general.decorators import (
+    TASK_EXECUTION,
+    not_in_conversation,
+    set_conversation_name,
+)
+from conversations.menu.callback_funcs import add_task_number_to_prev_message
+from conversations.task_8.keyboards import (
+    FIRST_STAGE_END_KEYBOARD,
+    NEXT_KEYBOARD,
+    REPLY_KEYBOARD,
+    SECOND_STAGE_END_KEYBOARD,
+    TASK_END_KEYBOARD,
+)
 from conversations.task_8.templates import (
     FINAL_MESSAGE_TEXT,
     RESULT_TEXT,
@@ -35,6 +47,19 @@ class LocationOfChoiceInTask(TypedDict):
     choice: Literal["а"] | Literal["б"]
 
 
+async def show_start_of_task_8_with_task_number(
+    update: Update, context: CallbackContext
+) -> int:
+    return await add_task_number_to_prev_message(
+        update=update,
+        context=context,
+        task_number=CURRENT_TASK,
+        start_task_method=show_start_of_task_8,
+    )
+
+
+@not_in_conversation(ConversationHandler.END)
+@set_conversation_name(TASK_EXECUTION)
 async def show_start_of_task_8(update: Update, context: CallbackContext) -> int:
     """Вывод описания задания 8."""
     query = update.callback_query
@@ -46,6 +71,7 @@ async def show_start_of_task_8(update: Update, context: CallbackContext) -> int:
     if task_status.is_done:
         text = f"Задание 8 {TASK_ALREADY_DONE_TEXT}"
         await update.effective_message.reply_text(text=text)
+        del context.user_data["current_conversation"]
         return ConversationHandler.END
     context.user_data["current_question"] = START_QUESTION_NUMBER
     context.user_data["picked_choices"] = []
@@ -57,19 +83,22 @@ async def show_start_of_task_8(update: Update, context: CallbackContext) -> int:
     return NEXT
 
 
-async def start_question(
-    update: Update, context: CallbackContext, question_number: int = 1
-) -> int:
+async def start_question(update: Update, context: CallbackContext) -> int:
     """Начинает новый вопрос."""
     query = update.callback_query
-    if question_number == 1:
+    question_number = context.user_data.get("current_question")
+    if question_number in (1, 21, 31):
         await query.message.edit_reply_markup()
     if FIRST_STAGE_END < question_number:
         params = context.user_data["picked_choices"][
             question_number - FIRST_STAGE_END - 1
         ]
+        if question_number > SECOND_STAGE_END:
+            offset = SECOND_STAGE_END
+        else:
+            offset = FIRST_STAGE_END
         messages = await api_service.get_task_8_question(
-            question_number=question_number, params=params
+            question_number=(question_number - offset), params=params
         )
     else:
         messages = await api_service.get_messages_with_question(
@@ -106,13 +135,24 @@ async def update_question(update: Update, context: CallbackContext) -> int:
 
     if current_question == TASK_END:
         await _save_answer_to_db(context, message)
-        state = await show_result(update, context)
-        return state
-
+        await update.effective_message.edit_reply_markup(
+            reply_markup=TASK_END_KEYBOARD,
+        )
+        return CHOOSING
+    elif current_question == FIRST_STAGE_END:
+        context.user_data["current_question"] += 1
+        await update.effective_message.edit_reply_markup(
+            reply_markup=FIRST_STAGE_END_KEYBOARD,
+        )
+        return CHOOSING
+    elif current_question == SECOND_STAGE_END:
+        context.user_data["current_question"] += 1
+        await update.effective_message.edit_reply_markup(
+            reply_markup=SECOND_STAGE_END_KEYBOARD,
+        )
+        return CHOOSING
     context.user_data["current_question"] += 1
-    state = await start_question(
-        update, context, context.user_data.get("current_question")
-    )
+    state = await start_question(update, context)
     return state
 
 
@@ -120,6 +160,8 @@ async def show_result(update: Update, context: CallbackContext) -> int:
     """Отправляет результаты прохождения задания."""
     context.user_data.clear()
     query = update.callback_query
+    if query is not None:
+        await query.message.edit_reply_markup()
     messages = await api_service.get_messages_with_results(
         telegram_id=update.effective_chat.id, task_number=CURRENT_TASK
     )

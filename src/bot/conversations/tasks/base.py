@@ -4,13 +4,18 @@ from telegram import ForceReply, InlineKeyboardButton, InlineKeyboardMarkup, Upd
 from telegram.constants import ParseMode
 from telegram.ext import (
     CallbackQueryHandler,
-    CommandHandler,
     ContextTypes,
     ConversationHandler,
     MessageHandler,
     filters,
 )
 
+from conversations.general.decorators import (
+    TASK_EXECUTION,
+    not_in_conversation,
+    set_conversation_name,
+)
+from conversations.menu.callback_funcs import add_task_number_to_prev_message
 from conversations.tasks.keyboards import (
     CONFIRM_KEYBOARD,
     NEXT_KEYBOARD,
@@ -25,12 +30,6 @@ CONFIRMING = 3
 START_QUESTION_NUMBER = 1
 BUTTON_LABELS_PATTERN = r"^([1-9]|10|[А-Е])$"
 NEXT_BUTTON_PATTERN = r"^Далее$"
-TASK_CANCEL_TEXT = (
-    "Прохождение задания прервано. Если захочешь продолжить его"
-    ' выполнение, то можешь открыть меню, перейти в "Посмотреть'
-    ' все задания" или ввести команду /tasks и выбрать'
-    " Задание "
-)
 TASK_START_BUTTON_LABEL = "Задание "
 TASK_ALREADY_DONE_TEXT = (
     "уже пройдено! 😎 Если ты хочешь повторно посмотреть результаты,"
@@ -38,7 +37,7 @@ TASK_ALREADY_DONE_TEXT = (
 )
 SEND_ANSWER_TEXT = (
     "После подтверждения этот ответ будет сохранён и отправлен."
-    " До подтверждения ты можешь его изменить.\nТекущий ответ: "
+    " До подтверждения ты можешь его изменить.\n\n<b>Текущий ответ:</b> "
 )
 CONFIRM_BUTTON_PATTERN = r"^confirm_answer$"
 
@@ -67,7 +66,7 @@ class BaseTaskConversation:
         self.entry_point_button_label: str = TASK_START_BUTTON_LABEL + str(
             self.task_number
         )
-        self.cancel_text: str = TASK_CANCEL_TEXT + str(self.task_number) + "."
+        self.start_method = self.show_task_description
         self.question_method = self.show_question
         self.update_method = self.handle_user_answer
 
@@ -78,6 +77,8 @@ class BaseTaskConversation:
         )
         return task_status.is_done
 
+    @not_in_conversation(ConversationHandler.END)
+    @set_conversation_name(TASK_EXECUTION)
     async def show_task_description(
         self, update: Update, context: ContextTypes.DEFAULT_TYPE
     ) -> int:
@@ -93,6 +94,7 @@ class BaseTaskConversation:
         if task_done:
             text = f"{self.entry_point_button_label} {TASK_ALREADY_DONE_TEXT}"
             await update.effective_message.reply_text(text=text)
+            del context.user_data["current_conversation"]
             return ConversationHandler.END
 
         description = self.description
@@ -195,14 +197,19 @@ class BaseTaskConversation:
         context.user_data.clear()
         return ConversationHandler.END
 
-    async def cancel(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    async def show_task_description_with_number(
+        self, update: Update, context: ContextTypes.DEFAULT_TYPE
+    ) -> int:
         """
-        Прерывает выполнение задания и выводит сообщение об этом.
-        Вызывается из CallbackQueryHandler в методе set_fallbacks.
+        Показывает описание задание, но перед этим добавляет
+        в предыдущее сообщение выбранный номер задания.
         """
-        await update.message.reply_text(self.cancel_text)
-        context.user_data.clear()
-        return ConversationHandler.END
+        return await add_task_number_to_prev_message(
+            update=update,
+            context=context,
+            task_number=self.task_number,
+            start_task_method=self.start_method,
+        )
 
     def set_entry_points(self):
         """
@@ -210,11 +217,12 @@ class BaseTaskConversation:
         Используется при создании хэндлера для задания.
         """
         return [
-            MessageHandler(
-                filters.Regex(self.entry_point_button_label), self.show_task_description
+            CallbackQueryHandler(
+                self.start_method, pattern=rf"^start_task_{self.task_number}$"
             ),
             CallbackQueryHandler(
-                self.show_task_description, pattern=rf"^start_task_{self.task_number}$"
+                self.show_task_description_with_number,
+                pattern=rf"^with_choice_start_task_{self.task_number}$",
             ),
         ]
 
@@ -235,7 +243,7 @@ class BaseTaskConversation:
         Управляет выходом из диалога.
         Используется при создании хэндлера для задания.
         """
-        return [CommandHandler("cancel", self.cancel)]
+        return []
 
     def add_handlers(self):
         """
@@ -251,9 +259,15 @@ class BaseTaskConversation:
 class OneQuestionConversation(BaseTaskConversation):
     """Класс для общения по заданиям с одним вопросом и ответом в свободной форме."""
 
+    def __post_init__(self):
+        super().__post_init__()
+        self.start_method = self.show_question
+
+    @not_in_conversation(ConversationHandler.END)
+    @set_conversation_name(TASK_EXECUTION)
     async def show_question(
-        self, update: Update, _context: ContextTypes.DEFAULT_TYPE
-    ) -> None:
+        self, update: Update, context: ContextTypes.DEFAULT_TYPE
+    ) -> int:
         """Показывает единственный вопрос задания."""
         if update.callback_query:
             await update.callback_query.edit_message_reply_markup()
@@ -261,6 +275,7 @@ class OneQuestionConversation(BaseTaskConversation):
         if task_done:
             text = f"{self.entry_point_button_label} {TASK_ALREADY_DONE_TEXT}"
             await update.effective_message.reply_text(text=text)
+            del context.user_data["current_conversation"]
             return ConversationHandler.END
 
         messages = await api_service.get_messages_with_question(
@@ -286,6 +301,7 @@ class OneQuestionConversation(BaseTaskConversation):
         confirmation_message = await update.effective_message.reply_text(
             text=SEND_ANSWER_TEXT + '"' + answer_text + '"',
             reply_markup=CONFIRM_KEYBOARD,
+            parse_mode=ParseMode.HTML,
         )
         context.user_data["confirmation_message_id"] = confirmation_message.message_id
 
@@ -313,6 +329,7 @@ class OneQuestionConversation(BaseTaskConversation):
                     message_id=confirmation_message_id,
                     text=SEND_ANSWER_TEXT + '"' + answer_text + '"',
                     reply_markup=CONFIRM_KEYBOARD,
+                    parse_mode=ParseMode.HTML,
                 )
 
             if answer_text and answer_id:
@@ -358,14 +375,6 @@ class OneQuestionConversation(BaseTaskConversation):
         )
         context.user_data.clear()
         return ConversationHandler.END
-
-    def set_entry_points(self):
-        """Описывает entry_point для входа в диалог: кнопка 'Задача 5'."""
-        return [
-            CallbackQueryHandler(
-                self.show_question, pattern=f"start_task_{self.task_number}"
-            )
-        ]
 
     def set_states(self):
         """Управляет ведением диалога."""

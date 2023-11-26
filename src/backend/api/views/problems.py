@@ -5,13 +5,12 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
+from api.conversation_utils import non_context_send_message
 from api.models import UserFromTelegram
 from api.serializers import ProblemSerializer
 from backend.settings import MAIN_MENTOR_ID
 
-from ..conversation_utils import non_context_send_message
-
-PROBLEM_TEXT = "Пользователь {user} отправил вопрос: «{question}»."
+PROBLEM_TEXT = "Пользователь {user} отправил вопрос: «{question}»"
 
 
 @api_view(("POST",))
@@ -24,20 +23,21 @@ def problem_create(request, telegram_id):
     if serializer.is_valid():
         serializer.save(user=user)
         try:
-            user_id = user.mentor.telegram_id
+            mentor_id_of_user = user.mentor.telegram_id
+            if mentor_id_of_user is None:
+                mentor_id_of_user = MAIN_MENTOR_ID
         except AttributeError as err:
             if str(err) == "'NoneType' object has no attribute 'telegram_id'":
-                user_id = MAIN_MENTOR_ID
-        # если у психолога, назначенного пользователю, не указан telegram_id,
-        # сообщение отправляется главному психологу
-        if user_id is None:
-            user_id = MAIN_MENTOR_ID
+                mentor_id_of_user = MAIN_MENTOR_ID
+            else:
+                raise AttributeError
         asyncio.run(
             non_context_send_message(
                 text=PROBLEM_TEXT.format(
-                    user=user.name, question=serializer.data["message"]
+                    user=f"{user.name} {user.surname}",
+                    question=serializer.data["message"],
                 ),
-                user_id=user_id,
+                user_id=mentor_id_of_user,
             )
         )
         return Response(serializer.data, status=status.HTTP_201_CREATED)

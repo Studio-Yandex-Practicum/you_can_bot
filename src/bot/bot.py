@@ -8,10 +8,8 @@ from conversations.mentor_registration.handlers import (
 from conversations.menu.handlers import (
     ask_question_handler,
     entry_point_to_ask_handler,
-    entry_point_to_profile_handler,
     entry_point_to_tasks_handler,
     info_handler,
-    profile_handler,
     show_all_tasks_handler,
 )
 from conversations.menu.keyboards import get_main_menu_commands
@@ -40,28 +38,31 @@ def create_bot():
     bot_app.add_handler(handler=acquaintance_handler)
 
     # task handlers
-    bot_app.add_handler(handler=task_one_handler)
-    bot_app.add_handler(handler=task_two_handler)
-    bot_app.add_handler(handler=task_three_handler)
-    bot_app.add_handler(handler=task_four_handler)
-    bot_app.add_handler(handler=task_five_handler)
-    bot_app.add_handler(handler=task_six_handler)
-    bot_app.add_handler(handler=task_seven_handler)
-    bot_app.add_handler(handler=task_8_handler)
+    bot_app.add_handlers(
+        handlers=[
+            task_one_handler,
+            task_two_handler,
+            task_three_handler,
+            task_four_handler,
+            task_five_handler,
+            task_six_handler,
+            task_seven_handler,
+            task_8_handler,
+        ],
+        group=2,
+    )
 
     # mentor registration handlers
     bot_app.add_handler(handler=mentor_registration_handler)
     bot_app.add_handler(handler=registration_confirmation_handler)
 
     # menu handlers
-    bot_app.add_handler(handler=profile_handler)
     bot_app.add_handler(handler=ask_question_handler)
     bot_app.add_handler(handler=show_all_tasks_handler)
     bot_app.add_handler(handler=info_handler)
     bot_app.add_handlers(
         handlers=[
             entry_point_to_tasks_handler,
-            entry_point_to_profile_handler,
             entry_point_to_ask_handler,
         ]
     )
