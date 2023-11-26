@@ -97,45 +97,6 @@ async def suggest_ask_question(
     return templates.WAITING_FOR_QUESTION_STATE
 
 
-async def get_user_question(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    """
-    Просит подтвердить отправку вопроса профдизайнеру, также обновляет его в
-    случае, если пользователь изменил изначальный вопрос.
-    """
-    # извлекаем из контекста id изначального вопроса, если он был
-    original_question_id = context.user_data.get("question_id")
-
-    if update.message:  # вопрос отправлен в первый раз
-        question_text = update.message.text
-        question_id = update.message.message_id
-    elif (
-        update.edited_message
-        and update.edited_message.message_id == original_question_id
-    ):  # изначальный вопрос был изменён
-        question_text = update.edited_message.text
-        question_id = update.edited_message.message_id
-        await context.bot.edit_message_text(
-            chat_id=update.effective_chat.id,
-            message_id=context.user_data.get("confirmation_message_id"),
-            text=templates.SEND_QUESTION_TEXT + '"' + question_text + '"',
-            reply_markup=AGREE_OR_CANCEL_KEYBOARD,
-            parse_mode=ParseMode.HTML,
-        )
-    else:  # иные случаи
-        return
-
-    if question_text and question_id:
-        context.user_data["question"] = question_text
-        context.user_data["question_id"] = question_id
-    if not context.user_data.get("confirmation_message_id") and update.message:
-        confirmation_message = await update.message.reply_text(
-            text=templates.SEND_QUESTION_TEXT + '"' + question_text + '"',
-            reply_markup=AGREE_OR_CANCEL_KEYBOARD,
-            parse_mode=ParseMode.HTML,
-        )
-        context.user_data["confirmation_message_id"] = confirmation_message.message_id
-
-
 async def handle_user_question(
     update: Update, context: ContextTypes.DEFAULT_TYPE
 ) -> str:
