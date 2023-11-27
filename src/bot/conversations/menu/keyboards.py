@@ -16,11 +16,7 @@ AGREE_OR_CANCEL_KEYBOARD = InlineKeyboardMarkup(
         ]
     ]
 )
-MY_TASKS_KEYBOARD = InlineKeyboardMarkup(
-    inline_keyboard=[
-        [InlineKeyboardButton(text=templates.MY_TASKS, callback_data="my_tasks")]
-    ]
-)
+
 CONFIRMATION_BUTTONS = [[KeyboardButton(text=templates.CONFIRM)], CANCEL_BUTTON]
 
 URL_BUTTON = InlineKeyboardMarkup.from_button(

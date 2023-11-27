@@ -161,7 +161,7 @@ logs/
 
 # Django #
 media/
-static/
+src/backend/static/
 
 # VSCode
 .vscode/

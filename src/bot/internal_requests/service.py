@@ -76,7 +76,7 @@ async def get_user_task_status_list(telegram_id: int) -> List[TaskStatus]:
 
 
 async def get_mentor_registration_status(telegram_id: int) -> MentorRegistrationStatus:
-    """Получение информации о статусе регистрации психолога."""
+    """Получение информации о статусе регистрации профдизайнера."""
     endpoint_urn = f"mentors/{telegram_id}/status/"
     response = await _get_request(endpoint_urn)
     registrations_status = await _parse_api_response_to_mentor_registration_status(
@@ -94,7 +94,7 @@ async def create_user(user: UserFromTelegram) -> Response:
 
 
 async def create_mentor(mentor: Mentor) -> MentorRegistered:
-    """Запрос на создание учетной записи психолога в БД."""
+    """Запрос на создание учетной записи профдизайнера в БД."""
     data = asdict(mentor)
     endpoint_urn = "mentors/"
     response = await _post_request(data, endpoint_urn)
@@ -103,14 +103,14 @@ async def create_mentor(mentor: Mentor) -> MentorRegistered:
 
 
 async def confirm_mentor_registration(telegram_id: int) -> Response:
-    """Запрос, подтверждающий учетную запись психолога."""
+    """Запрос, подтверждающий учетную запись профдизайнера."""
     endpoint_urn = f"mentors/{telegram_id}/confirm/"
     response = await _post_request(dict(), endpoint_urn)
     return response
 
 
 async def delete_mentor(telegram_id: int) -> Response:
-    """Запрос на удаление учетной записи психолога."""
+    """Запрос на удаление учетной записи профдизайнера."""
     endpoint_urn = f"mentors/{telegram_id}/"
     response = await _delete_request(endpoint_urn)
     return response

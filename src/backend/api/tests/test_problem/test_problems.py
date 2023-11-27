@@ -61,7 +61,10 @@ class ProblemTests(BaseCaseForProblemTests):
         mock_send_message.assert_called_with(
             text=PROBLEM_TEXT.format(
                 question=self.MESSAGE,
-                user=self.user_from_telegram.name,
+                user=(
+                    f"{self.user_from_telegram.name}"
+                    f" {self.user_from_telegram.surname}"
+                ),
             ),
             user_id=self.MENTOR_TELEGRAM_ID,
         )

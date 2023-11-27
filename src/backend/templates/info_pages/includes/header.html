@@ -1,0 +1,22 @@
+<nav class="navbar navbar-expand-lg" style="background-color: #f8bc43;">
+  <div class="container">
+    <a class="navbar-brand" href="{% url 'admin:index' %}">
+      <img src="https://youcan.by/_next/static/media/logo.8382e3f2.svg" alt="логотип" loading="lazy" width="56" height="52" decoding="async" data-nimg="1" class="d-inline-block align-text-middle" id="logo">
+      <span class="fs-3">YouCan</span>
+    </a>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav">
+        <li class="nav-item">
+        {% if request.GET.questions %}
+          <a class="nav-link" href="{% url 'info_pages:taskstatus-list' telegram_id=object.telegram_id %}">Спрятать вопросы</a>
+        {% else %}
+          <a class="nav-link" href="{% url 'info_pages:taskstatus-list' telegram_id=object.telegram_id %}?questions=true">Показать вопросы</a>
+        {% endif %}
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" onclick="window.print()">Печать</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>

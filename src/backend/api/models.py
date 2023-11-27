@@ -9,7 +9,7 @@ User = get_user_model()
 
 
 class MentorProfile(models.Model):
-    """Модель профиля психолога."""
+    """Модель профиля профдизайнера."""
 
     user = models.OneToOneField(
         to=User, on_delete=models.CASCADE, related_name="mentorprofile"
@@ -23,8 +23,8 @@ class MentorProfile(models.Model):
     )
 
     class Meta:
-        verbose_name = "Профиль психолога"
-        verbose_name_plural = "Профили психологов"
+        verbose_name = "Профиль профдизайнера"
+        verbose_name_plural = "Профили профдизайнеров"
 
     def __str__(self):
         return f"{self.user}"
@@ -50,7 +50,7 @@ class UserFromTelegram(models.Model):
         max_length=settings.MAX_LENGTH_SURNAME,
     )
     mentor = models.ForeignKey(
-        verbose_name="Психолог",
+        verbose_name="Профдизайнер",
         to=MentorProfile,
         on_delete=models.SET_NULL,
         null=True,
@@ -299,6 +299,7 @@ class ResultStatus(models.Model):
     class Meta:
         verbose_name = "Результат пользователя"
         verbose_name_plural = "Результаты пользователя"
+        ordering = ("top",)
 
     def __str__(self):
         return f"{self.result} ({self.score} б.)"
@@ -317,7 +318,7 @@ class Problem(models.Model):
         "Вопрос",
     )
     answer = models.TextField(
-        "Ответ психолога",
+        "Ответ профдизайнера",
         default="",
         blank=True,
     )

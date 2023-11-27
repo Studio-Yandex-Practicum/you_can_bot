@@ -7,7 +7,11 @@ from telegram.ext import (
 )
 
 import conversations.menu.callback_funcs as callback_funcs
-from conversations.menu.templates import TASKS_STATE, WAITING_FOR_QUESTION_STATE
+from conversations.menu.templates import (
+    TASKS_STATE,
+    WAITING_FOR_CONFIRMATION_STATE,
+    WAITING_FOR_QUESTION_STATE,
+)
 
 # /tasks
 entry_point_to_tasks_handler = CommandHandler(
@@ -37,9 +41,15 @@ ask_question_handler = ConversationHandler(
     states={
         WAITING_FOR_QUESTION_STATE: [
             MessageHandler(
-                filters.TEXT & (~filters.COMMAND),
-                callback_funcs.get_user_question,
+                filters=filters.TEXT & (~filters.COMMAND),
+                callback=callback_funcs.handle_user_question,
             )
+        ],
+        WAITING_FOR_CONFIRMATION_STATE: [
+            MessageHandler(
+                filters=filters.UpdateType.EDITED_MESSAGE,
+                callback=callback_funcs.handle_user_question_edit,
+            ),
         ],
     },
     fallbacks=[

@@ -10,7 +10,8 @@ SECRET_KEY = os.getenv("SECRET_KEY", default="secret_key")
 DEBUG = os.getenv("DEBUG", default=False)
 
 ALLOWED_HOSTS = [os.getenv("ALLOWED_HOSTS", default="*")]
-CSRF_TRUSTED_ORIGINS = (f"http://{os.getenv('HOST', default='127.0.0.1')}",)
+DOMAIN = os.getenv("DOMAIN", default="127.0.0.1")
+CSRF_TRUSTED_ORIGINS = (f"http://{DOMAIN}", f"https://{DOMAIN}")
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -21,6 +22,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "rest_framework",
     "api.apps.ApiConfig",
+    "info_pages.apps.InfoPagesConfig",
 ]
 
 MIDDLEWARE = [
@@ -104,7 +106,7 @@ MAX_LENGTH_SURNAME = 150
 
 NOT_FOUND_QUESTION_ERROR_MESSAGE = "Не найден вопрос с таким номером."
 NOT_FOUND_TASK_ERROR_MESSAGE = "Не найдено задание с таким номером."
-NOT_FOUND_MENTOR_MESSAGE = "Не найдена учетная запись психолога."
+NOT_FOUND_MENTOR_MESSAGE = "Не найдена учетная запись профдизайнера."
 
 LOG_FILENAME = "backend.log"
 LOG_PATH = BASE_DIR.parent / ".data" / os.getenv("LOG_DIR", "logs")
