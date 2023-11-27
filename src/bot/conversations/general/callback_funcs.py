@@ -1,5 +1,11 @@
+import html
+import logging
+import traceback
+from asyncio import sleep
+
 from httpx import HTTPStatusError, codes
-from telegram import Update
+from telegram import Bot, Update
+from telegram.constants import ParseMode
 from telegram.ext import ContextTypes, ConversationHandler
 
 import conversations.general.keyboards as keyboards
@@ -15,7 +21,11 @@ from external_requests.exceptions import (
     UserNotFound,
 )
 from internal_requests.entities import UserFromTelegram
-from utils.configs import ALLOWED_TARIFFS
+from utils.configs import ALLOWED_TARIFFS, DEVELOPER_CHAT_ID
+
+DELAY_TO_AVOID_FLOOD = 5
+
+_LOGGER = logging.getLogger(__name__)
 
 HELLO = 0
 
@@ -58,6 +68,26 @@ async def show_skill_set_info(
     return ConversationHandler.END
 
 
+async def error_handler(update: object, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Обрабатывает ошибку, логирует исключение с информацией из контекста пользователя,
+    уведомляет разработчика об ошибке."""
+    await _log_exception_with_user_context(context)
+
+    await _notify_developer_of_error(context)
+
+    if isinstance(update, Update):
+        await _handle_error_and_clear_context(update, context)
+
+
+async def _log_exception_with_user_context(context):
+    _LOGGER.error(
+        "При обработке обновления было вызвано исключение:\n\n"
+        f"context.chat_data = {str(context.chat_data)}\n\n"
+        f"context.user_data = {str(context.user_data)}\n\n",
+        exc_info=context.error,
+    )
+
+
 async def _get_or_create_user_from_telegram(update, context):
     """Получает информацию о пользователе по telegram_id.
     При отсутствии создаёт новый экземпляр UserFromTelegram.
@@ -93,7 +123,53 @@ async def _get_user_info_and_set_in_context(update, context):
         await update.message.reply_text(templates.CONNECTION_ERROR_MESSAGE)
     except (HTTPStatusError, PostAPIError):
         await update.message.reply_text(templates.SERVER_ERROR_MESSAGE)
-    except Exception as e:
-        print(str(e))
+    except Exception as error:
         await update.message.reply_text(templates.INTERNAL_ERROR_MESSAGE)
-        raise Exception
+        raise error
+
+
+async def _notify_developer_of_error(context):
+    """Уведомляет разработчика об ошибке."""
+    tb_list = traceback.format_exception(
+        None, context.error, context.error.__traceback__
+    )
+    tb_string = "".join(tb_list)
+    message = (
+        "При обработке обновления было вызвано исключение:\n"
+        f"{html.escape(tb_string)}"
+    )
+    await _send_long_message(
+        message=message, chat_id=DEVELOPER_CHAT_ID, bot_instance=context.bot
+    )
+
+
+async def _handle_error_and_clear_context(
+    update: Update, context: ContextTypes.DEFAULT_TYPE
+) -> None:
+    """Чистит context пользователя, у которого случилась ошибка."""
+    context.user_data.clear()
+    await update.effective_message.reply_text(
+        "Ой! Что-то пошло не так. Попробуйте позже."
+    )
+
+
+async def _send_long_message(message: str, chat_id: int, bot_instance: Bot) -> None:
+    max_message_len = 4096
+    if len(message) > max_message_len:
+        message_parts = [
+            message[i : i + max_message_len]
+            for i in range(0, len(message), max_message_len)
+        ]
+        for part in message_parts:
+            await sleep(DELAY_TO_AVOID_FLOOD)
+            await bot_instance.send_message(
+                chat_id=chat_id,
+                text="<pre>" + part + "</pre>",
+                parse_mode=ParseMode.HTML,
+            )
+    else:
+        await bot_instance.send_message(
+            chat_id=chat_id,
+            text="<pre>" + message + "</pre>",
+            parse_mode=ParseMode.HTML,
+        )

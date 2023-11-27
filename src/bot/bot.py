@@ -1,5 +1,6 @@
 from telegram.ext import Application, ApplicationBuilder
 
+from conversations.general.callback_funcs import error_handler
 from conversations.general.handlers import acquaintance_handler
 from conversations.mentor_registration.handlers import (
     mentor_registration_handler,
@@ -66,6 +67,8 @@ def create_bot():
             entry_point_to_ask_handler,
         ]
     )
+
+    bot_app.add_error_handler(error_handler)
 
     return bot_app
 

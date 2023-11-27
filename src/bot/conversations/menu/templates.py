@@ -1,13 +1,24 @@
 # Main menu button commands
 COMMANDS = {
+    "profile": "Профиль",
     "tasks": "Посмотреть все задания",
     "ask": "Задать вопрос",
     "info": "Перейти на сайт/инфо",
+    "cancel": "Приостановить выполнение задания",
 }
 USER_NOT_FOUND = (
     "Я с тобой еще не знаком, поэтому не могу выполнить для тебя эту команду. "
     "Если хочешь познакомиться, введи команду /start"
 )
+
+# Profile
+SHOW_MY_TASKS_STATE = "SHOW_MY_TASKS"
+USER_PROFILE_TEXT = "<b>Имя:</b> {name}\n" "<b>Фамилия:</b> {surname}\n"
+TASKS_LIST_TEXT = (
+    "Нажав на кнопку с заданием, ты можешь начать, или продолжить его выполнение, "
+    "или посмотреть результаты."
+)
+NAME_PATTERN = "^[A-Za-zА-яЁё ]+$"
 
 # Show all tasks + show user results
 TASKS_STATE = "TASKS"
