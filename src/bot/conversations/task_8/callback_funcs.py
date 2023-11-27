@@ -187,7 +187,7 @@ async def show_result(update: Update, _context: CallbackContext) -> int:
     return FINAL_STATE
 
 
-async def send_final_message(update: Update, _context: CallbackContext) -> int:
+async def send_final_message(update: Update, context: CallbackContext) -> int:
     """Отправляет сообщение - поздравление о прохождении всех заданий."""
     await update.effective_message.edit_reply_markup()
     user_info = await api_service.get_info_about_user(
@@ -197,6 +197,7 @@ async def send_final_message(update: Update, _context: CallbackContext) -> int:
         text=FINAL_MESSAGE_TEXT.substitute(name=user_info.name),
         parse_mode=ParseMode.HTML,
     )
+    context.user_data.clear()
     return ConversationHandler.END
 
 
