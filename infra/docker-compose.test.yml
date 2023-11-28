@@ -10,8 +10,8 @@ services:
       environment:
         LANG: "ru_RU.UTF-8"
         POSTGRES_INITDB_ARGS: '--locale-provider=icu --icu-locale=ru-RU'
-      ports:
-        - "5432:5432"
+      expose:
+        - "5432"
       env_file:
         - ../.env
 
@@ -25,6 +25,8 @@ services:
         - static_value:/app/backend/static/
         - media_value:/app/backend/media/
         - ../.data/logs/:/app/.data/logs/
+      expose:
+        - "8000"
       env_file:
         - ../.env
       depends_on:
@@ -49,11 +51,21 @@ services:
         - "443:443"
       volumes:
         - ./default.conf:/etc/nginx/conf.d/default.conf
+        - ./certbot/conf:/etc/letsencrypt
+        - ./certbot/www:/var/www/certbot
         - static_value:/var/html/static/
         - media_value:/var/html/media/
       depends_on:
         - bot
         - backend
+
+    certbot:
+      image: certbot/certbot
+      container_name: certbot
+      volumes:
+        - ./certbot/conf:/etc/letsencrypt
+        - ./certbot/www:/var/www/certbot
+      command: certonly --webroot -w /var/www/certbot --force-renewal --email ${CERT_EMAIL} -d ${DOMAIN} --agree-tos
 
 
 volumes:
