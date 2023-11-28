@@ -32,7 +32,8 @@ BUTTON_LABELS_PATTERN = r"^([1-9]|10|[А-Е])$"
 NEXT_BUTTON_PATTERN = r"^Далее$"
 TASK_START_BUTTON_LABEL = "Задание "
 TASK_ALREADY_DONE_TEXT = (
-    "уже пройдено! 😎 Если ты хочешь повторно посмотреть результаты,"
+    "Данное задание уже пройдено!"
+    " Если ты хочешь повторно посмотреть его результаты,"
     " то используй команду /tasks."
 )
 SEND_ANSWER_TEXT = (
@@ -92,8 +93,7 @@ class BaseTaskConversation:
             await update.callback_query.edit_message_reply_markup()
         task_done = await self.check_current_task_is_done(update=update)
         if task_done:
-            text = f"{self.entry_point_button_label} {TASK_ALREADY_DONE_TEXT}"
-            await update.effective_message.reply_text(text=text)
+            await update.effective_message.reply_text(text=TASK_ALREADY_DONE_TEXT)
             del context.user_data["current_conversation"]
             return ConversationHandler.END
 
@@ -273,8 +273,7 @@ class OneQuestionConversation(BaseTaskConversation):
             await update.callback_query.edit_message_reply_markup()
         task_done = await self.check_current_task_is_done(update=update)
         if task_done:
-            text = f"{self.entry_point_button_label} {TASK_ALREADY_DONE_TEXT}"
-            await update.effective_message.reply_text(text=text)
+            await update.effective_message.reply_text(text=TASK_ALREADY_DONE_TEXT)
             del context.user_data["current_conversation"]
             return ConversationHandler.END
 
