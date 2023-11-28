@@ -120,6 +120,7 @@ jobs:
             echo DEBUG=${{ vars.DEBUG }} >> .env
             echo ALLOWED_HOSTS=${{ secrets.DJANGO_ALLOWED_HOSTS }} >> .env
             echo HOST=${{ secrets.HOST }} >> .env
+            echo CERT_EMAIL=${{ secrets.CERT_EMAIL }} >> .env
             echo DOMAIN=${{ secrets.DOMAIN }} >> .env
 
             echo INTERNAL_API_URL=${{ secrets.INTERNAL_API_URL }} >> .env
@@ -135,7 +136,7 @@ jobs:
 
             docker image prune -f
 
-            docker compose -f infra/docker-compose.test.yml stop
+            docker compose -f infra/docker-compose.test.yml stop nginx backend bot db
             docker compose -f infra/docker-compose.test.yml rm backend -f
             docker compose -f infra/docker-compose.test.yml rm bot -f
             docker compose --env-file .env -f infra/docker-compose.test.yml up -d
