@@ -70,8 +70,7 @@ async def show_start_of_task_8(update: Update, context: CallbackContext) -> int:
         task_number=CURRENT_TASK, telegram_id=update.effective_user.id
     )
     if task_status.is_done:
-        text = f"Задание 8 {TASK_ALREADY_DONE_TEXT}"
-        await update.effective_message.reply_text(text=text)
+        await update.effective_message.reply_text(text=TASK_ALREADY_DONE_TEXT)
         del context.user_data["current_conversation"]
         return ConversationHandler.END
     context.user_data["current_question"] = START_QUESTION_NUMBER

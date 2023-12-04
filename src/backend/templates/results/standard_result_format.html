@@ -1,5 +1,5 @@
 {% extends "results/base.html" %}
 {% block top %}<b>{{ result_status.top }}.</b>{% endblock %}
-{% block title %}<b> {{ result.title|capfirst }}</b>{% endblock %}
+{% block title %}<b> {{ result.title | capfirst }}</b>{% endblock %}
 {% block content %}
-{{ result.description }}{% endblock %}
+{{ result.description | safe }}{% endblock %}

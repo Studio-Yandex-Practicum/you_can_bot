@@ -3,8 +3,8 @@ from conversations.task_6.callback_funcs import TaskSixConversation
 TASK_SIX_NUMBER = 6
 TASK_SIX_NUM_OF_QUESTIONS = 3
 TASK_SIX_DESCRIPTION = (
-    "Сейчас тебе будет предоставлено 3 вопроса, подумай и запиши ответы. "
-    "Пиши всё, что приходит в голову. Чем больше ответов, тем лучше."
+    "Сейчас тебе будет предоставлено 3 вопроса."
+    " Твоя задача — написать все, что приходит в голову."
 )
 TASK_SIX_RESULT_INTRO = (
     "Отлично! Ответы успешно сохранены, результаты "

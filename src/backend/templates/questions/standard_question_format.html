@@ -1,9 +1,11 @@
 {% extends "questions/base.html" %}
 {% block number %}<b>{{ question.number }}.</b>{% endblock number %}
-{% block title %}<b> {{ question.content }}</b>{% endblock title %}
+{% block title %}<b> {{ question.content | safe }}</b>{% endblock title %}
 {% block content %}{% for choice in question.choices.all %}
-<b>[{{ forloop.counter | add:"1039" | stringformat:"c" }}]</b> {{ choice.title }}
+<b>[{{ forloop.counter | add:"1039" | stringformat:"c" }}]</b> {{ choice.title | safe }}
 {% if choice.description %}
-{{ choice.description }}
+{{ choice.description | safe }}
 {% endif %}{% empty %}{% endfor %}
-{% if question.example %}<b>Пример:</b> {{ question.example }}{% endif %}{% endblock content %}
+{% if question.example %}<b>Пример</b> 👇
+
+{{ question.example | safe }}{% endif %}{% endblock content %}
