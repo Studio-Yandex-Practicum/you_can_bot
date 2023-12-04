@@ -163,7 +163,6 @@ async def cancel_save_question(
     return ConversationHandler.END
 
 
-@user_exists
 @not_in_conversation()
 async def show_url(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Перейти на сайт YouCan."""
