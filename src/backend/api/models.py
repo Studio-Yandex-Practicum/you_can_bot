@@ -320,7 +320,6 @@ class Problem(models.Model):
     answer = models.TextField(
         "Ответ профдизайнера",
         default="",
-        blank=True,
     )
     create_date = models.DateTimeField(
         "Дата создания",
