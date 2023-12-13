@@ -150,6 +150,7 @@ class MentorRegistrationConversation:
                 last_name=context.user_data.get("last_name"),
                 username=update.effective_user.username,
             ),
+            parse_mode=ParseMode.HTML,
             reply_markup=InlineKeyboardMarkup(keyboard),
         )
 
