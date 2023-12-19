@@ -53,5 +53,8 @@ def _get_top_features_sorted(scales_avg_score: dict[str:float]) -> list[str]:
     sorted_scales = sorted(
         scales_avg_score.items(), key=lambda scale: (-scale[1], scale[0])
     )
-    filtered_scales = [scale for scale in sorted_scales if scale[1] > MIN_AVG_SCORE]
+    filtered_scales = [scale for scale in sorted_scales if scale[1] >= MIN_AVG_SCORE]
+    if len(filtered_scales) == 0:
+        best_score = sorted_scales[0][1]
+        filtered_scales = [scale for scale in sorted_scales if scale[1] == best_score]
     return filtered_scales
