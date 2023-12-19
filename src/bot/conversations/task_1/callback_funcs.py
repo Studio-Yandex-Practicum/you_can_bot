@@ -38,7 +38,8 @@ class TaskOneConversation(BaseTaskConversation):
         Выводит вопросы в Задании 1: текст вопроса + клавиатура с исходными
         вариантами ответов: А Б В Г Д Е.
         """
-        await update.callback_query.edit_message_reply_markup()
+        if question_number == 1:
+            await update.callback_query.edit_message_reply_markup()
         context.user_data["picked_choices"] = ""
         messages = await api_service.get_messages_with_question(
             task_number=self.task_number,
