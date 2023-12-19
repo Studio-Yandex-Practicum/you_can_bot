@@ -77,11 +77,15 @@ async def show_all_user_tasks(
     keyboard = create_inline_tasks_keyboard(tasks)
     if update.callback_query:
         await update.callback_query.message.edit_text(
-            text=templates.TASKS_LIST_TEXT, reply_markup=keyboard
+            text=templates.TASKS_LIST_TEXT,
+            reply_markup=keyboard,
+            parse_mode=ParseMode.HTML,
         )
     else:
         await update.effective_message.reply_text(
-            text=templates.TASKS_LIST_TEXT, reply_markup=keyboard
+            text=templates.TASKS_LIST_TEXT,
+            reply_markup=keyboard,
+            parse_mode=ParseMode.HTML,
         )
     return templates.TASKS_STATE
 

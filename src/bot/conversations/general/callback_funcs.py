@@ -112,11 +112,17 @@ async def _get_user_info_from_lk_and_handle_it(update: Update) -> Optional[dict]
         user_info = await get_user_info_from_lk(update.effective_user.id)
         return user_info
     except UserNotFound:
-        await update.message.reply_text(templates.UNKNOWN_START_MESSAGE)
+        await update.message.reply_text(
+            templates.UNKNOWN_START_MESSAGE, parse_mode=ParseMode.HTML
+        )
     except ConnectionError:
-        await update.message.reply_text(templates.CONNECTION_ERROR_MESSAGE)
+        await update.message.reply_text(
+            templates.CONNECTION_ERROR_MESSAGE, parse_mode=ParseMode.HTML
+        )
     except (HTTPStatusError, PostAPIError, APIDataError):
-        await update.message.reply_text(templates.SERVER_ERROR_MESSAGE)
+        await update.message.reply_text(
+            templates.SERVER_ERROR_MESSAGE, parse_mode=ParseMode.HTML
+        )
     except Exception as error:
         raise error
 
@@ -142,7 +148,8 @@ async def _handle_error_and_clear_context(
     """Чистит context пользователя, у которого случилась ошибка."""
     context.user_data.clear()
     await update.effective_message.reply_text(
-        "Ой, что-то пошло не так! Попробуй, пожалуйста, позже."
+        "Ой, что-то пошло не так! Попробуй, пожалуйста, позже.",
+        parse_mode=ParseMode.HTML,
     )
 
 

@@ -93,15 +93,16 @@ class BaseTaskConversation:
             await update.callback_query.edit_message_reply_markup()
         task_done = await self.check_current_task_is_done(update=update)
         if task_done:
-            await update.effective_message.reply_text(text=TASK_ALREADY_DONE_TEXT)
+            await update.effective_message.reply_text(
+                text=TASK_ALREADY_DONE_TEXT, parse_mode=ParseMode.HTML
+            )
             del context.user_data["current_conversation"]
             return ConversationHandler.END
 
         description = self.description
         context.user_data["current_question"] = START_QUESTION_NUMBER
         await update.effective_message.reply_text(
-            text=description,
-            reply_markup=NEXT_KEYBOARD,
+            text=description, reply_markup=NEXT_KEYBOARD, parse_mode=ParseMode.HTML
         )
         return CHOOSING
 
@@ -273,7 +274,9 @@ class OneQuestionConversation(BaseTaskConversation):
             await update.callback_query.edit_message_reply_markup()
         task_done = await self.check_current_task_is_done(update=update)
         if task_done:
-            await update.effective_message.reply_text(text=TASK_ALREADY_DONE_TEXT)
+            await update.effective_message.reply_text(
+                text=TASK_ALREADY_DONE_TEXT, parse_mode=ParseMode.HTML
+            )
             del context.user_data["current_conversation"]
             return ConversationHandler.END
 
