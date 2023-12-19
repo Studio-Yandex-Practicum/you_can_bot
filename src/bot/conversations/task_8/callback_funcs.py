@@ -77,8 +77,7 @@ async def show_start_of_task_8(update: Update, context: CallbackContext) -> int:
     context.user_data["picked_choices"] = []
     context.user_data["result"] = []
     await update.effective_message.reply_text(
-        text=TEXT_OF_START_TASK_8,
-        reply_markup=NEXT_KEYBOARD,
+        text=TEXT_OF_START_TASK_8, reply_markup=NEXT_KEYBOARD, parse_mode=ParseMode.HTML
     )
     return TASK_DESCRIPTION_STATE
 

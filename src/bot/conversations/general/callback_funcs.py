@@ -2,6 +2,7 @@ import html
 import logging
 import traceback
 from asyncio import sleep
+from typing import Optional
 
 from httpx import HTTPStatusError, codes
 from telegram import Bot, Update
@@ -13,13 +14,7 @@ import conversations.general.templates as templates
 import internal_requests.service as api_service
 from conversations.general.decorators import not_in_conversation, set_conversation_name
 from external_requests import NAME, SURNAME, TARIFF, get_user_info_from_lk
-from external_requests.exceptions import (
-    APIDataError,
-    APIForbiddenError,
-    PostAPIError,
-    TelegramIdError,
-    UserNotFound,
-)
+from external_requests.exceptions import APIDataError, PostAPIError, UserNotFound
 from internal_requests.entities import UserFromTelegram
 from utils.configs import ALLOWED_TARIFFS, DEVELOPER_CHAT_ID
 
@@ -34,22 +29,32 @@ HELLO = 0
 @set_conversation_name("start")
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     """Первое сообщение от бота при вводе команды /start."""
-    await _get_user_info_and_set_in_context(update, context)
-    if not context.user_info:
-        return ConversationHandler.END
-    if context.user_info[TARIFF] not in ALLOWED_TARIFFS:
-        await update.effective_chat.send_message(
-            templates.NOT_ALLOWED_TARIFFS_START_MESSAGE.format(
-                name=context.user_info[NAME]
-            )
+    try:
+        user_info = await api_service.get_info_about_user(
+            telegram_id=update.effective_chat.id
         )
-        return ConversationHandler.END
+    except HTTPStatusError as exception:
+        if exception.response.status_code != codes.NOT_FOUND:
+            raise exception
+        user_info_from_lk = await _get_user_info_from_lk_and_handle_it(update)
+        if user_info_from_lk is None:
+            del context.user_data["current_conversation"]
+            return ConversationHandler.END
+        if user_info_from_lk[TARIFF] not in ALLOWED_TARIFFS:
+            await update.effective_chat.send_message(
+                templates.NOT_ALLOWED_TARIFFS_START_MESSAGE.format(
+                    name=user_info_from_lk[NAME]
+                )
+            )
+            del context.user_data["current_conversation"]
+            return ConversationHandler.END
+        user_info = await _save_user_info_to_db(update, user_info_from_lk)
 
-    await _get_or_create_user_from_telegram(update, context)
     await update.effective_chat.send_message(
-        templates.ALLOWED_TARIFFS_START_MESSAGE.format(name=context.user_info[NAME]),
+        templates.ALLOWED_TARIFFS_START_MESSAGE.format(name=user_info.name),
         reply_markup=keyboards.HELLO_KEYBOARD,
     )
+
     return HELLO
 
 
@@ -88,43 +93,31 @@ async def _log_exception_with_user_context(context):
     )
 
 
-async def _get_or_create_user_from_telegram(update, context):
-    """Получает информацию о пользователе по telegram_id.
-    При отсутствии создаёт новый экземпляр UserFromTelegram.
-    """
-    telegram_id = update.effective_user.id
-    try:
-        user = await api_service.get_info_about_user(telegram_id)
-    except HTTPStatusError as exception:
-        if exception.response.status_code != codes.NOT_FOUND:
-            raise exception
-        user = UserFromTelegram(
-            telegram_id=telegram_id,
-            telegram_username=update.effective_user.username,
-            name=context.user_info[NAME],
-            surname=context.user_info[SURNAME],
-        )
-        await api_service.create_user(user)
-    return user
+async def _save_user_info_to_db(update: Update, user_info: dict) -> UserFromTelegram:
+    """Отправляет информацию о новом пользователе в backend."""
+    telegram_id = update.effective_chat.id
+    user_info = UserFromTelegram(
+        telegram_id=telegram_id,
+        telegram_username=update.effective_user.username,
+        name=user_info[NAME],
+        surname=user_info[SURNAME],
+    )
+    await api_service.create_user(user=user_info)
+    return user_info
 
 
-async def _get_user_info_and_set_in_context(update, context):
-    """Добавляет информацию о пользователе в context."""
-    context.user_info = None
+async def _get_user_info_from_lk_and_handle_it(update: Update) -> Optional[dict]:
+    """Совершает запрос к ЛК и возвращает полученный словарь, обрабатывает ошибки."""
     try:
-        context.user_info = await get_user_info_from_lk(update.effective_user.id)
+        user_info = await get_user_info_from_lk(update.effective_user.id)
+        return user_info
     except UserNotFound:
         await update.message.reply_text(templates.UNKNOWN_START_MESSAGE)
-    except APIDataError:
-        await update.message.reply_text(templates.DATA_ERROR_MESSAGE)
-    except (APIForbiddenError, TelegramIdError):
-        await update.message.reply_text(templates.INTERNAL_ERROR_MESSAGE)
     except ConnectionError:
         await update.message.reply_text(templates.CONNECTION_ERROR_MESSAGE)
-    except (HTTPStatusError, PostAPIError):
+    except (HTTPStatusError, PostAPIError, APIDataError):
         await update.message.reply_text(templates.SERVER_ERROR_MESSAGE)
     except Exception as error:
-        await update.message.reply_text(templates.INTERNAL_ERROR_MESSAGE)
         raise error
 
 
@@ -149,7 +142,7 @@ async def _handle_error_and_clear_context(
     """Чистит context пользователя, у которого случилась ошибка."""
     context.user_data.clear()
     await update.effective_message.reply_text(
-        "Ой! Что-то пошло не так. Попробуйте позже."
+        "Ой, что-то пошло не так! Попробуй, пожалуйста, позже."
     )
 
 
