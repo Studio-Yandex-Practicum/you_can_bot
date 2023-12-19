@@ -149,7 +149,7 @@ async def confirm_saving_question(
     await api_service.create_question_from_user(problem)
     context.user_data.clear()
     await update.callback_query.message.edit_text(
-        text=templates.QUESTION_CONFIRMATION_TEXT
+        text=templates.QUESTION_CONFIRMATION_TEXT, parse_mode=ParseMode.HTML
     )
     return ConversationHandler.END
 
@@ -159,13 +159,17 @@ async def cancel_save_question(
 ) -> int:
     """Отменяет отправку вопроса."""
     context.user_data.clear()
-    await update.callback_query.message.edit_text(text=templates.QUESTION_CANCEL)
+    await update.callback_query.message.edit_text(
+        text=templates.QUESTION_CANCEL, parse_mode=ParseMode.HTML
+    )
     return ConversationHandler.END
 
 
 @not_in_conversation()
-async def show_url(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+async def show_url(update: Update, _context: ContextTypes.DEFAULT_TYPE) -> None:
     """Перейти на сайт YouCan."""
     await update.message.reply_text(
-        text=templates.GET_MORE_INFO_TEXT, reply_markup=URL_BUTTON
+        text=templates.GET_MORE_INFO_TEXT,
+        reply_markup=URL_BUTTON,
+        parse_mode=ParseMode.HTML,
     )
