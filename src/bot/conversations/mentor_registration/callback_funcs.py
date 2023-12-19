@@ -57,11 +57,14 @@ class MentorRegistrationConversation:
             await update.effective_message.reply_text(
                 REG_STATUS_CONFIRMED
                 if registration_status.confirmed
-                else REG_STATUS_NOT_CONFIRMED
+                else REG_STATUS_NOT_CONFIRMED,
+                parse_mode=ParseMode.HTML,
             )
             context.user_data.clear()
             return ConversationHandler.END
-        await update.effective_message.reply_text(ASK_FIRST_NAME)
+        await update.effective_message.reply_text(
+            ASK_FIRST_NAME, parse_mode=ParseMode.HTML
+        )
         return TYPING_FIRST_NAME
 
     async def handle_name(
@@ -73,13 +76,19 @@ class MentorRegistrationConversation:
         """
         first_name = update.message.text.strip()
         if len(first_name) < MIN_NAME_LENGTH:
-            await update.effective_message.reply_text(SHORT_FIRST_NAME_MSG)
+            await update.effective_message.reply_text(
+                SHORT_FIRST_NAME_MSG, parse_mode=ParseMode.HTML
+            )
             return TYPING_FIRST_NAME
         if len(first_name) > MAX_NAME_LENGTH:
-            await update.effective_message.reply_text(LONG_FIRST_NAME_MSG)
+            await update.effective_message.reply_text(
+                LONG_FIRST_NAME_MSG, parse_mode=ParseMode.HTML
+            )
             return TYPING_FIRST_NAME
         context.user_data["first_name"] = first_name
-        await update.effective_message.reply_text(ASK_LAST_NAME)
+        await update.effective_message.reply_text(
+            ASK_LAST_NAME, parse_mode=ParseMode.HTML
+        )
         return TYPING_LAST_NAME
 
     async def handle_surname(
@@ -91,10 +100,14 @@ class MentorRegistrationConversation:
         """
         last_name = update.message.text.strip()
         if len(last_name) < MIN_NAME_LENGTH:
-            await update.effective_message.reply_text(SHORT_LAST_NAME_MSG)
+            await update.effective_message.reply_text(
+                SHORT_LAST_NAME_MSG, parse_mode=ParseMode.HTML
+            )
             return TYPING_LAST_NAME
         if len(last_name) > MAX_NAME_LENGTH:
-            await update.effective_message.reply_text(LONG_LAST_NAME_MSG)
+            await update.effective_message.reply_text(
+                LONG_LAST_NAME_MSG, parse_mode=ParseMode.HTML
+            )
             return TYPING_LAST_NAME
         context.user_data["last_name"] = last_name
         return await self.finish_conversation(update, context)
@@ -158,7 +171,9 @@ class MentorRegistrationConversation:
         """
         Прерывает процесс регистрации.
         """
-        await update.effective_message.reply_text(REGISTRATION_CANCEL)
+        await update.effective_message.reply_text(
+            REGISTRATION_CANCEL, parse_mode=ParseMode.HTML
+        )
         context.user_data.clear()
         return ConversationHandler.END
 
@@ -214,7 +229,7 @@ async def registration_confirmation(
     id_to_confirm = int(id_to_confirm)
     if command == REGISTRATION_CONFIRM:
         await api_service.confirm_mentor_registration(id_to_confirm)
-        await update.effective_message.reply_text(CONFIRMED)
+        await update.effective_message.reply_text(CONFIRMED, parse_mode=ParseMode.HTML)
     elif command == REGISTRATION_REJECT:
         await api_service.delete_mentor(id_to_confirm)
-        await update.effective_message.reply_text(REJECTED)
+        await update.effective_message.reply_text(REJECTED, parse_mode=ParseMode.HTML)
