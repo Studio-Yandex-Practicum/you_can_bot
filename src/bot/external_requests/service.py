@@ -167,10 +167,10 @@ async def _split_full_name(full_name: str) -> tuple[str, str]:
     ### Returns:
     - tuple[str, str]
     """
-    name_surname = full_name.rsplit(" ", 1)
-    if len(name_surname) == 2:
-        return name_surname[0], name_surname[1]
-    return full_name, ""
+    name_surname = full_name.split(" ")
+    if len(name_surname) == 1:
+        return full_name, ""
+    return name_surname[1], name_surname[0]
 
 
 async def _parse_data(data: dict) -> dict[str, str]:
