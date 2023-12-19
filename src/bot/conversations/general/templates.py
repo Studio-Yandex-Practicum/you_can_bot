@@ -2,10 +2,11 @@ GO_BUTTON_LABEL = "Начать"
 HELLO_BUTTON_LABEL = "Привет"
 FIRST_TASK_BUTTON_LABEL = "Задание 1"
 
-CONNECTION_ERROR_MESSAGE = "Сбой сети. Попробуйте позже."
-DATA_ERROR_MESSAGE = "Неправильные данные. Обратитесь к администратору."
-INTERNAL_ERROR_MESSAGE = "Ошибка. Обратитесь к администратору бота."
-SERVER_ERROR_MESSAGE = "Сбой сервера. Попробуйте позже или обратитесь в поддержку."
+CONNECTION_ERROR_MESSAGE = "Сбой сети сайта youcan.by. Попробуйте, пожалуйста, позже."
+SERVER_ERROR_MESSAGE = (
+    "Не получилось получить данные из ЛК youcan.by."
+    " Обратитесь, пожалуйста, к @katerina_bril."
+)
 
 START = "start"
 SHOW_SKILL_SET_INFO = "show_skill_set_info"
@@ -43,6 +44,6 @@ COMMAND_PROHIBITED = (
     "Заверши диалог по ней и только после этого введи следующую."
 )
 COMMAND_PROHIBITED_ON_TASK = (
-    "Чтобы использовать другие команды из меню,"
+    "Чтобы использовать команды из меню,"
     " <u>необходимо завершить выполнение данного задания</u>."
 )
