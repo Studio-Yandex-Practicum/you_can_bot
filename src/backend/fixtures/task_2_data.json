@@ -1,0 +1,2902 @@
+[
+  {
+    "model": "api.question",
+    "pk": 1,
+    "fields": {
+      "task": 1,
+      "number": 1,
+      "content": "Мне хотелось бы в своей профессиональной деятельности",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 2,
+    "fields": {
+      "task": 1,
+      "number": 2,
+      "content": "Если выбирать из шести вариантов, я скорее соглашусь стать",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 3,
+    "fields": {
+      "task": 1,
+      "number": 3,
+      "content": "Если я стану руководителем, то в первую очередь",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 4,
+    "fields": {
+      "task": 1,
+      "number": 4,
+      "content": "В людях я ценю прежде всего",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 5,
+    "fields": {
+      "task": 1,
+      "number": 5,
+      "content": "Мне интереснее беседовать с друзьями",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 6,
+    "fields": {
+      "task": 1,
+      "number": 6,
+      "content": "Из шести возможных профилей обучения я выберу",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 7,
+    "fields": {
+      "task": 1,
+      "number": 7,
+      "content": "Мне интереснее было бы",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 8,
+    "fields": {
+      "task": 1,
+      "number": 8,
+      "content": "Я думаю, что школа должна",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 9,
+    "fields": {
+      "task": 1,
+      "number": 9,
+      "content": "В свободное время я предпочитаю",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 10,
+    "fields": {
+      "task": 1,
+      "number": 10,
+      "content": "Думаю, что мне будет комфортно работать",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 11,
+    "fields": {
+      "task": 2,
+      "number": 1,
+      "content": "В компании (на вечеринке) ты:",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 12,
+    "fields": {
+      "task": 2,
+      "number": 2,
+      "content": "Ты человек скорее:",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 13,
+    "fields": {
+      "task": 2,
+      "number": 3,
+      "content": "По-твоему, что хуже:",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 14,
+    "fields": {
+      "task": 2,
+      "number": 4,
+      "content": "Ты более подвержен влиянию:",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 15,
+    "fields": {
+      "task": 2,
+      "number": 5,
+      "content": "Ты более склонен:",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 16,
+    "fields": {
+      "task": 2,
+      "number": 6,
+      "content": "Ты предпочитаешь работать:",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 17,
+    "fields": {
+      "task": 2,
+      "number": 7,
+      "content": "Ты склонен делать выбор:",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 18,
+    "fields": {
+      "task": 2,
+      "number": 8,
+      "content": "В компании (на вечеринке) ты:",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 19,
+    "fields": {
+      "task": 2,
+      "number": 9,
+      "content": "Тебя бoлee привлекают:",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 20,
+    "fields": {
+      "task": 2,
+      "number": 10,
+      "content": "Тебе интереснее:",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 21,
+    "fields": {
+      "task": 2,
+      "number": 11,
+      "content": "Оценивая поступки людей, ты больше учитываешь:",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 22,
+    "fields": {
+      "task": 2,
+      "number": 12,
+      "content": "Обращаясь к другим, ты склонен:",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 23,
+    "fields": {
+      "task": 2,
+      "number": 13,
+      "content": "Ты человек скорее:",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 24,
+    "fields": {
+      "task": 2,
+      "number": 14,
+      "content": "Тебя больше беспокоит необходимость:",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 25,
+    "fields": {
+      "task": 2,
+      "number": 15,
+      "content": "В кругу знакомых ты, как правило:",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 26,
+    "fields": {
+      "task": 2,
+      "number": 16,
+      "content": "Повседневные дела тебе нравится делать:",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 27,
+    "fields": {
+      "task": 2,
+      "number": 17,
+      "content": "Предпочитаешь таких писателей, которые:",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 28,
+    "fields": {
+      "task": 2,
+      "number": 18,
+      "content": "Что тебя больше привлекает:",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 29,
+    "fields": {
+      "task": 2,
+      "number": 19,
+      "content": "Ты чувствуешь себя увереннее:",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 30,
+    "fields": {
+      "task": 2,
+      "number": 20,
+      "content": "Ты предпочитаешь, когда дела:",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 31,
+    "fields": {
+      "task": 2,
+      "number": 21,
+      "content": "Как по-твоему, ты человек:",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 32,
+    "fields": {
+      "task": 2,
+      "number": 22,
+      "content": "При телефонных разговорах ты:",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 33,
+    "fields": {
+      "task": 2,
+      "number": 23,
+      "content": "Как ты считаешь, факты:",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 34,
+    "fields": {
+      "task": 2,
+      "number": 24,
+      "content": "Фантазеры, мечтатели:",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 35,
+    "fields": {
+      "task": 2,
+      "number": 25,
+      "content": "Ты чаще действуешь как человек:",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 36,
+    "fields": {
+      "task": 2,
+      "number": 26,
+      "content": "По-твоему, хуже быть:",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 37,
+    "fields": {
+      "task": 2,
+      "number": 27,
+      "content": "Обычно ты предпочитаешь действовать:",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 38,
+    "fields": {
+      "task": 2,
+      "number": 28,
+      "content": "Тебе приятнее:",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 39,
+    "fields": {
+      "task": 2,
+      "number": 29,
+      "content": "В компании ты, как правило:",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 40,
+    "fields": {
+      "task": 2,
+      "number": 30,
+      "content": "Здравый смысл:",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 41,
+    "fields": {
+      "task": 2,
+      "number": 31,
+      "content": "Детям часто не хватает:",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 42,
+    "fields": {
+      "task": 2,
+      "number": 32,
+      "content": "В принятии решений ты руководствуешься скорее:",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 43,
+    "fields": {
+      "task": 2,
+      "number": 33,
+      "content": "Ты человек скорее:",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 44,
+    "fields": {
+      "task": 2,
+      "number": 34,
+      "content": "Что, по-твоему, больше впечатляет:",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 45,
+    "fields": {
+      "task": 2,
+      "number": 35,
+      "content": "Ты больше ценишь:",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 46,
+    "fields": {
+      "task": 2,
+      "number": 36,
+      "content": "Новые и нестандартные отношения с людьми:",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 47,
+    "fields": {
+      "task": 2,
+      "number": 37,
+      "content": "Ты чаще действуешь как:",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 48,
+    "fields": {
+      "task": 2,
+      "number": 38,
+      "content": "Ты более склонен:",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 49,
+    "fields": {
+      "task": 2,
+      "number": 39,
+      "content": "Что приносит тебе больше удовлетворения:",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 50,
+    "fields": {
+      "task": 2,
+      "number": 40,
+      "content": "Ты руководствуешься более:",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 51,
+    "fields": {
+      "task": 2,
+      "number": 41,
+      "content": "Тебе удобнее выполнять работу:",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 52,
+    "fields": {
+      "task": 2,
+      "number": 42,
+      "content": "Ты обычно полагаешься:",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 53,
+    "fields": {
+      "task": 2,
+      "number": 43,
+      "content": "Ты предпочитаешь иметь:",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 54,
+    "fields": {
+      "task": 2,
+      "number": 44,
+      "content": "Ты руководствуешься в большей степени:",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 55,
+    "fields": {
+      "task": 2,
+      "number": 45,
+      "content": "Тебя больше интересуют:",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 56,
+    "fields": {
+      "task": 2,
+      "number": 46,
+      "content": "Что ты скорее сочтешь за комплимент:",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 57,
+    "fields": {
+      "task": 2,
+      "number": 47,
+      "content": "Ты более ценишь в себе:",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 58,
+    "fields": {
+      "task": 2,
+      "number": 48,
+      "content": "Ты предпочитаешь высказывать:",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 59,
+    "fields": {
+      "task": 2,
+      "number": 49,
+      "content": "Ты лучше чувствуешь себя:",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 60,
+    "fields": {
+      "task": 2,
+      "number": 50,
+      "content": "Общаясь с незнакомыми, ты:",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 61,
+    "fields": {
+      "task": 2,
+      "number": 51,
+      "content": "Ты больше доверяешь:",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 62,
+    "fields": {
+      "task": 2,
+      "number": 52,
+      "content": "Ты чувствуешь себя человеком:",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 63,
+    "fields": {
+      "task": 2,
+      "number": 53,
+      "content": "Кто больше заслуживает одобрения:",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 64,
+    "fields": {
+      "task": 2,
+      "number": 54,
+      "content": "Ты более склонен:",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 65,
+    "fields": {
+      "task": 2,
+      "number": 55,
+      "content": "Что, по-твоему, предпочтительней:",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 66,
+    "fields": {
+      "task": 2,
+      "number": 56,
+      "content": "Отношения между людьми должны строиться:",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 67,
+    "fields": {
+      "task": 2,
+      "number": 57,
+      "content": "Когда звонит телефон, ты:",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 68,
+    "fields": {
+      "task": 2,
+      "number": 58,
+      "content": "Что ты ценишь в себе больше:",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 69,
+    "fields": {
+      "task": 2,
+      "number": 59,
+      "content": "Ты больше придаешь значение:",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 70,
+    "fields": {
+      "task": 2,
+      "number": 60,
+      "content": "Что выглядит большим заблуждением:",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 71,
+    "fields": {
+      "task": 2,
+      "number": 61,
+      "content": "Ты в основном считаешь себя:",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 72,
+    "fields": {
+      "task": 2,
+      "number": 62,
+      "content": "Какие ситуации привлекают тебя больше:",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 73,
+    "fields": {
+      "task": 2,
+      "number": 63,
+      "content": "Ты человек скорее:",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 74,
+    "fields": {
+      "task": 2,
+      "number": 64,
+      "content": "Ты чаще склонен:",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 75,
+    "fields": {
+      "task": 2,
+      "number": 65,
+      "content": "В литературных произведениях ты предпочитаешь:",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 76,
+    "fields": {
+      "task": 2,
+      "number": 66,
+      "content": "Что для тебя труднее:",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 77,
+    "fields": {
+      "task": 2,
+      "number": 67,
+      "content": "Что бы ты себе больше пожелал:",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 78,
+    "fields": {
+      "task": 2,
+      "number": 68,
+      "content": "Что хуже:",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 79,
+    "fields": {
+      "task": 2,
+      "number": 69,
+      "content": "Ты предпочитаешь:",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.question",
+    "pk": 80,
+    "fields": {
+      "task": 2,
+      "number": 70,
+      "content": "Ты склонен поступать скорее:",
+      "example": "",
+      "photo": null
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 1,
+    "fields": {
+      "question": 1,
+      "title": "общаться с разными людьми",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 2,
+    "fields": {
+      "question": 1,
+      "title": "снимать фильмы, писать книги, рисовать, выступать на сцене и т. д.",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 3,
+    "fields": {
+      "question": 1,
+      "title": "заниматься расчетами, вести документацию, собирать и анализировать данные",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 4,
+    "fields": {
+      "question": 1,
+      "title": "создавать материальные объекты (строить дома, делать мебель, шить одежду, разводить собак и др.)",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 5,
+    "fields": {
+      "question": 1,
+      "title": "заниматься защитой объектов и людей (лечить пациентов, охранять имущество и людей и др.)",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 6,
+    "fields": {
+      "question": 1,
+      "title": "проводить исследования",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 7,
+    "fields": {
+      "question": 2,
+      "title": "психологом",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 8,
+    "fields": {
+      "question": 2,
+      "title": "художником",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 9,
+    "fields": {
+      "question": 2,
+      "title": "секретарем",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 10,
+    "fields": {
+      "question": 2,
+      "title": "водителем",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 11,
+    "fields": {
+      "question": 2,
+      "title": "спасателем",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 12,
+    "fields": {
+      "question": 2,
+      "title": "ученым",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 13,
+    "fields": {
+      "question": 3,
+      "title": "создам дружный, сплоченный коллектив",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 14,
+    "fields": {
+      "question": 3,
+      "title": "разработаю логотип, дизайн интерьера",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 15,
+    "fields": {
+      "question": 3,
+      "title": "соберу и проанализирую информацию об организации",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 16,
+    "fields": {
+      "question": 3,
+      "title": "займусь развитием материально-технической базы организации (закуплю технику, транспорт, мебель и другие вещи, которые нужны для работы)",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 17,
+    "fields": {
+      "question": 3,
+      "title": "обеспечу безопасность",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 18,
+    "fields": {
+      "question": 3,
+      "title": "займусь научно-методическим обеспечением работы организации (разработаю и внедрю учебные пособия, подготовлю планы, программы для работы и др.)",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 19,
+    "fields": {
+      "question": 4,
+      "title": "душевные качества",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 20,
+    "fields": {
+      "question": 4,
+      "title": "внешнюю привлекательность",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 21,
+    "fields": {
+      "question": 4,
+      "title": "пунктуальность",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 22,
+    "fields": {
+      "question": 4,
+      "title": "трудолюбие",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 23,
+    "fields": {
+      "question": 4,
+      "title": "решительность",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 24,
+    "fields": {
+      "question": 4,
+      "title": "высокий интеллект",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 25,
+    "fields": {
+      "question": 5,
+      "title": "о человеческих взаимоотношениях",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 26,
+    "fields": {
+      "question": 5,
+      "title": "книгах, фильмах, музыке",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 27,
+    "fields": {
+      "question": 5,
+      "title": "цифровых технологиях",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 28,
+    "fields": {
+      "question": 5,
+      "title": "технических характеристиках новой модели машины, компьютера и т. п.",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 29,
+    "fields": {
+      "question": 5,
+      "title": "об оружии и средствах защиты",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 30,
+    "fields": {
+      "question": 5,
+      "title": "о новых научных открытиях",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 31,
+    "fields": {
+      "question": 6,
+      "title": "медицинский или психолого-педагогический профиль (хочу лечить людей; обучать; разбираться в причинах их поведения и помогать решать психологические проблемы)",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 32,
+    "fields": {
+      "question": 6,
+      "title": "художественно-эстетический профиль (хочу заниматься творчеством: писать картины, танцевать, петь, снимать кино, выступать в театре и др.)",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 33,
+    "fields": {
+      "question": 6,
+      "title": "информационно-технологический профиль (хочу работать в IT, разрабатывать умные машины и технологии)",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 34,
+    "fields": {
+      "question": 6,
+      "title": "индустриально-технологический профиль (хочу быть инженером и руководить рабочим процессом в промышленности, машиностроении)",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 35,
+    "fields": {
+      "question": 6,
+      "title": "военно-спортивный профиль (люблю спорт, хочу быть сильным и стать военным)",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 36,
+    "fields": {
+      "question": 6,
+      "title": "академический профиль (хочу быть ученым и хорошо разбираться в своей области)",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 37,
+    "fields": {
+      "question": 7,
+      "title": "предлагать людям товары и услуги",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 38,
+    "fields": {
+      "question": 7,
+      "title": "заниматься дизайном изделий",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 39,
+    "fields": {
+      "question": 7,
+      "title": "организовывать рекламную кампанию",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 40,
+    "fields": {
+      "question": 7,
+      "title": "делать что-то своими руками",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 41,
+    "fields": {
+      "question": 7,
+      "title": "участвовать в соревнованиях",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 42,
+    "fields": {
+      "question": 7,
+      "title": "решать сложные задачи",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 43,
+    "fields": {
+      "question": 8,
+      "title": "учить общению с другими людьми",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 44,
+    "fields": {
+      "question": 8,
+      "title": "воспитывать чувство прекрасного",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 45,
+    "fields": {
+      "question": 8,
+      "title": "обучать навыкам работы с информацией",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 46,
+    "fields": {
+      "question": 8,
+      "title": "обучать навыкам практической работы",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 47,
+    "fields": {
+      "question": 8,
+      "title": "обучать основам безопасности жизнедеятельности и выживания",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 48,
+    "fields": {
+      "question": 8,
+      "title": "развивать мышление",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 49,
+    "fields": {
+      "question": 9,
+      "title": "общаться с друзьями и знакомиться с новыми людьми",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 50,
+    "fields": {
+      "question": 9,
+      "title": "ходить на художественные выставки, концерты и спектакли, в музеи",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 51,
+    "fields": {
+      "question": 9,
+      "title": "узнавать что-то новое из книг, интернета, СМИ",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 52,
+    "fields": {
+      "question": 9,
+      "title": "что-нибудь мастерить, готовить, ухаживать за кем-то (чем-то)",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 53,
+    "fields": {
+      "question": 9,
+      "title": "тренироваться",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 54,
+    "fields": {
+      "question": 9,
+      "title": "конструировать, создавать что-то новое",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 55,
+    "fields": {
+      "question": 10,
+      "title": "в помещении с большим количеством людей",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 56,
+    "fields": {
+      "question": 10,
+      "title": "в мастерской или студии",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 57,
+    "fields": {
+      "question": 10,
+      "title": "дома или в обычном кабинете",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 58,
+    "fields": {
+      "question": 10,
+      "title": "на свежем воздухе или в специально оборудованном помещении",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 59,
+    "fields": {
+      "question": 10,
+      "title": "в экстремальных условиях",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 60,
+    "fields": {
+      "question": 10,
+      "title": "дома, в обычном кабинете или лаборатории",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 61,
+    "fields": {
+      "question": 11,
+      "title": "общаешься со многими, включая и незнакомцев",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 62,
+    "fields": {
+      "question": 11,
+      "title": " общаешься с немногими – только твоими знакомыми",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 63,
+    "fields": {
+      "question": 12,
+      "title": "реалистичный, чем склонный рассуждать на теоретические, отвлеченные темы",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 64,
+    "fields": {
+      "question": 12,
+      "title": " склонный теоретизировать, чем реалистичный",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 65,
+    "fields": {
+      "question": 13,
+      "title": "витать в облаках",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 66,
+    "fields": {
+      "question": 13,
+      "title": " придерживаться проторенной дорожки",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 67,
+    "fields": {
+      "question": 14,
+      "title": "принципов, законов",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 68,
+    "fields": {
+      "question": 14,
+      "title": " эмоций, чувств",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 69,
+    "fields": {
+      "question": 15,
+      "title": "убеждать",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 70,
+    "fields": {
+      "question": 15,
+      "title": " затрагивать чувства",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 71,
+    "fields": {
+      "question": 16,
+      "title": "выполняя все точно в срок",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 72,
+    "fields": {
+      "question": 16,
+      "title": " не связывая себя определенными сроками",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 73,
+    "fields": {
+      "question": 17,
+      "title": "довольно осторожно",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 74,
+    "fields": {
+      "question": 17,
+      "title": " внезапно, импульсивно",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 75,
+    "fields": {
+      "question": 18,
+      "title": "остаешься допоздна, не чувствуя усталости",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 76,
+    "fields": {
+      "question": 18,
+      "title": " быстро утомляешься и предпочитаешь пораньше уйти",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 77,
+    "fields": {
+      "question": 19,
+      "title": "здравомыслящие люди",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 78,
+    "fields": {
+      "question": 19,
+      "title": " люди с богатым воображением",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 79,
+    "fields": {
+      "question": 20,
+      "title": "то, что происходит в действительности",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 80,
+    "fields": {
+      "question": 20,
+      "title": " те события, которые могут произойти",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 81,
+    "fields": {
+      "question": 21,
+      "title": "требования закона, чем обстоятельства",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 82,
+    "fields": {
+      "question": 21,
+      "title": " обстоятельства, чем требования закона",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 83,
+    "fields": {
+      "question": 22,
+      "title": "соблюдать формальности, этикет",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 84,
+    "fields": {
+      "question": 22,
+      "title": " проявлять свои личные, индивидуальные качества",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 85,
+    "fields": {
+      "question": 23,
+      "title": "точный, пунктуальный",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 86,
+    "fields": {
+      "question": 23,
+      "title": " неторопливый, медленный",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 87,
+    "fields": {
+      "question": 24,
+      "title": "оставлять дела незаконченными",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 88,
+    "fields": {
+      "question": 24,
+      "title": " непременно доводить дело до конца",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 89,
+    "fields": {
+      "question": 25,
+      "title": "в куpce событий",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 90,
+    "fields": {
+      "question": 25,
+      "title": " узнаешь о новостях с опозданием",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 91,
+    "fields": {
+      "question": 26,
+      "title": "общепринятым способом (как делают все)",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 92,
+    "fields": {
+      "question": 26,
+      "title": " своим оригинальным способом",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 93,
+    "fields": {
+      "question": 27,
+      "title": "выражаются буквально, напрямую",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 94,
+    "fields": {
+      "question": 27,
+      "title": "используют аналогии, иносказания",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 95,
+    "fields": {
+      "question": 28,
+      "title": "мыслить логически, фактами",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 96,
+    "fields": {
+      "question": 28,
+      "title": "взаимоотношения более важны",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 97,
+    "fields": {
+      "question": 29,
+      "title": "в логических умозаключениях",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 98,
+    "fields": {
+      "question": 29,
+      "title": " в практических оценках ситуаций",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 99,
+    "fields": {
+      "question": 30,
+      "title": "решены и устроены",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 100,
+    "fields": {
+      "question": 30,
+      "title": " не решены и не устроены",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 101,
+    "fields": {
+      "question": 31,
+      "title": "серьезный, определенный",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 102,
+    "fields": {
+      "question": 31,
+      "title": " беззаботный, беспечный",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 103,
+    "fields": {
+      "question": 32,
+      "title": "заранее не продумываешь то, что надо сказать",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 104,
+    "fields": {
+      "question": 32,
+      "title": " мысленно репетируешь, что скажешь",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 105,
+    "fields": {
+      "question": 33,
+      "title": "важны сами по себе",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 106,
+    "fields": {
+      "question": 33,
+      "title": " это проявление общих закономерностей",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 107,
+    "fields": {
+      "question": 34,
+      "title": "раздражают тебя",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 108,
+    "fields": {
+      "question": 34,
+      "title": " довольно симпатичны тебе",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 109,
+    "fields": {
+      "question": 35,
+      "title": "хладнокровный",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 110,
+    "fields": {
+      "question": 35,
+      "title": " вспыльчивый, горячий",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 111,
+    "fields": {
+      "question": 36,
+      "title": "несправедливым",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 112,
+    "fields": {
+      "question": 36,
+      "title": " беспощадным",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 113,
+    "fields": {
+      "question": 37,
+      "title": "тщательно оценив возможности",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 114,
+    "fields": {
+      "question": 37,
+      "title": " полагаясь на волю случая",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 115,
+    "fields": {
+      "question": 38,
+      "title": "покупать что-то",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 116,
+    "fields": {
+      "question": 38,
+      "title": " иметь возможность купить",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 117,
+    "fields": {
+      "question": 39,
+      "title": "первым заводишь беседу",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 118,
+    "fields": {
+      "question": 39,
+      "title": " ждешь, когда с тобой заговорят",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 119,
+    "fields": {
+      "question": 40,
+      "title": "редко ошибается",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 120,
+    "fields": {
+      "question": 40,
+      "title": " часто попадает впросак",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 121,
+    "fields": {
+      "question": 41,
+      "title": "практичности",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 122,
+    "fields": {
+      "question": 41,
+      "title": " воображения",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 123,
+    "fields": {
+      "question": 42,
+      "title": "принятыми нормами",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 124,
+    "fields": {
+      "question": 42,
+      "title": " своими чувствами, ощущениями",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 125,
+    "fields": {
+      "question": 43,
+      "title": "твердый, чем мягкий",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 126,
+    "fields": {
+      "question": 43,
+      "title": " мягкий, чем твердый",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 127,
+    "fields": {
+      "question": 44,
+      "title": "умение методично организовывать",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 128,
+    "fields": {
+      "question": 44,
+      "title": " умение приспособиться и довольствоваться достигнутым",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 129,
+    "fields": {
+      "question": 45,
+      "title": "определенность, законченность",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 130,
+    "fields": {
+      "question": 45,
+      "title": " открытость, многовариантность",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 131,
+    "fields": {
+      "question": 46,
+      "title": "стимулируют, придают тебе энергии",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 132,
+    "fields": {
+      "question": 46,
+      "title": " утомляют",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 133,
+    "fields": {
+      "question": 47,
+      "title": "человек практического склада",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 134,
+    "fields": {
+      "question": 47,
+      "title": " человек оригинальный, необычный",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 135,
+    "fields": {
+      "question": 48,
+      "title": "находить пользу в отношениях с людьми",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 136,
+    "fields": {
+      "question": 48,
+      "title": " понимать мысли и чувства других",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 137,
+    "fields": {
+      "question": 49,
+      "title": "тщательное всестороннее обсуждение спорного вопроса",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 138,
+    "fields": {
+      "question": 49,
+      "title": " достижение соглашения по поводу спорного вопроса",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 139,
+    "fields": {
+      "question": 50,
+      "title": "рассудком",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 140,
+    "fields": {
+      "question": 50,
+      "title": " велением сердца",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 141,
+    "fields": {
+      "question": 51,
+      "title": "по предварительной договоренности",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 142,
+    "fields": {
+      "question": 51,
+      "title": " которая подвернулась случайно",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 143,
+    "fields": {
+      "question": 52,
+      "title": "на организованность, порядок",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 144,
+    "fields": {
+      "question": 52,
+      "title": " на случайность, неожиданность",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 145,
+    "fields": {
+      "question": 53,
+      "title": "много друзей на непродолжительный срок",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 146,
+    "fields": {
+      "question": 53,
+      "title": " несколько старых друзей",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 147,
+    "fields": {
+      "question": 54,
+      "title": "фактами, обстоятельствами",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 148,
+    "fields": {
+      "question": 54,
+      "title": " общими положениями, принципами",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 149,
+    "fields": {
+      "question": 55,
+      "title": "производство и сбыт продукции",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 150,
+    "fields": {
+      "question": 55,
+      "title": " проектирование и исследования",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 151,
+    "fields": {
+      "question": 56,
+      "title": "«Ты очень логичный человек»",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 152,
+    "fields": {
+      "question": 56,
+      "title": " «Ты тонко чувствующий человек»",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 153,
+    "fields": {
+      "question": 57,
+      "title": "невозмутимость",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 154,
+    "fields": {
+      "question": 57,
+      "title": " увлеченность",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 155,
+    "fields": {
+      "question": 58,
+      "title": "окончательные и определенные утверждения",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 156,
+    "fields": {
+      "question": 58,
+      "title": " предварительные и неоднозначные утверждения",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 157,
+    "fields": {
+      "question": 59,
+      "title": "после принятия решения",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 158,
+    "fields": {
+      "question": 59,
+      "title": " не ограничивая себя решениями",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 159,
+    "fields": {
+      "question": 60,
+      "title": "легко завязываешь продолжительные беседы",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 160,
+    "fields": {
+      "question": 60,
+      "title": " не всегда находишь общие темы для разговора",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 161,
+    "fields": {
+      "question": 61,
+      "title": "своему опыту",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 162,
+    "fields": {
+      "question": 61,
+      "title": " своим предчувствиям",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 163,
+    "fields": {
+      "question": 62,
+      "title": "более практичным, чем изобретательным",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 164,
+    "fields": {
+      "question": 62,
+      "title": " более изобретательным, чем практичным",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 165,
+    "fields": {
+      "question": 63,
+      "title": "рассудительный, здравомыслящий человек",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 166,
+    "fields": {
+      "question": 63,
+      "title": " глубоко переживающий человек",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 167,
+    "fields": {
+      "question": 64,
+      "title": "быть прямым и беспристрастным",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 168,
+    "fields": {
+      "question": 64,
+      "title": " сочувствовать людям",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 169,
+    "fields": {
+      "question": 65,
+      "title": "удостовериться, что все подготовлено и улажено",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 170,
+    "fields": {
+      "question": 65,
+      "title": " предоставить событиям идти своим чередом",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 171,
+    "fields": {
+      "question": 66,
+      "title": "на предварительной взаимной договоренности",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 172,
+    "fields": {
+      "question": 66,
+      "title": " в зависимости от обстоятельств",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 173,
+    "fields": {
+      "question": 67,
+      "title": "торопишься подойти первым",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 174,
+    "fields": {
+      "question": 67,
+      "title": " надеешься, что подойдет кто-нибудь другой",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 175,
+    "fields": {
+      "question": 68,
+      "title": "развитое чувство реальности",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 176,
+    "fields": {
+      "question": 68,
+      "title": " пылкое воображение",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 177,
+    "fields": {
+      "question": 69,
+      "title": "тому, что сказано",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 178,
+    "fields": {
+      "question": 69,
+      "title": " тому, как сказано",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 179,
+    "fields": {
+      "question": 70,
+      "title": "излишняя пылкость, горячность",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 180,
+    "fields": {
+      "question": 70,
+      "title": " чрезмерная объективность, беспристрастность",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 181,
+    "fields": {
+      "question": 71,
+      "title": "трезвым и практичным",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 182,
+    "fields": {
+      "question": 71,
+      "title": " сердечным и отзывчивым",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 183,
+    "fields": {
+      "question": 72,
+      "title": "регламентированные (точно определенные) и упорядоченные",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 184,
+    "fields": {
+      "question": 72,
+      "title": " неупорядоченные и нерегламентированные",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 185,
+    "fields": {
+      "question": 73,
+      "title": "педантичный, чем капризный",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 186,
+    "fields": {
+      "question": 73,
+      "title": " капризный, чем педантичный",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 187,
+    "fields": {
+      "question": 74,
+      "title": "быть открытым, доступным людям",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 188,
+    "fields": {
+      "question": 74,
+      "title": " быть сдержанным, скрытным",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 189,
+    "fields": {
+      "question": 75,
+      "title": "буквальность, конкретность",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 190,
+    "fields": {
+      "question": 75,
+      "title": " образность, переносный смысл",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 191,
+    "fields": {
+      "question": 76,
+      "title": "находить общий язык",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 192,
+    "fields": {
+      "question": 76,
+      "title": " использовать других в своих интересах",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 193,
+    "fields": {
+      "question": 77,
+      "title": "ясности размышлений",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 194,
+    "fields": {
+      "question": 77,
+      "title": " умения сочувствовать",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 195,
+    "fields": {
+      "question": 78,
+      "title": "быть неприхотливым",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 196,
+    "fields": {
+      "question": 78,
+      "title": " быть излишне привередливым",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 197,
+    "fields": {
+      "question": 79,
+      "title": "запланированные события",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 198,
+    "fields": {
+      "question": 79,
+      "title": " незапланированные события",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 199,
+    "fields": {
+      "question": 80,
+      "title": "обдуманно, чем импульсивно",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.choice",
+    "pk": 200,
+    "fields": {
+      "question": 80,
+      "title": " импульсивно, чем обдуманно",
+      "description": ""
+    }
+  },
+  {
+    "model": "api.result",
+    "pk": 1,
+    "fields": {
+      "task": 1,
+      "key": "А",
+      "title": "склонность к работе с людьми",
+      "description": "Необходима для профессий, связанных с управлением, обучением, воспитанием, обслуживанием (бытовым, медицинским, информационным).\r\n\r\nТребования к профессионалу: профессиональные знания и навыки, интерес\r\nи терпимость к людям, тактичность, ответственность, развитый эмоциональный интеллект.\r\n\r\nПримеры профессий: учитель, воспитатель, врач, тренер, психолог, продавец, менеджер."
+    }
+  },
+  {
+    "model": "api.result",
+    "pk": 2,
+    "fields": {
+      "task": 1,
+      "key": "Б",
+      "title": "склонность к эстетическим видам деятельности",
+      "description": "Необходима для творческих профессий, связанных с изобразительной, музыкальной, литературно-художественной, актерско-сценической деятельностью.\r\n\r\nЭти профессии требуют не только профессиональных знаний и навыков, но и творческих и специальных\r\nспособностей к различным видам искусства.\r\n\r\nПримеры профессий: художник, музыкант, актер театра и кино, режиссер, дизайнер, литератор."
+    }
+  },
+  {
+    "model": "api.result",
+    "pk": 3,
+    "fields": {
+      "task": 1,
+      "key": "В",
+      "title": "склонность к работе с информацией",
+      "description": "Необходима для освоения профессий, связанных с расчетами, сбором, обработкой, анализом и преобразованием информации любого рода.\r\n\r\nТребования\r\nк профессионалу: профессиональные знания и навыки, аккуратность, хорошее внимание, исполнительность, ответственность.\r\n\r\nПримеры профессий: лингвист, программист, переводчик, редактор, корректор, диспетчер, делопроизводитель, секретарь."
+    }
+  },
+  {
+    "model": "api.result",
+    "pk": 4,
+    "fields": {
+      "task": 1,
+      "key": "Г",
+      "title": "склонность к практической деятельности",
+      "description": "Связана с производством и обработкой материалов; монтажом, ремонтом\r\nи обслуживанием механизмов и конструкций; управлением техникой; изготовлением изделий и продуктов; сельским хозяйством.\r\n\r\nТребования\r\nк профессионалу: профессиональные знания и навыки, сила, ответственность, выносливость, хорошее здоровье, предметно-действенный тип мышления.\r\n\r\nПримеры профессий: автослесарь, фермер, водитель, швея, машинист, техник, зоотехник, токарь, монтажник."
+    }
+  },
+  {
+    "model": "api.result",
+    "pk": 5,
+    "fields": {
+      "task": 1,
+      "key": "Д",
+      "title": "склонность к экстремальным видам деятельности",
+      "description": "Связана со спортом, службой в армии, оперативно-розыскной деятельностью, спасательными работами.\r\n\r\nТребования\r\nк профессионалу: профессиональные знания и навыки, ответственность, сила, выносливость, решительность, готовность к обдуманному риску, предметно-действенный тип мышления, хорошее здоровье\r\n\r\n\r\nПримеры профессий: сотрудник правоохранительных органов, военный, спасатель, пожарный,\r\nводолаз, промышленный альпинист, каскадер, испытатель."
+    }
+  },
+  {
+    "model": "api.result",
+    "pk": 6,
+    "fields": {
+      "task": 1,
+      "key": "Е",
+      "title": "склонность к научно-исследовательской деятельности",
+      "description": "Связана с созданием новых технологий, исследованиями и открытиями в различных областях науки и общественной жизни\r\n\r\nТребования к профессионалу:\r\nвысокий уровень интеллекта,\r\nкритичность мышления, абстрактно-символический тип мышления, глубокие теоретические знания\r\nв своей профессиональной области и других областях, общая эрудиция, интуиция, любознательность, открытость новому опыту.\r\n\r\nПримеры профессий: ученый, конструктор, изобретатель, исследователь."
+    }
+  },
+  {
+    "model": "api.result",
+    "pk": 7,
+    "fields": {
+      "task": 2,
+      "key": "ESFP",
+      "title": "Исполнитель (ESFP)",
+      "description": "Личностные особенности: деятельные, ценят здравый смысл.\n\nПримеры профессий: детский психолог, терапевт, актер, дизайнер, ученый-эколог."
+    }
+  },
+  {
+    "model": "api.result",
+    "pk": 8,
+    "fields": {
+      "task": 2,
+      "key": "ISFP",
+      "title": "Композитор (ISFP)",
+      "description": "Личностные особенности: теплые и чувствующие, любят помогать ощутимыми способами.\n\nПримеры профессий: модельер, физиотерапевт, массажист, ландшафтный архитектор."
+    }
+  },
+  {
+    "model": "api.result",
+    "pk": 9,
+    "fields": {
+      "task": 2,
+      "key": "ESTP",
+      "title": "Деятель (ESTP)",
+      "description": "Личностные особенности: прагматики, которые преуспевают в любом кризисе.\n\nПримеры профессий: детектив, банкир, инвестор, аниматор, фитнес-тренер."
+    }
+  },
+  {
+    "model": "api.result",
+    "pk": 10,
+    "fields": {
+      "task": 2,
+      "key": "ISTP",
+      "title": "Мастер (ISTP)",
+      "description": "Личностные особенности: прямые, предпочитают делать, а не говорить.\n\nПримеры профессий: строитель, экономист, пилот, аналитик данных, врач скорой помощи."
+    }
+  },
+  {
+    "model": "api.result",
+    "pk": 11,
+    "fields": {
+      "task": 2,
+      "key": "ESFJ",
+      "title": "Провайдер (ESFJ)",
+      "description": "Личностные особенности: общительные, традиционалисты, помогают другим.\n\nПримеры профессий: менеджер продаж, медработник, социальный работник, PR-менеджер, кредитный специалист."
+    }
+  },
+  {
+    "model": "api.result",
+    "pk": 12,
+    "fields": {
+      "task": 2,
+      "key": "ISFJ",
+      "title": "Воспитатель (ISFJ)",
+      "description": "Личностные особенности: скромные и решительные, помогают другим.\n\nПримеры профессий: стоматолог, учитель, библиотекарь, владелец франшизы, сотрудник поддержки."
+    }
+  },
+  {
+    "model": "api.result",
+    "pk": 13,
+    "fields": {
+      "task": 2,
+      "key": "ESTJ",
+      "title": "Супервайзер (ESTJ)",
+      "description": "Личностные особенности: реалисты, быстро принимающие решения.\n\nПримеры профессий: страховой агент, фармацевт, юрист, менеджер проектов, судья."
+    }
+  },
+  {
+    "model": "api.result",
+    "pk": 14,
+    "fields": {
+      "task": 2,
+      "key": "ISTJ",
+      "title": "Инспектор (ISTJ)",
+      "description": "Личностные особенности: работяги, ценят обязанности и обязательства.\n\nПримеры профессий: аудитор, бухгалтер, финансист, веб-разработчик, государственный служащий."
+    }
+  },
+  {
+    "model": "api.result",
+    "pk": 15,
+    "fields": {
+      "task": 2,
+      "key": "ENFJ",
+      "title": "Наставник (ENFJ)",
+      "description": "Личностные особенности: любят людей, энергичны и дипломатичны.\n\nПримеры профессий: PR-менеджер, социальный работник, корпоративный коуч, менеджер по продажам, HR-специалист."
+    }
+  },
+  {
+    "model": "api.result",
+    "pk": 16,
+    "fields": {
+      "task": 2,
+      "key": "INFJ",
+      "title": "Советник (INFJ)",
+      "description": "Личностные особенности: вдумчивые, двигаемые твердыми принципами.\n\nПримеры профессий: психотерапевт, социальный работник, консультант по организационному развитию, клиентский менеджер."
+    }
+  },
+  {
+    "model": "api.result",
+    "pk": 17,
+    "fields": {
+      "task": 2,
+      "key": "ENFP",
+      "title": "Чемпион (ENFP)",
+      "description": "Личностные особенности: любопытный тип, который везде видит возможности.\n\nПримеры профессий: журналист, консультант, ресторатор, event-менеджер."
+    }
+  },
+  {
+    "model": "api.result",
+    "pk": 18,
+    "fields": {
+      "task": 2,
+      "key": "INFP",
+      "title": "Идеалист (INFP)",
+      "description": "Личностные особенности: идеалист, движимый своими ценностями.\n\nПримеры профессий: графический дизайнер, психотерапевт, писатель, физиотерапевт, HR-специалист."
+    }
+  },
+  {
+    "model": "api.result",
+    "pk": 19,
+    "fields": {
+      "task": 2,
+      "key": "ENTJ",
+      "title": "Командир (ENTJ)",
+      "description": "Личностные особенности: природные лидеры, аналитики с хорошей логикой, стратеги.\n\nПримеры профессий: руководитель, юрист, аналитик рынка, венчурный капиталист."
+    }
+  },
+  {
+    "model": "api.result",
+    "pk": 20,
+    "fields": {
+      "task": 2,
+      "key": "INTJ",
+      "title": "Вдохновитель (INTJ)",
+      "description": "Личностные особенности: творческие перфекционисты, делают все по-своему.\n\nПримеры профессий: инвестиционный банкир, финансовый консультант, разработчик ПО, экономист, руководитель."
+    }
+  },
+  {
+    "model": "api.result",
+    "pk": 21,
+    "fields": {
+      "task": 2,
+      "key": "ENTP",
+      "title": "Визионер (ENTP)",
+      "description": "Личностные особенности: предприимчивые люди, которым нравятся вызовы.\n\nПримеры профессий: предприниматель, разработчик ПО, политик, специалист по маркетингу."
+    }
+  },
+  {
+    "model": "api.result",
+    "pk": 22,
+    "fields": {
+      "task": 2,
+      "key": "INTP",
+      "title": "Мыслитель (INTP)",
+      "description": "Личностные особенности: независимые, любят решать проблемы.\n\nПримеры профессий: разработчик ПО, финансовый аналитик, архитектор, преподаватель, экономист."
+    }
+  }
+]

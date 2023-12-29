@@ -1,0 +1,33 @@
+[tool.poetry]
+name = "you_can_bot"
+version = "0.1.0"
+description = ""
+authors = ["Your Name <you@example.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+Django = "^4.2.5"
+djangorestframework = "^3.14.0"
+python-telegram-bot = "^20.5"
+psycopg2-binary = "^2.9.7"
+gunicorn = "^21.2.0"
+pillow = "^10.0.0"
+python-dotenv = "^1.0.0"
+python-slugify = "8.0.1"
+
+[tool.poetry.group.dev.dependencies]
+pre-commit = "^3.4.0"
+flake8 = "^6.1.0"
+isort = "^5.12.0"
+black = "^23.7.0"
+django-debug-toolbar = "^4.2.0"
+
+[tool.isort]
+profile = "black"
+skip_glob = ["**/migrations/*.py"]
+src_paths = ["src/bot", "src/backend"]
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

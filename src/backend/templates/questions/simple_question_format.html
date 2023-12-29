@@ -1,0 +1,8 @@
+{% extends "questions/base.html" %}
+{% block number %}<b>{{ question.number }}. </b>{% endblock number %}
+{% block title %}{{ question.content | safe }}{% endblock title %}
+{% block content %}{% if question.example %}
+<b>Пример</b> 👇
+
+{{ question.example | safe }}
+{% endif %}{% endblock content %}
