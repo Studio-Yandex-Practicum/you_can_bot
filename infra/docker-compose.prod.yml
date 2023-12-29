@@ -1,0 +1,75 @@
+version: '3.8'
+
+services:
+    db:
+      image: postgres:16-alpine
+      container_name: db
+      restart: always
+      volumes:
+        - data_value:/var/lib/postgresql/data/
+      environment:
+        LANG: "ru_RU.UTF-8"
+        POSTGRES_INITDB_ARGS: '--locale-provider=icu --icu-locale=ru-RU'
+      expose:
+        - "5432"
+      env_file:
+        - ../.env
+
+
+    backend:
+      image: ghcr.io/studio-yandex-practicum/you_can_bot:prod
+      container_name: backend
+      command: bash -c "cd backend/ && gunicorn backend.wsgi:application --bind 0:8000"
+      restart: always
+      volumes:
+        - static_value:/app/backend/static/
+        - media_value:/app/backend/media/
+        - ../.data/logs/:/app/.data/logs/
+      expose:
+        - "8000"
+      env_file:
+        - ../.env
+      depends_on:
+        - db
+
+    bot:
+      image: ghcr.io/studio-yandex-practicum/you_can_bot:prod
+      container_name: bot
+      command: bash -c "cd bot/ && python run_bot.py"
+      env_file:
+        - ../.env
+      restart: always
+      volumes:
+        - ../.data/logs/:/app/.data/logs/
+      depends_on:
+        - backend
+
+    nginx:
+      image: nginx:1.24-alpine
+      container_name: nginx
+      ports:
+        - "80:80"
+        - "443:443"
+      volumes:
+        - ./default.prod.conf:/etc/nginx/conf.d/default.conf
+        - ./certbot/conf:/etc/letsencrypt
+        - ./certbot/www:/var/www/certbot
+        - static_value:/var/html/static/
+        - media_value:/var/html/media/
+      depends_on:
+        - bot
+        - backend
+
+    certbot:
+      image: certbot/certbot
+      container_name: certbot
+      volumes:
+        - ./certbot/conf:/etc/letsencrypt
+        - ./certbot/www:/var/www/certbot
+      command: certonly --webroot -w /var/www/certbot --force-renewal --email ${CERT_EMAIL} -d ${DOMAIN} --agree-tos
+
+
+volumes:
+    static_value:
+    media_value:
+    data_value:
