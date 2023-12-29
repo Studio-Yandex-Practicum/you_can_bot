@@ -97,7 +97,7 @@ jobs:
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_KEY }}
+          password: ${{ secrets.SSH_PASSWORD }}
           source: "./infra/docker-compose.prod.yml, ./infra/default.prod.conf"
           target: ${{ env.DEPLOY_PATH }}
 
