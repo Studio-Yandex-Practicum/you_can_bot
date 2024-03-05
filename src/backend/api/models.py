@@ -81,6 +81,11 @@ class Task(models.Model):
         choices=TaskNumber.choices,
         primary_key=True,
     )
+    name = models.TextField(
+        "Название задания",
+        default="",
+        blank=True,
+    )
     end_question = models.PositiveSmallIntegerField(
         "Последний номер задания",
     )
