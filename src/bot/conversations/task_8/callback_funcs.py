@@ -42,6 +42,9 @@ FIRST_STAGE_END = 20
 SECOND_STAGE_END = FIRST_STAGE_END + FIRST_STAGE_END // 2
 TASK_END = SECOND_STAGE_END + FIRST_STAGE_END // 4
 
+FIRST_STAGE_END_MESSAGE = "Начало второго круга задания"
+SECOND_STAGE_END_MESSAGE = "Начало последнего круга задания"
+
 
 class LocationOfChoiceInTask(TypedDict):
     question: int
@@ -100,8 +103,12 @@ async def start_question(update: Update, context: CallbackContext) -> int:
         ]
         if question_number > SECOND_STAGE_END:
             offset = SECOND_STAGE_END
+            if question_number == (SECOND_STAGE_END + 1):
+                await update.effective_message.reply_text(SECOND_STAGE_END_MESSAGE)
         else:
             offset = FIRST_STAGE_END
+            if question_number == (FIRST_STAGE_END + 1):
+                await update.effective_message.reply_text(FIRST_STAGE_END_MESSAGE)
         messages = await api_service.get_task_8_question(
             question_number=(question_number - offset), params=params
         )
