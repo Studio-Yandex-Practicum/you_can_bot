@@ -1,3 +1,4 @@
+import logging
 from typing import Callable
 
 from telegram import Update
@@ -15,8 +16,12 @@ from conversations.menu.keyboards import (
 )
 from conversations.menu.templates import PICKED_TASK
 from internal_requests.entities import Problem
+from utils.error_handler import error_decorator
+
+_LOGGER = logging.getLogger(__name__)
 
 
+@error_decorator(logger=_LOGGER)
 async def show_done_tasks(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     task_number = int(query.data.split("_")[-1])
@@ -67,6 +72,7 @@ async def add_task_number_to_prev_message(
 @user_exists
 @not_in_conversation(ConversationHandler.END)
 @set_conversation_name("tasks")
+@error_decorator(logger=_LOGGER)
 async def show_all_user_tasks(
     update: Update, context: ContextTypes.DEFAULT_TYPE
 ) -> None:
@@ -93,6 +99,7 @@ async def show_all_user_tasks(
 @user_exists
 @not_in_conversation(ConversationHandler.END)
 @set_conversation_name("ask")
+@error_decorator(logger=_LOGGER)
 async def suggest_ask_question(
     update: Update, context: ContextTypes.DEFAULT_TYPE
 ) -> str:
@@ -101,6 +108,7 @@ async def suggest_ask_question(
     return templates.WAITING_FOR_QUESTION_STATE
 
 
+@error_decorator(logger=_LOGGER)
 async def handle_user_question(
     update: Update, context: ContextTypes.DEFAULT_TYPE
 ) -> str:
@@ -120,6 +128,7 @@ async def handle_user_question(
     return templates.WAITING_FOR_QUESTION_STATE
 
 
+@error_decorator(logger=_LOGGER)
 async def handle_user_question_edit(
     update: Update, context: ContextTypes.DEFAULT_TYPE
 ) -> str:
@@ -144,6 +153,7 @@ async def handle_user_question_edit(
     return templates.WAITING_FOR_CONFIRMATION_STATE
 
 
+@error_decorator(logger=_LOGGER)
 async def confirm_saving_question(
     update: Update, context: ContextTypes.DEFAULT_TYPE
 ) -> int:
@@ -158,6 +168,7 @@ async def confirm_saving_question(
     return ConversationHandler.END
 
 
+@error_decorator(logger=_LOGGER)
 async def cancel_save_question(
     update: Update, context: ContextTypes.DEFAULT_TYPE
 ) -> int:
@@ -170,6 +181,7 @@ async def cancel_save_question(
 
 
 @not_in_conversation()
+@error_decorator(logger=_LOGGER)
 async def show_url(update: Update, _context: ContextTypes.DEFAULT_TYPE) -> None:
     """Перейти на сайт YouCan."""
     await update.message.reply_text(

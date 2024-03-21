@@ -1,3 +1,5 @@
+import logging
+
 from telegram import ForceReply, InlineKeyboardButton, InlineKeyboardMarkup, Update
 from telegram.constants import ParseMode
 from telegram.ext import (
@@ -20,6 +22,9 @@ from conversations.tasks.base import (
 from conversations.tasks.keyboards import CONFIRM_KEYBOARD
 from internal_requests import service as api_service
 from internal_requests.entities import Answer
+from utils.error_handler import error_decorator
+
+_LOGGER = logging.getLogger(__name__)
 
 
 class TaskSixConversation(BaseTaskConversation):
@@ -29,21 +34,20 @@ class TaskSixConversation(BaseTaskConversation):
     пользователь отправляет ответы в виде текстовых сообщений.
     """
 
+    @error_decorator(logger=_LOGGER)
     async def show_question(
-        self,
-        update: Update,
-        _context: ContextTypes.DEFAULT_TYPE,
-        question_number: int = 1,
+        self, update: Update, context: ContextTypes.DEFAULT_TYPE
     ) -> int:
         """
         Показывает очередной вопрос, относящийся к текущему заданию.
         """
-        if question_number == 1:
+        current_question = context.user_data["current_question"]
+        if current_question == 1:
             await update.callback_query.answer()
             await update.callback_query.edit_message_reply_markup()
         messages = await api_service.get_messages_with_question(
             task_number=self.task_number,
-            question_number=question_number,
+            question_number=current_question,
         )
         await update.effective_message.reply_text(
             text=messages[0].content,
@@ -75,6 +79,7 @@ class TaskSixConversation(BaseTaskConversation):
         context.user_data.clear()
         return ConversationHandler.END
 
+    @error_decorator(logger=_LOGGER)
     async def handle_typed_answer(
         self, update: Update, context: ContextTypes.DEFAULT_TYPE
     ) -> int:
@@ -96,6 +101,7 @@ class TaskSixConversation(BaseTaskConversation):
             context.user_data["answer_id"] = answer_id
         return CONFIRMING
 
+    @error_decorator(logger=_LOGGER)
     async def handle_answer_editing(
         self, update: Update, context: ContextTypes.DEFAULT_TYPE
     ) -> int:
@@ -123,6 +129,7 @@ class TaskSixConversation(BaseTaskConversation):
                 context.user_data["answer_id"] = answer_id
         return CONFIRMING
 
+    @error_decorator(logger=_LOGGER)
     async def save_answer(
         self, update: Update, context: ContextTypes.DEFAULT_TYPE
     ) -> int:
@@ -152,11 +159,7 @@ class TaskSixConversation(BaseTaskConversation):
         if current_question_number == self.number_of_questions:
             return await self.show_result(update, context)
         context.user_data["current_question"] += 1
-        await self.show_question(
-            update=update,
-            _context=context,
-            question_number=context.user_data.get("current_question"),
-        )
+        await self.show_question(update, context)
         return TYPING_ANSWER
 
     def set_states(self):

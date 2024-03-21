@@ -22,3 +22,7 @@ hr {
     color: #f8bc43;
     -webkit-text-fill-color: #1f0e0e;
 }
+
+.border-dotted .content-font {
+    font-family: "Mulish", sans-serif;
+}
