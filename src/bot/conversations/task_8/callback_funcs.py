@@ -28,8 +28,7 @@ from conversations.task_8.templates import (
 )
 from conversations.tasks.base import TASK_ALREADY_DONE_TEXT
 from internal_requests.entities import Answer
-
-_LOGGER = logging.getLogger(__name__)
+from utils.error_handler import error_decorator
 
 DELAY_TO_AVOID_FLOOD = 3
 DELAY_BEFORE_THE_FINAL_MESSAGE = 5
@@ -42,12 +41,15 @@ FIRST_STAGE_END = 20
 SECOND_STAGE_END = FIRST_STAGE_END + FIRST_STAGE_END // 2
 TASK_END = SECOND_STAGE_END + FIRST_STAGE_END // 4
 
+_LOGGER = logging.getLogger(__name__)
+
 
 class LocationOfChoiceInTask(TypedDict):
     question: int
     choice: Literal["а"] | Literal["б"]
 
 
+@error_decorator(logger=_LOGGER)
 async def show_start_of_task_8_with_task_number(
     update: Update, context: CallbackContext
 ) -> int:
@@ -61,6 +63,7 @@ async def show_start_of_task_8_with_task_number(
 
 @not_in_conversation(ConversationHandler.END)
 @set_conversation_name(TASK_EXECUTION)
+@error_decorator(logger=_LOGGER)
 async def show_start_of_task_8(update: Update, context: CallbackContext) -> int:
     """Вывод описания задания 8."""
     query = update.callback_query
@@ -84,6 +87,7 @@ async def show_start_of_task_8(update: Update, context: CallbackContext) -> int:
     return TASK_DESCRIPTION_STATE
 
 
+@error_decorator(logger=_LOGGER)
 async def start_question(update: Update, context: CallbackContext) -> int:
     """Начинает новый вопрос."""
     query = update.callback_query
@@ -120,6 +124,7 @@ async def start_question(update: Update, context: CallbackContext) -> int:
     return PASSING_TEST_STATE
 
 
+@error_decorator(logger=_LOGGER)
 async def update_question(update: Update, context: CallbackContext) -> int:
     """Обработчик ответов на вопросы."""
     current_question = context.user_data.get("current_question")
@@ -161,6 +166,7 @@ async def update_question(update: Update, context: CallbackContext) -> int:
     return state
 
 
+@error_decorator(logger=_LOGGER)
 async def show_result(update: Update, _context: CallbackContext) -> int:
     """Отправляет результаты прохождения задания."""
     query = update.callback_query
@@ -187,6 +193,7 @@ async def show_result(update: Update, _context: CallbackContext) -> int:
     return FINAL_STATE
 
 
+@error_decorator(logger=_LOGGER)
 async def send_final_message(update: Update, context: CallbackContext) -> int:
     """Отправляет сообщение - поздравление о прохождении всех заданий."""
     await update.effective_message.edit_reply_markup()

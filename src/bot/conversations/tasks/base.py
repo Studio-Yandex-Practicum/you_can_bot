@@ -1,4 +1,6 @@
+import logging
 from dataclasses import dataclass
+from typing import Tuple
 
 from telegram import ForceReply, InlineKeyboardButton, InlineKeyboardMarkup, Update
 from telegram.constants import ParseMode
@@ -23,6 +25,7 @@ from conversations.tasks.keyboards import (
 )
 from internal_requests import service as api_service
 from internal_requests.entities import Answer
+from utils.error_handler import error_decorator
 
 CHOOSING = 1
 TYPING_ANSWER = 2
@@ -41,6 +44,8 @@ SEND_ANSWER_TEXT = (
     " До подтверждения ты можешь его изменить.\n\n<b>Текущий ответ:</b> "
 )
 CONFIRM_BUTTON_PATTERN = r"^confirm_answer$"
+
+_LOGGER = logging.getLogger(__name__)
 
 
 @dataclass
@@ -71,15 +76,19 @@ class BaseTaskConversation:
         self.question_method = self.show_question
         self.update_method = self.handle_user_answer
 
-    async def check_current_task_is_done(self, update: Update) -> bool:
-        """Проверяет, проходил ли пользователь текущее задание."""
+    async def check_current_task_is_done(self, update: Update) -> Tuple[bool, int]:
+        """
+        Проверяет, проходил ли пользователь текущее задание.
+        :return: Статус задания (завершено или нет), текущий номер вопроса
+        """
         task_status = await api_service.get_user_task_status_by_number(
             task_number=self.task_number, telegram_id=update.effective_user.id
         )
-        return task_status.is_done
+        return task_status.is_done, task_status.current_question
 
     @not_in_conversation(ConversationHandler.END)
     @set_conversation_name(TASK_EXECUTION)
+    @error_decorator(logger=_LOGGER)
     async def show_task_description(
         self, update: Update, context: ContextTypes.DEFAULT_TYPE
     ) -> int:
@@ -91,7 +100,9 @@ class BaseTaskConversation:
         """
         if update.callback_query:
             await update.callback_query.edit_message_reply_markup()
-        task_done = await self.check_current_task_is_done(update=update)
+        task_done, current_question = await self.check_current_task_is_done(
+            update=update
+        )
         if task_done:
             await update.effective_message.reply_text(
                 text=TASK_ALREADY_DONE_TEXT, parse_mode=ParseMode.HTML
@@ -99,28 +110,28 @@ class BaseTaskConversation:
             del context.user_data["current_conversation"]
             return ConversationHandler.END
 
-        description = self.description
-        context.user_data["current_question"] = START_QUESTION_NUMBER
+        context.user_data["current_question"] = current_question + 1
         await update.effective_message.reply_text(
-            text=description, reply_markup=NEXT_KEYBOARD, parse_mode=ParseMode.HTML
+            text=self.description,
+            reply_markup=NEXT_KEYBOARD,
+            parse_mode=ParseMode.HTML,
         )
         return CHOOSING
 
+    @error_decorator(logger=_LOGGER)
     async def show_question(
-        self,
-        update: Update,
-        _context: ContextTypes.DEFAULT_TYPE,
-        question_number: int = 1,
+        self, update: Update, context: ContextTypes.DEFAULT_TYPE
     ) -> None:
         """
         Показывает очередной вопрос, относящийся к текущему заданию.
         Формирует клавиатуру для ответа на вопрос.
         """
-        if question_number == 1:
+        current_question = context.user_data["current_question"]
+        if current_question == 1:
             await update.callback_query.edit_message_reply_markup()
         messages = await api_service.get_messages_with_question(
             task_number=self.task_number,
-            question_number=question_number,
+            question_number=current_question,
         )
         await update.effective_message.reply_text(
             text=messages[0].content,
@@ -129,6 +140,7 @@ class BaseTaskConversation:
         )
         await update.callback_query.answer()
 
+    @error_decorator(logger=_LOGGER)
     async def handle_user_answer(
         self, update: Update, context: ContextTypes.DEFAULT_TYPE
     ) -> int:
@@ -157,11 +169,10 @@ class BaseTaskConversation:
             state = await self.show_result(update, context)
             return state
         context.user_data["current_question"] += 1
-        await self.show_question(
-            update, context, context.user_data.get("current_question")
-        )
+        await self.show_question(update, context)
         return CHOOSING
 
+    @error_decorator(logger=_LOGGER)
     async def show_result(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         """
         Выводит результаты пользователя и завершает диалог текущего задания,
@@ -198,6 +209,7 @@ class BaseTaskConversation:
         context.user_data.clear()
         return ConversationHandler.END
 
+    @error_decorator(logger=_LOGGER)
     async def show_task_description_with_number(
         self, update: Update, context: ContextTypes.DEFAULT_TYPE
     ) -> int:
@@ -266,13 +278,14 @@ class OneQuestionConversation(BaseTaskConversation):
 
     @not_in_conversation(ConversationHandler.END)
     @set_conversation_name(TASK_EXECUTION)
+    @error_decorator(logger=_LOGGER)
     async def show_question(
         self, update: Update, context: ContextTypes.DEFAULT_TYPE
     ) -> int:
         """Показывает единственный вопрос задания."""
         if update.callback_query:
             await update.callback_query.edit_message_reply_markup()
-        task_done = await self.check_current_task_is_done(update=update)
+        task_done, current_question = await self.check_current_task_is_done(update)
         if task_done:
             await update.effective_message.reply_text(
                 text=TASK_ALREADY_DONE_TEXT, parse_mode=ParseMode.HTML
@@ -291,6 +304,7 @@ class OneQuestionConversation(BaseTaskConversation):
         await update.callback_query.answer()
         return TYPING_ANSWER
 
+    @error_decorator(logger=_LOGGER)
     async def handle_typed_answer(
         self, update: Update, context: ContextTypes.DEFAULT_TYPE
     ) -> int:
@@ -312,6 +326,7 @@ class OneQuestionConversation(BaseTaskConversation):
             context.user_data["answer_id"] = answer_id
         return CONFIRMING
 
+    @error_decorator(logger=_LOGGER)
     async def handle_answer_editing(
         self, update: Update, context: ContextTypes.DEFAULT_TYPE
     ) -> int:
@@ -339,6 +354,7 @@ class OneQuestionConversation(BaseTaskConversation):
                 context.user_data["answer_id"] = answer_id
         return CONFIRMING
 
+    @error_decorator(logger=_LOGGER)
     async def confirm_saving_answer(
         self, update: Update, context: ContextTypes.DEFAULT_TYPE
     ) -> int:

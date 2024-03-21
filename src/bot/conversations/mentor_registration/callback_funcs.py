@@ -1,3 +1,5 @@
+import logging
+
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
 from telegram.constants import ParseMode
 from telegram.ext import (
@@ -29,6 +31,7 @@ from conversations.mentor_registration.templates import (
 from internal_requests import service as api_service
 from internal_requests.entities import Mentor
 from utils.configs import MAIN_MENTOR_ID
+from utils.error_handler import error_decorator
 
 TYPING_FIRST_NAME = 1
 TYPING_LAST_NAME = 2
@@ -36,6 +39,8 @@ MIN_NAME_LENGTH = 2
 MAX_NAME_LENGTH = 30
 REGISTRATION_CONFIRM = "registration_confirm"
 REGISTRATION_REJECT = "registration_reject"
+
+_LOGGER = logging.getLogger(__name__)
 
 
 class MentorRegistrationConversation:
@@ -45,6 +50,7 @@ class MentorRegistrationConversation:
 
     @not_in_conversation(ConversationHandler.END)
     @set_conversation_name("mentor_registration")
+    @error_decorator(logger=_LOGGER)
     async def start(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
         """
         Начало диалога. Проверяет, не был ли пользователь зарегистрирован ранее.
@@ -67,6 +73,7 @@ class MentorRegistrationConversation:
         )
         return TYPING_FIRST_NAME
 
+    @error_decorator(logger=_LOGGER)
     async def handle_name(
         self, update: Update, context: ContextTypes.DEFAULT_TYPE
     ) -> int:
@@ -91,6 +98,7 @@ class MentorRegistrationConversation:
         )
         return TYPING_LAST_NAME
 
+    @error_decorator(logger=_LOGGER)
     async def handle_surname(
         self, update: Update, context: ContextTypes.DEFAULT_TYPE
     ) -> int:
@@ -167,6 +175,7 @@ class MentorRegistrationConversation:
             reply_markup=InlineKeyboardMarkup(keyboard),
         )
 
+    @error_decorator(logger=_LOGGER)
     async def cancel(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
         """
         Прерывает процесс регистрации.
@@ -214,7 +223,7 @@ class MentorRegistrationConversation:
 
 
 async def registration_confirmation(
-    update: Update, context: ContextTypes.DEFAULT_TYPE
+    update: Update, _context: ContextTypes.DEFAULT_TYPE
 ) -> None:
     """
     Обрабатывает ответ на запрос подтверждения регистрации.
@@ -222,6 +231,17 @@ async def registration_confirmation(
     либо подтверждает регистрацию профдизайнера,
     либо отклоняет и удаляет его учетную запись.
     """
+    try:
+        await _process_mentor_registration_confirmation(update)
+    except Exception as exc:
+        await update.effective_message.reply_text(
+            "Что-то пошло не так. "
+            "Возможно, потребуется вручную выполнить действие в админке."
+        )
+        raise exc
+
+
+async def _process_mentor_registration_confirmation(update):
     await update.callback_query.answer()
     await update.callback_query.edit_message_reply_markup()
     picked_choice = update.callback_query.data
