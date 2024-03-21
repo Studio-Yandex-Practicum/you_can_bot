@@ -120,9 +120,7 @@ class BaseTaskConversation:
 
     @error_decorator(logger=_LOGGER)
     async def show_question(
-        self,
-        update: Update,
-        context: ContextTypes.DEFAULT_TYPE,
+        self, update: Update, context: ContextTypes.DEFAULT_TYPE
     ) -> None:
         """
         Показывает очередной вопрос, относящийся к текущему заданию.
@@ -287,7 +285,7 @@ class OneQuestionConversation(BaseTaskConversation):
         """Показывает единственный вопрос задания."""
         if update.callback_query:
             await update.callback_query.edit_message_reply_markup()
-        task_done = await self.check_current_task_is_done(update=update)
+        task_done, current_question = await self.check_current_task_is_done(update)
         if task_done:
             await update.effective_message.reply_text(
                 text=TASK_ALREADY_DONE_TEXT, parse_mode=ParseMode.HTML

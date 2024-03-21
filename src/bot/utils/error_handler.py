@@ -22,10 +22,14 @@ async def handle_error(
 def error_decorator(logger):
     def decorator(func):
         @wraps(func)
-        async def wrapper(conv_instance, update, context, *args, **kwargs):
+        async def wrapper(*args):
             try:
-                return await func(conv_instance, update, context, *args, **kwargs)
+                return await func(*args)
             except Exception as exception:
+                if len(args) == 3:
+                    conv_instance, update, context = args
+                else:
+                    update, context = args
                 return await handle_error(update, context, exception, logger)
 
         return wrapper

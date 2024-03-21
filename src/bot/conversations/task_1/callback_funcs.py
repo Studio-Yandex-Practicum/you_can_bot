@@ -1,3 +1,4 @@
+import logging
 import re
 
 from telegram import Update
@@ -8,6 +9,7 @@ from conversations.tasks.base import CHOOSING, BaseTaskConversation
 from conversations.tasks.keyboards import get_default_inline_keyboard
 from internal_requests import service as api_service
 from internal_requests.entities import Answer
+from utils.error_handler import error_decorator
 
 LABEL_PATTERN = r"\[([А-Я])\]"
 IDX_IN_STR = 4
@@ -21,6 +23,8 @@ SCORES = {
     5: " 5️⃣ баллов",
 }
 
+_LOGGER = logging.getLogger(__name__)
+
 
 class TaskOneConversation(BaseTaskConversation):
     """
@@ -28,22 +32,23 @@ class TaskOneConversation(BaseTaskConversation):
     отображения вопросов и метод обработки ответов пользователя.
     """
 
+    @error_decorator(logger=_LOGGER)
     async def show_question(
         self,
         update: Update,
         context: ContextTypes.DEFAULT_TYPE,
-        question_number: int = 1,
     ) -> None:
         """
         Выводит вопросы в Задании 1: текст вопроса + клавиатура с исходными
         вариантами ответов: А Б В Г Д Е.
         """
-        if question_number == 1:
+        current_question = context.user_data["current_question"]
+        if current_question == 1:
             await update.callback_query.edit_message_reply_markup()
         context.user_data["picked_choices"] = ""
         messages = await api_service.get_messages_with_question(
             task_number=self.task_number,
-            question_number=question_number,
+            question_number=current_question,
         )
         await update.effective_message.reply_text(
             text=messages[0].content,
@@ -51,6 +56,7 @@ class TaskOneConversation(BaseTaskConversation):
             parse_mode=ParseMode.HTML,
         )
 
+    @error_decorator(logger=_LOGGER)
     async def handle_user_answer(
         self, update: Update, context: ContextTypes.DEFAULT_TYPE
     ) -> int:
@@ -80,9 +86,7 @@ class TaskOneConversation(BaseTaskConversation):
                 state = await self.show_result(update, context)
                 return state
             context.user_data["current_question"] += 1
-            await self.show_question(
-                update, context, context.user_data.get("current_question")
-            )
+            await self.show_question(update, context)
         return CHOOSING
 
     async def _save_answer(self, user_id, current_question, picked_choices):
