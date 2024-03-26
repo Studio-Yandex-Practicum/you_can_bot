@@ -1,8 +1,8 @@
 from telegram.ext import CallbackQueryHandler, ConversationHandler
 
 from conversations.task_8.callback_funcs import (
-    FINAL_STATE,
     END_STAGE,
+    FINAL_STATE,
     STAGE_1,
     STAGE_2,
     STAGE_3,
