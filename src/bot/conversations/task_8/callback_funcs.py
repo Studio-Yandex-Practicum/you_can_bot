@@ -1,8 +1,8 @@
 import logging
 from asyncio import sleep
-from typing import Literal, TypedDict, cast
+from typing import Literal, Optional, TypedDict, cast
 
-from telegram import Message, Update
+from telegram import Update
 from telegram.constants import ChatAction, ParseMode
 from telegram.ext import CallbackContext, ConversationHandler
 
@@ -28,12 +28,20 @@ from conversations.task_8.templates import (
 )
 from conversations.tasks.base import TASK_ALREADY_DONE_TEXT
 from internal_requests.entities import Answer
-from utils.error_handler import error_decorator
+
+_LOGGER = logging.getLogger(__name__)
 
 DELAY_TO_AVOID_FLOOD = 3
 DELAY_BEFORE_THE_FINAL_MESSAGE = 5
 
-TASK_DESCRIPTION_STATE, PASSING_TEST_STATE, FINAL_STATE = 1, 2, 3
+(
+    TASK_DESCRIPTION_STATE,
+    END_STAGE,
+    STAGE_1,
+    STAGE_2,
+    STAGE_3,
+    FINAL_STATE,
+) = range(1, 7)
 
 CURRENT_TASK = 8
 START_QUESTION_NUMBER = 1
@@ -41,7 +49,8 @@ FIRST_STAGE_END = 20
 SECOND_STAGE_END = FIRST_STAGE_END + FIRST_STAGE_END // 2
 TASK_END = SECOND_STAGE_END + FIRST_STAGE_END // 4
 
-_LOGGER = logging.getLogger(__name__)
+FIRST_STAGE_END_MESSAGE = "Начало второго круга задания"
+SECOND_STAGE_END_MESSAGE = "Начало последнего круга задания"
 
 
 class LocationOfChoiceInTask(TypedDict):
@@ -49,7 +58,6 @@ class LocationOfChoiceInTask(TypedDict):
     choice: Literal["а"] | Literal["б"]
 
 
-@error_decorator(logger=_LOGGER)
 async def show_start_of_task_8_with_task_number(
     update: Update, context: CallbackContext
 ) -> int:
@@ -63,7 +71,6 @@ async def show_start_of_task_8_with_task_number(
 
 @not_in_conversation(ConversationHandler.END)
 @set_conversation_name(TASK_EXECUTION)
-@error_decorator(logger=_LOGGER)
 async def show_start_of_task_8(update: Update, context: CallbackContext) -> int:
     """Вывод описания задания 8."""
     query = update.callback_query
@@ -87,27 +94,16 @@ async def show_start_of_task_8(update: Update, context: CallbackContext) -> int:
     return TASK_DESCRIPTION_STATE
 
 
-@error_decorator(logger=_LOGGER)
-async def start_question(update: Update, context: CallbackContext) -> int:
+async def _send_question(update: Update, context: CallbackContext) -> None:
     """Начинает новый вопрос."""
-    query = update.callback_query
     question_number = context.user_data.get("current_question")
-    if question_number in (
-        START_QUESTION_NUMBER,
-        FIRST_STAGE_END + 1,
-        SECOND_STAGE_END + 1,
-    ):
-        await query.message.edit_reply_markup()
     if FIRST_STAGE_END < question_number:
         params = context.user_data["picked_choices"][
             question_number - FIRST_STAGE_END - 1
         ]
-        if question_number > SECOND_STAGE_END:
-            offset = SECOND_STAGE_END
-        else:
-            offset = FIRST_STAGE_END
         messages = await api_service.get_task_8_question(
-            question_number=(question_number - offset), params=params
+            question_number=(question_number - context.user_data["offset"]),
+            params=params,
         )
     else:
         messages = await api_service.get_messages_with_question(
@@ -121,52 +117,92 @@ async def start_question(update: Update, context: CallbackContext) -> int:
         reply_markup=REPLY_KEYBOARD,
         parse_mode=ParseMode.HTML,
     )
-    return PASSING_TEST_STATE
 
 
-@error_decorator(logger=_LOGGER)
-async def update_question(update: Update, context: CallbackContext) -> int:
-    """Обработчик ответов на вопросы."""
-    current_question = context.user_data.get("current_question")
-    picked_choice = await _validate_callback_data(update)
+async def send_first_question(update, context):
+    await update.effective_message.edit_reply_markup()
+    await _send_question(update, context)
+    return STAGE_1
+
+
+async def send_next_stage_2_message(update, context):
     message = update.effective_message
+    await message.edit_reply_markup()
+    await message.reply_text(FIRST_STAGE_END_MESSAGE)
+    context.user_data["offset"] = FIRST_STAGE_END
+    await _send_question(update, context)
+    return STAGE_2
 
-    if FIRST_STAGE_END < current_question <= SECOND_STAGE_END:
-        await _handle_second_stage_answer(context, current_question, picked_choice)
-    elif SECOND_STAGE_END < current_question:
-        await _handle_third_stage_answer(context, current_question, picked_choice)
-    else:
-        await _handle_first_stage_answer(context, current_question, picked_choice)
 
+async def send_next_stage_3_message(update, context):
+    message = update.effective_message
+    await message.edit_reply_markup()
+    await message.reply_text(SECOND_STAGE_END_MESSAGE)
+    context.user_data["offset"] = SECOND_STAGE_END
+    await _send_question(update, context)
+    return STAGE_3
+
+
+async def handle_answer_on_stage_1(
+    update: Update, context: CallbackContext
+) -> Optional[int]:
+    picked_choice = await _validate_callback_data(update)
+    current_question = context.user_data.get("current_question")
+    await _handle_first_stage_answer(context, current_question, picked_choice)
+    if current_question == FIRST_STAGE_END:
+        context.user_data["current_question"] += 1
+        await update.effective_message.edit_reply_markup(
+            reply_markup=FIRST_STAGE_END_KEYBOARD,
+        )
+        return END_STAGE
+    context.user_data["current_question"] += 1
+    await _send_question(update, context)
+    return None
+
+
+async def handle_answer_on_stage_2(
+    update: Update, context: CallbackContext
+) -> Optional[int]:
+    picked_choice = await _validate_callback_data(update)
+    current_question = context.user_data.get("current_question")
+    await _handle_second_stage_answer(context, current_question, picked_choice)
+    if current_question == SECOND_STAGE_END:
+        context.user_data["current_question"] += 1
+        await update.effective_message.edit_reply_markup(
+            reply_markup=SECOND_STAGE_END_KEYBOARD,
+        )
+        return END_STAGE
+    context.user_data["current_question"] += 1
+    await _send_question(update, context)
+    return None
+
+
+async def handle_answer_on_stage_3(
+    update: Update, context: CallbackContext
+) -> Optional[int]:
+    picked_choice = await _validate_callback_data(update)
+    current_question = context.user_data.get("current_question")
+    await _handle_third_stage_answer(context, current_question, picked_choice)
+    await _add_answer_to_message(picked_choice, update)
+    if current_question == TASK_END:
+        await _save_answer_to_db(context, update.effective_chat.id)
+        await update.effective_message.edit_reply_markup(
+            reply_markup=TASK_END_KEYBOARD,
+        )
+        return END_STAGE
+    context.user_data["current_question"] += 1
+    await _send_question(update, context)
+    return None
+
+
+async def _add_answer_to_message(picked_choice, update):
+    message = update.effective_message
     await message.edit_text(
         text=f"{message.text_html}\n\nОтвет: {picked_choice.upper()}",
         parse_mode=ParseMode.HTML,
     )
 
-    if current_question == TASK_END:
-        await _save_answer_to_db(context, message)
-        await update.effective_message.edit_reply_markup(
-            reply_markup=TASK_END_KEYBOARD,
-        )
-        return PASSING_TEST_STATE
-    elif current_question == FIRST_STAGE_END:
-        context.user_data["current_question"] += 1
-        await update.effective_message.edit_reply_markup(
-            reply_markup=FIRST_STAGE_END_KEYBOARD,
-        )
-        return PASSING_TEST_STATE
-    elif current_question == SECOND_STAGE_END:
-        context.user_data["current_question"] += 1
-        await update.effective_message.edit_reply_markup(
-            reply_markup=SECOND_STAGE_END_KEYBOARD,
-        )
-        return PASSING_TEST_STATE
-    context.user_data["current_question"] += 1
-    state = await start_question(update, context)
-    return state
 
-
-@error_decorator(logger=_LOGGER)
 async def show_result(update: Update, _context: CallbackContext) -> int:
     """Отправляет результаты прохождения задания."""
     query = update.callback_query
@@ -193,7 +229,6 @@ async def show_result(update: Update, _context: CallbackContext) -> int:
     return FINAL_STATE
 
 
-@error_decorator(logger=_LOGGER)
 async def send_final_message(update: Update, context: CallbackContext) -> int:
     """Отправляет сообщение - поздравление о прохождении всех заданий."""
     await update.effective_message.edit_reply_markup()
@@ -291,10 +326,10 @@ async def _get_picked_choice_dict_from_context(
     return picked_choice_dict
 
 
-async def _save_answer_to_db(context: CallbackContext, message: Message):
+async def _save_answer_to_db(context: CallbackContext, telegram_id: int):
     await api_service.create_answer(
         Answer(
-            telegram_id=message.chat_id,
+            telegram_id=telegram_id,
             task_number=CURRENT_TASK,
             number=1,
             content=",".join(context.user_data["result"]),
