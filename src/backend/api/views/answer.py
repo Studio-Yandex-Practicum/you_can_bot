@@ -61,7 +61,7 @@ def answer_create(request, telegram_id, task_number):
                         surname=f"{task_status.user.surname}",
                         task=task_number,
                     ),
-                    mentor_id=mentor_id,
+                    user_id=mentor_id,
                 )
             )
 
