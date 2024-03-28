@@ -32,7 +32,7 @@ TASK_COMPLETE_NOTIFICATION_TEXT = (
 
 
 @api_view(("POST",))
-def answer_create(request, telegram_id, task_number, mentor_id_of_user=None):
+def answer_create(request, telegram_id, task_number):
     task_status = _get_task_status_or_404(task_number, telegram_id)
     number = _get_and_validate_number_of_question(request)
     question = _get_question_or_404(number, task_number)
