@@ -14,9 +14,8 @@ from api.calculation_service.task_3 import calculate_task_3_result
 from api.calculation_service.task_4 import calculate_task_4_result
 from api.calculation_service.task_8 import calculate_task_8_result
 from api.conversation_utils import task_completed_send_message
-from api.models import Answer, MentorProfile, Question, TaskStatus
+from api.models import Answer, Question, TaskStatus
 from api.serializers import AnswerSerializer
-from internal_requests.entities import Mentor
 
 ANSWER_CREATE_ERROR = "Ошибка при обработке запроса: {error}"
 CALCULATE_TASKS = {
