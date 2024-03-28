@@ -1,3 +1,6 @@
+import asyncio
+import os
+
 from django.conf import settings
 from django.utils import timezone
 from rest_framework import status
@@ -10,8 +13,10 @@ from api.calculation_service.task_2 import calculate_task_2_result
 from api.calculation_service.task_3 import calculate_task_3_result
 from api.calculation_service.task_4 import calculate_task_4_result
 from api.calculation_service.task_8 import calculate_task_8_result
-from api.models import Answer, Question, TaskStatus
+from api.conversation_utils import task_completed_send_message
+from api.models import Answer, MentorProfile, Question, TaskStatus
 from api.serializers import AnswerSerializer
+from internal_requests.entities import Mentor
 
 ANSWER_CREATE_ERROR = "Ошибка при обработке запроса: {error}"
 CALCULATE_TASKS = {
@@ -21,10 +26,14 @@ CALCULATE_TASKS = {
     4: calculate_task_4_result,
     8: calculate_task_8_result,
 }
+MAIN_MENTOR_ID = os.getenv("MAIN_MENTOR_ID")
+TASK_COMPLETE_NOTIFICATION_TEXT = (
+    "Пользователь {name} {surname} завершил Задание № {task}."
+)
 
 
 @api_view(("POST",))
-def answer_create(request, telegram_id, task_number):
+def answer_create(request, telegram_id, task_number, mentor_id_of_user=None):
     task_status = _get_task_status_or_404(task_number, telegram_id)
     number = _get_and_validate_number_of_question(request)
     question = _get_question_or_404(number, task_number)
@@ -44,6 +53,19 @@ def answer_create(request, telegram_id, task_number):
             _create_result_status(
                 task_status, task_number, task_status.task.end_question
             )
+
+            mentor_id = task_status.user.mentor_id or MAIN_MENTOR_ID
+            asyncio.run(
+                task_completed_send_message(
+                    text=TASK_COMPLETE_NOTIFICATION_TEXT.format(
+                        name=f"{task_status.user.name}",
+                        surname=f"{task_status.user.surname}",
+                        task=task_number,
+                    ),
+                    mentor_id=mentor_id,
+                )
+            )
+
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
