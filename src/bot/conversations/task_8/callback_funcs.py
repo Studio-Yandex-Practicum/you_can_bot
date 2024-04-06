@@ -1,8 +1,8 @@
 import logging
 from asyncio import sleep
-from typing import Literal, Optional, TypedDict, cast
+from typing import Callable, Literal, Optional, TypedDict, cast
 
-from telegram import Update
+from telegram import InlineKeyboardMarkup, Update
 from telegram.constants import ChatAction, ParseMode
 from telegram.ext import CallbackContext, ConversationHandler
 
@@ -143,56 +143,47 @@ async def send_next_stage_3_message(update, context):
     return STAGE_3
 
 
-async def handle_answer_on_stage_1(
-    update: Update, context: CallbackContext
-) -> Optional[int]:
-    picked_choice = await _validate_callback_data(update)
-    current_question = context.user_data.get("current_question")
-    await _handle_first_stage_answer(context, current_question, picked_choice)
-    if current_question == FIRST_STAGE_END:
-        context.user_data["current_question"] += 1
-        await update.effective_message.edit_reply_markup(
-            reply_markup=FIRST_STAGE_END_KEYBOARD,
-        )
-        return END_STAGE
-    context.user_data["current_question"] += 1
-    await _send_question(update, context)
-    return None
+def handle_answer(
+    stage_end: int, end_keyboard: Optional[InlineKeyboardMarkup] = None
+) -> Callable:
+    def decorator(func):
+        async def wrapper(update: Update, context: CallbackContext) -> Optional[int]:
+            await update.effective_message.edit_reply_markup()
+            picked_choice = await _validate_callback_data(update)
+            await _add_answer_to_message(picked_choice, update)
+            current_question = context.user_data.get("current_question")
+            await func(update, context, current_question, picked_choice)
+            if current_question == stage_end:
+                context.user_data["current_question"] += 1
+                if end_keyboard:
+                    await update.effective_message.edit_reply_markup(
+                        reply_markup=end_keyboard
+                    )
+                return END_STAGE
+            context.user_data["current_question"] += 1
+            await _send_question(update, context)
+            return None
+
+        return wrapper
+
+    return decorator
 
 
-async def handle_answer_on_stage_2(
-    update: Update, context: CallbackContext
-) -> Optional[int]:
-    picked_choice = await _validate_callback_data(update)
-    current_question = context.user_data.get("current_question")
-    await _handle_second_stage_answer(context, current_question, picked_choice)
-    if current_question == SECOND_STAGE_END:
-        context.user_data["current_question"] += 1
-        await update.effective_message.edit_reply_markup(
-            reply_markup=SECOND_STAGE_END_KEYBOARD,
-        )
-        return END_STAGE
-    context.user_data["current_question"] += 1
-    await _send_question(update, context)
-    return None
+@handle_answer(FIRST_STAGE_END, FIRST_STAGE_END_KEYBOARD)
+async def handle_answer_on_stage_1(update, context, current_question, picked_choice):
+    await _save_first_stage_answer_to_context(context, current_question, picked_choice)
 
 
-async def handle_answer_on_stage_3(
-    update: Update, context: CallbackContext
-) -> Optional[int]:
-    picked_choice = await _validate_callback_data(update)
-    current_question = context.user_data.get("current_question")
-    await _handle_third_stage_answer(context, current_question, picked_choice)
-    await _add_answer_to_message(picked_choice, update)
+@handle_answer(SECOND_STAGE_END, SECOND_STAGE_END_KEYBOARD)
+async def handle_answer_on_stage_2(update, context, current_question, picked_choice):
+    await _save_second_stage_answer_to_context(context, current_question, picked_choice)
+
+
+@handle_answer(TASK_END, TASK_END_KEYBOARD)
+async def handle_answer_on_stage_3(update, context, current_question, picked_choice):
+    await _save_third_stage_answer_to_context(context, current_question, picked_choice)
     if current_question == TASK_END:
         await _save_answer_to_db(context, update.effective_chat.id)
-        await update.effective_message.edit_reply_markup(
-            reply_markup=TASK_END_KEYBOARD,
-        )
-        return END_STAGE
-    context.user_data["current_question"] += 1
-    await _send_question(update, context)
-    return None
 
 
 async def _add_answer_to_message(picked_choice, update):
@@ -251,7 +242,7 @@ async def _validate_callback_data(update: Update) -> Literal["а"] | Literal["б
     raise ValueError("Получен некорректный вариант ответа.")
 
 
-async def _handle_first_stage_answer(
+async def _save_first_stage_answer_to_context(
     context: CallbackContext,
     question_number: int,
     picked_choice: Literal["а"] | Literal["б"],
@@ -266,7 +257,7 @@ async def _handle_first_stage_answer(
     )
 
 
-async def _handle_second_stage_answer(
+async def _save_second_stage_answer_to_context(
     context: CallbackContext,
     question_number: int,
     picked_choice: Literal["а"] | Literal["б"],
@@ -282,7 +273,7 @@ async def _handle_second_stage_answer(
     )
 
 
-async def _handle_third_stage_answer(
+async def _save_third_stage_answer_to_context(
     context: CallbackContext,
     question_number: int,
     picked_choice: Literal["а"] | Literal["б"],
