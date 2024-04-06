@@ -13,7 +13,7 @@ from api.calculation_service.task_2 import calculate_task_2_result
 from api.calculation_service.task_3 import calculate_task_3_result
 from api.calculation_service.task_4 import calculate_task_4_result
 from api.calculation_service.task_8 import calculate_task_8_result
-from api.conversation_utils import task_completed_send_message
+from api.conversation_utils import non_context_send_message
 from api.models import Answer, Question, TaskStatus
 from api.serializers import AnswerSerializer
 
@@ -55,7 +55,7 @@ def answer_create(request, telegram_id, task_number):
 
             mentor_id = task_status.user.mentor_id or MAIN_MENTOR_ID
             asyncio.run(
-                task_completed_send_message(
+                non_context_send_message(
                     text=TASK_COMPLETE_NOTIFICATION_TEXT.format(
                         name=f"{task_status.user.name}",
                         surname=f"{task_status.user.surname}",
