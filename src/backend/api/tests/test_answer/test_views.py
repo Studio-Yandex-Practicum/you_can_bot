@@ -1,8 +1,8 @@
 import datetime
+from unittest.mock import patch
 
 from django.urls import reverse
 from rest_framework import status
-from unittest.mock import patch
 
 from api.models import Answer, ResultStatus, TaskStatus, UserFromTelegram
 from api.tests.test_answer.fixtures import BaseCaseForAnswerTests
