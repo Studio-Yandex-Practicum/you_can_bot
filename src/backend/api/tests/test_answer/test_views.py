@@ -1,4 +1,5 @@
 import datetime
+from unittest.mock import patch
 
 from django.urls import reverse
 from rest_framework import status
@@ -92,7 +93,8 @@ class ViewAnswerTests(BaseCaseForAnswerTests):
                     " статус-код не соответствует ожидаемому.",
                 )
 
-    def test_view_tasks_status_is_done(self):
+    @patch("api.views.answer.non_context_send_message")
+    def test_view_tasks_status_is_done(self, _mock_send_message):
         """
         Проверка изменения полей TaskStatus при завершении Заданий.
         """
@@ -119,7 +121,8 @@ class ViewAnswerTests(BaseCaseForAnswerTests):
                     " не установлено текущее время.",
                 )
 
-    def test_view_create_result_status_task_1(self):
+    @patch("api.views.answer.non_context_send_message")
+    def test_view_create_result_status_task_1(self, _mock_send_message):
         """
         Проверка создания в базе данных расшифрованных результатов ResultStatus
         при получении последнего ответа Задания №1.
@@ -144,7 +147,8 @@ class ViewAnswerTests(BaseCaseForAnswerTests):
             self.TASK_NUMBER_1, result, "score", self.RESULT_SCORE_TASK_1
         )
 
-    def test_view_create_result_status_task_2(self):
+    @patch("api.views.answer.non_context_send_message")
+    def test_view_create_result_status_task_2(self, _mock_send_message):
         """
         Проверка создания в базе данных расшифрованных результатов ResultStatus
         при получении последнего ответа Задания №2.
@@ -166,7 +170,8 @@ class ViewAnswerTests(BaseCaseForAnswerTests):
             self.TASK_NUMBER_2, result, "top", self.RESULT_TOP_TASK_2
         )
 
-    def test_view_create_result_status_task_3(self):
+    @patch("api.views.answer.non_context_send_message")
+    def test_view_create_result_status_task_3(self, _mock_send_message):
         """
         Проверка создания в базе данных расшифрованных результатов ResultStatus
         при получении последнего ответа Задания №3.
@@ -191,7 +196,8 @@ class ViewAnswerTests(BaseCaseForAnswerTests):
             self.TASK_NUMBER_3, result, "score", self.RESULT_SCORE_TASK_3
         )
 
-    def test_view_create_result_status_task_4(self):
+    @patch("api.views.answer.non_context_send_message")
+    def test_view_create_result_status_task_4(self, _mock_send_message):
         """
         Проверка создания в базе данных расшифрованных результатов ResultStatus
         при получении последнего ответа Задания №4.

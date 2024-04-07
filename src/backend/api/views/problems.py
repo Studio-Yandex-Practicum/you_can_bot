@@ -22,22 +22,17 @@ def problem_create(request, telegram_id):
     serializer = ProblemSerializer(data=request.data)
     if serializer.is_valid():
         serializer.save(user=user)
-        try:
-            mentor_id_of_user = user.mentor.telegram_id
-            if mentor_id_of_user is None:
-                mentor_id_of_user = MAIN_MENTOR_ID
-        except AttributeError as err:
-            if str(err) == "'NoneType' object has no attribute 'telegram_id'":
-                mentor_id_of_user = MAIN_MENTOR_ID
-            else:
-                raise AttributeError
+        if user.mentor and user.mentor.telegram_id:
+            mentor_telegram_id = user.mentor.telegram_id
+        else:
+            mentor_telegram_id = MAIN_MENTOR_ID
         asyncio.run(
             non_context_send_message(
                 text=PROBLEM_TEXT.format(
                     user=f"{user.name} {user.surname}",
                     question=serializer.data["message"],
                 ),
-                user_id=mentor_id_of_user,
+                user_id=mentor_telegram_id,
             )
         )
         return Response(serializer.data, status=status.HTTP_201_CREATED)
