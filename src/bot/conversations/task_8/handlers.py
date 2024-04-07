@@ -1,15 +1,22 @@
 from telegram.ext import CallbackQueryHandler, ConversationHandler
 
 from conversations.task_8.callback_funcs import (
+    END_STAGE,
     FINAL_STATE,
-    PASSING_TEST_STATE,
+    STAGE_1,
+    STAGE_2,
+    STAGE_3,
     TASK_DESCRIPTION_STATE,
+    handle_answer_on_stage_1,
+    handle_answer_on_stage_2,
+    handle_answer_on_stage_3,
     send_final_message,
+    send_first_question,
+    send_next_stage_2_message,
+    send_next_stage_3_message,
     show_result,
     show_start_of_task_8,
     show_start_of_task_8_with_task_number,
-    start_question,
-    update_question,
 )
 
 task_8_handler: ConversationHandler = ConversationHandler(
@@ -21,11 +28,20 @@ task_8_handler: ConversationHandler = ConversationHandler(
     ],
     states={
         TASK_DESCRIPTION_STATE: [
-            CallbackQueryHandler(start_question, pattern=r"^Далее$"),
+            CallbackQueryHandler(send_first_question, pattern=r"^Далее$"),
         ],
-        PASSING_TEST_STATE: [
-            CallbackQueryHandler(update_question, pattern=r"^(а|б)$"),
-            CallbackQueryHandler(start_question, pattern=r"^next_stage$"),
+        STAGE_1: [
+            CallbackQueryHandler(handle_answer_on_stage_1, pattern=r"^(а|б)$"),
+        ],
+        STAGE_2: [
+            CallbackQueryHandler(handle_answer_on_stage_2, pattern=r"^(а|б)$"),
+        ],
+        STAGE_3: [
+            CallbackQueryHandler(handle_answer_on_stage_3, pattern=r"^(а|б)$"),
+        ],
+        END_STAGE: [
+            CallbackQueryHandler(send_next_stage_2_message, pattern=r"^next_stage_2$"),
+            CallbackQueryHandler(send_next_stage_3_message, pattern=r"^next_stage_3$"),
             CallbackQueryHandler(show_result, pattern=r"^finish_task_8$"),
         ],
         FINAL_STATE: [
