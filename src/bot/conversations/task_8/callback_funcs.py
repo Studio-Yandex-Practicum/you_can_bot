@@ -28,11 +28,11 @@ from conversations.task_8.templates import (
 )
 from conversations.tasks.base import TASK_ALREADY_DONE_TEXT
 from internal_requests.entities import Answer
+from utils.error_handler import error_decorator
 
 _LOGGER = logging.getLogger(__name__)
 
-DELAY_TO_AVOID_FLOOD = 3
-DELAY_BEFORE_THE_FINAL_MESSAGE = 5
+DELAY_TO_AVOID_FLOOD = 2
 
 (
     TASK_DESCRIPTION_STATE,
@@ -58,6 +58,7 @@ class LocationOfChoiceInTask(TypedDict):
     choice: Literal["а"] | Literal["б"]
 
 
+@error_decorator(logger=_LOGGER)
 async def show_start_of_task_8_with_task_number(
     update: Update, context: CallbackContext
 ) -> int:
@@ -69,6 +70,7 @@ async def show_start_of_task_8_with_task_number(
     )
 
 
+@error_decorator(logger=_LOGGER)
 @not_in_conversation(ConversationHandler.END)
 @set_conversation_name(TASK_EXECUTION)
 async def show_start_of_task_8(update: Update, context: CallbackContext) -> int:
@@ -94,37 +96,14 @@ async def show_start_of_task_8(update: Update, context: CallbackContext) -> int:
     return TASK_DESCRIPTION_STATE
 
 
-async def _send_question(update: Update, context: CallbackContext) -> None:
-    """Начинает новый вопрос."""
-    question_number = context.user_data.get("current_question")
-    if FIRST_STAGE_END < question_number:
-        params = context.user_data["picked_choices"][
-            question_number - FIRST_STAGE_END - 1
-        ]
-        messages = await api_service.get_task_8_question(
-            question_number=(question_number - context.user_data["offset"]),
-            params=params,
-        )
-    else:
-        messages = await api_service.get_messages_with_question(
-            task_number=CURRENT_TASK,
-            question_number=question_number,
-        )
-    await update.effective_chat.send_action(ChatAction.TYPING)
-    await sleep(DELAY_TO_AVOID_FLOOD)
-    await update.effective_message.reply_text(
-        text=messages[0].content,
-        reply_markup=REPLY_KEYBOARD,
-        parse_mode=ParseMode.HTML,
-    )
-
-
+@error_decorator(logger=_LOGGER)
 async def send_first_question(update, context):
     await update.effective_message.edit_reply_markup()
     await _send_question(update, context)
     return STAGE_1
 
 
+@error_decorator(logger=_LOGGER)
 async def send_next_stage_2_message(update, context):
     message = update.effective_message
     await message.edit_reply_markup()
@@ -134,6 +113,7 @@ async def send_next_stage_2_message(update, context):
     return STAGE_2
 
 
+@error_decorator(logger=_LOGGER)
 async def send_next_stage_3_message(update, context):
     message = update.effective_message
     await message.edit_reply_markup()
@@ -169,16 +149,19 @@ def handle_answer(
     return decorator
 
 
+@error_decorator(logger=_LOGGER)
 @handle_answer(FIRST_STAGE_END, FIRST_STAGE_END_KEYBOARD)
 async def handle_answer_on_stage_1(update, context, current_question, picked_choice):
     await _save_first_stage_answer_to_context(context, current_question, picked_choice)
 
 
+@error_decorator(logger=_LOGGER)
 @handle_answer(SECOND_STAGE_END, SECOND_STAGE_END_KEYBOARD)
 async def handle_answer_on_stage_2(update, context, current_question, picked_choice):
     await _save_second_stage_answer_to_context(context, current_question, picked_choice)
 
 
+@error_decorator(logger=_LOGGER)
 @handle_answer(TASK_END, TASK_END_KEYBOARD)
 async def handle_answer_on_stage_3(update, context, current_question, picked_choice):
     await _save_third_stage_answer_to_context(context, current_question, picked_choice)
@@ -186,14 +169,7 @@ async def handle_answer_on_stage_3(update, context, current_question, picked_cho
         await _save_answer_to_db(context, update.effective_chat.id)
 
 
-async def _add_answer_to_message(picked_choice, update):
-    message = update.effective_message
-    await message.edit_text(
-        text=f"{message.text_html}\n\nОтвет: {picked_choice.upper()}",
-        parse_mode=ParseMode.HTML,
-    )
-
-
+@error_decorator(logger=_LOGGER)
 async def show_result(update: Update, _context: CallbackContext) -> int:
     """Отправляет результаты прохождения задания."""
     query = update.callback_query
@@ -220,6 +196,7 @@ async def show_result(update: Update, _context: CallbackContext) -> int:
     return FINAL_STATE
 
 
+@error_decorator(logger=_LOGGER)
 async def send_final_message(update: Update, context: CallbackContext) -> int:
     """Отправляет сообщение - поздравление о прохождении всех заданий."""
     await update.effective_message.edit_reply_markup()
@@ -232,6 +209,39 @@ async def send_final_message(update: Update, context: CallbackContext) -> int:
     )
     context.user_data.clear()
     return ConversationHandler.END
+
+
+async def _send_question(update: Update, context: CallbackContext) -> None:
+    """Начинает новый вопрос."""
+    question_number = context.user_data.get("current_question")
+    if FIRST_STAGE_END < question_number:
+        params = context.user_data["picked_choices"][
+            question_number - FIRST_STAGE_END - 1
+        ]
+        messages = await api_service.get_task_8_question(
+            question_number=(question_number - context.user_data["offset"]),
+            params=params,
+        )
+    else:
+        messages = await api_service.get_messages_with_question(
+            task_number=CURRENT_TASK,
+            question_number=question_number,
+        )
+    await update.effective_chat.send_action(ChatAction.TYPING)
+    await sleep(DELAY_TO_AVOID_FLOOD)
+    await update.effective_message.reply_text(
+        text=messages[0].content,
+        reply_markup=REPLY_KEYBOARD,
+        parse_mode=ParseMode.HTML,
+    )
+
+
+async def _add_answer_to_message(picked_choice, update):
+    message = update.effective_message
+    await message.edit_text(
+        text=f"{message.text_html}\n\nОтвет: {picked_choice.upper()}",
+        parse_mode=ParseMode.HTML,
+    )
 
 
 async def _validate_callback_data(update: Update) -> Literal["а"] | Literal["б"]:

@@ -70,12 +70,6 @@ class ResultStatusInline(admin.StackedInline):
     can_delete = False
 
 
-class ProblemInline(admin.StackedInline):
-    model = Problem
-    extra = 0
-    can_delete = False
-
-
 class TaskStatusInline(admin.TabularInline):
     model = TaskStatus
     extra = 0
@@ -170,7 +164,7 @@ class UserFromTelegramAdmin(admin.ModelAdmin):
     )
     list_filter = ("mentor",)
     empty_value_display = "-пусто-"
-    inlines = (ProblemInline, TaskStatusInline)
+    inlines = (TaskStatusInline,)
 
     @admin.display(description="Общая сводка")
     def info_page(self, obj):

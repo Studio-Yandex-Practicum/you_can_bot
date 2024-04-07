@@ -37,7 +37,7 @@ FURTHER_ACTIONS_KEYBOARD = InlineKeyboardMarkup(
         (
             InlineKeyboardButton(
                 text="Ура! Все задания выполнены. Что дальше?",
-                callback_data="further_actions"
+                callback_data="further_actions",
             ),
         ),
     )
