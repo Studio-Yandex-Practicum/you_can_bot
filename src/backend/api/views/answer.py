@@ -2,6 +2,7 @@ import asyncio
 import os
 
 from django.conf import settings
+from django.core.exceptions import ObjectDoesNotExist
 from django.utils import timezone
 from rest_framework import status
 from rest_framework.decorators import api_view
@@ -14,7 +15,7 @@ from api.calculation_service.task_3 import calculate_task_3_result
 from api.calculation_service.task_4 import calculate_task_4_result
 from api.calculation_service.task_8 import calculate_task_8_result
 from api.conversation_utils import non_context_send_message
-from api.models import Answer, Question, TaskStatus
+from api.models import Answer, TaskStatus
 from api.serializers import AnswerSerializer
 
 ANSWER_CREATE_ERROR = "Ошибка при обработке запроса: {error}"
@@ -35,7 +36,7 @@ TASK_COMPLETE_NOTIFICATION_TEXT = (
 def answer_create(request, telegram_id, task_number):
     task_status = _get_task_status_or_404(task_number, telegram_id)
     number = _get_and_validate_number_of_question(request)
-    question = _get_question_or_404(number, task_number)
+    question = _get_question_or_404(number, task_status)
     answer = task_status.answers.filter(question=question)
     if answer.exists() and request.data.get("content"):
         serializer = AnswerSerializer(answer.first(), data=request.data, partial=True)
@@ -53,7 +54,10 @@ def answer_create(request, telegram_id, task_number):
                 task_status, task_number, task_status.task.end_question
             )
 
-            mentor_id = task_status.user.mentor_id or MAIN_MENTOR_ID
+            if task_status.user.mentor and task_status.user.mentor.telegram_id:
+                mentor_telegram_id = task_status.user.mentor.telegram_id
+            else:
+                mentor_telegram_id = MAIN_MENTOR_ID
             asyncio.run(
                 non_context_send_message(
                     text=TASK_COMPLETE_NOTIFICATION_TEXT.format(
@@ -61,18 +65,17 @@ def answer_create(request, telegram_id, task_number):
                         surname=f"{task_status.user.surname}",
                         task=task_number,
                     ),
-                    user_id=mentor_id,
+                    user_id=mentor_telegram_id,
                 )
             )
-
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-def _get_question_or_404(number, task_number):
+def _get_question_or_404(number, task_status):
     try:
-        question = Question.objects.get(task__number=task_number, number=number)
-    except Question.DoesNotExist:
+        question = task_status.task.questions.get(number=number)
+    except ObjectDoesNotExist:
         raise NotFound(detail=settings.NOT_FOUND_QUESTION_ERROR_MESSAGE)
     return question
 
@@ -87,10 +90,10 @@ def _get_and_validate_number_of_question(request):
 
 def _get_task_status_or_404(task_number, telegram_id):
     try:
-        task_status = TaskStatus.objects.get(
+        task_status = TaskStatus.objects.select_related("user__mentor", "task").get(
             user__telegram_id=telegram_id, task__number=task_number
         )
-    except TaskStatus.DoesNotExist:
+    except ObjectDoesNotExist:
         raise NotFound(
             detail="Не найдена связка задания и пользователя."
             " Возможно неверно указаны telegram_id и task_number."
