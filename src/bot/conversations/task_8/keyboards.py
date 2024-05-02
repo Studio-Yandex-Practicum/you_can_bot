@@ -9,7 +9,7 @@ FIRST_STAGE_END_KEYBOARD = InlineKeyboardMarkup(
     (
         (
             InlineKeyboardButton(
-                text="Перейти ко второму кругу задания", callback_data="next_stage"
+                text="Перейти ко второму кругу задания", callback_data="next_stage_2"
             ),
         ),
     )
@@ -18,7 +18,7 @@ SECOND_STAGE_END_KEYBOARD = InlineKeyboardMarkup(
     (
         (
             InlineKeyboardButton(
-                text="Перейти к последнему кругу задания", callback_data="next_stage"
+                text="Перейти к последнему кругу задания", callback_data="next_stage_3"
             ),
         ),
     )
@@ -37,7 +37,7 @@ FURTHER_ACTIONS_KEYBOARD = InlineKeyboardMarkup(
         (
             InlineKeyboardButton(
                 text="Ура! Все задания выполнены. Что дальше?",
-                callback_data="further_actions"
+                callback_data="further_actions",
             ),
         ),
     )
