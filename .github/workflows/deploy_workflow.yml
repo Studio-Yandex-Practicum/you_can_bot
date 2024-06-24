@@ -33,7 +33,7 @@ jobs:
     - name: Setup Poetry
       uses: Gr1N/setup-poetry@v9
       with:
-        poetry-version: "1.5.1"
+        poetry-version: "1.8.2"
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
