@@ -3,7 +3,6 @@ from typing import Optional
 
 from httpx import HTTPStatusError, codes
 from telegram import Update
-from telegram.constants import ParseMode
 from telegram.ext import ContextTypes, ConversationHandler
 
 import conversations.general.keyboards as keyboards
@@ -89,16 +88,10 @@ async def _get_user_info_from_lk_and_handle_it(update: Update) -> Optional[dict]
         user_info = await get_user_info_from_lk(update.effective_user.id)
         return user_info
     except UserNotFound:
-        await update.message.reply_text(
-            templates.UNKNOWN_START_MESSAGE, parse_mode=ParseMode.HTML
-        )
+        await update.message.reply_text(templates.UNKNOWN_START_MESSAGE)
     except ConnectionError:
-        await update.message.reply_text(
-            templates.CONNECTION_ERROR_MESSAGE, parse_mode=ParseMode.HTML
-        )
+        await update.message.reply_text(templates.CONNECTION_ERROR_MESSAGE)
     except (HTTPStatusError, PostAPIError, APIDataError):
-        await update.message.reply_text(
-            templates.SERVER_ERROR_MESSAGE, parse_mode=ParseMode.HTML
-        )
+        await update.message.reply_text(templates.SERVER_ERROR_MESSAGE)
     except Exception as error:
         raise error

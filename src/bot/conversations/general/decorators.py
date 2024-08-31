@@ -1,7 +1,6 @@
 from functools import wraps
 
 from telegram import Update
-from telegram.constants import ParseMode
 from telegram.ext import ContextTypes
 
 from conversations.general.templates import (
@@ -64,10 +63,11 @@ def not_in_conversation(interrupt_value: int | None = None):
             current_conversation = context.user_data.get("current_conversation")
             if current_conversation:
                 await update.effective_message.reply_text(
-                    COMMAND_PROHIBITED_ON_TASK
-                    if current_conversation == TASK_EXECUTION
-                    else COMMAND_PROHIBITED,
-                    parse_mode=ParseMode.HTML,
+                    (
+                        COMMAND_PROHIBITED_ON_TASK
+                        if current_conversation == TASK_EXECUTION
+                        else COMMAND_PROHIBITED
+                    ),
                 )
                 return interrupt_value
             return await func(*args)

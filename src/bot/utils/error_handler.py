@@ -2,7 +2,6 @@ from functools import wraps
 from logging import Logger
 
 from telegram import Update
-from telegram.constants import ParseMode
 from telegram.ext import ContextTypes, ConversationHandler
 
 
@@ -40,7 +39,6 @@ def error_decorator(logger):
 async def _send_user_error_message(update):
     await update.effective_chat.send_message(
         "Ой, что-то пошло не так! Попробуй, пожалуйста, позже.",
-        parse_mode=ParseMode.HTML,
     )
 
 

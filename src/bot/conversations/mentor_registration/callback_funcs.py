@@ -1,7 +1,6 @@
 import logging
 
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
-from telegram.constants import ParseMode
 from telegram.ext import (
     CommandHandler,
     ContextTypes,
@@ -61,16 +60,15 @@ class MentorRegistrationConversation:
         )
         if registration_status.registered:
             await update.effective_message.reply_text(
-                REG_STATUS_CONFIRMED
-                if registration_status.confirmed
-                else REG_STATUS_NOT_CONFIRMED,
-                parse_mode=ParseMode.HTML,
+                (
+                    REG_STATUS_CONFIRMED
+                    if registration_status.confirmed
+                    else REG_STATUS_NOT_CONFIRMED
+                ),
             )
             context.user_data.clear()
             return ConversationHandler.END
-        await update.effective_message.reply_text(
-            ASK_FIRST_NAME, parse_mode=ParseMode.HTML
-        )
+        await update.effective_message.reply_text(ASK_FIRST_NAME)
         return TYPING_FIRST_NAME
 
     @error_decorator(logger=_LOGGER)
@@ -83,19 +81,13 @@ class MentorRegistrationConversation:
         """
         first_name = update.message.text.strip()
         if len(first_name) < MIN_NAME_LENGTH:
-            await update.effective_message.reply_text(
-                SHORT_FIRST_NAME_MSG, parse_mode=ParseMode.HTML
-            )
+            await update.effective_message.reply_text(SHORT_FIRST_NAME_MSG)
             return TYPING_FIRST_NAME
         if len(first_name) > MAX_NAME_LENGTH:
-            await update.effective_message.reply_text(
-                LONG_FIRST_NAME_MSG, parse_mode=ParseMode.HTML
-            )
+            await update.effective_message.reply_text(LONG_FIRST_NAME_MSG)
             return TYPING_FIRST_NAME
         context.user_data["first_name"] = first_name
-        await update.effective_message.reply_text(
-            ASK_LAST_NAME, parse_mode=ParseMode.HTML
-        )
+        await update.effective_message.reply_text(ASK_LAST_NAME)
         return TYPING_LAST_NAME
 
     @error_decorator(logger=_LOGGER)
@@ -108,14 +100,10 @@ class MentorRegistrationConversation:
         """
         last_name = update.message.text.strip()
         if len(last_name) < MIN_NAME_LENGTH:
-            await update.effective_message.reply_text(
-                SHORT_LAST_NAME_MSG, parse_mode=ParseMode.HTML
-            )
+            await update.effective_message.reply_text(SHORT_LAST_NAME_MSG)
             return TYPING_LAST_NAME
         if len(last_name) > MAX_NAME_LENGTH:
-            await update.effective_message.reply_text(
-                LONG_LAST_NAME_MSG, parse_mode=ParseMode.HTML
-            )
+            await update.effective_message.reply_text(LONG_LAST_NAME_MSG)
             return TYPING_LAST_NAME
         context.user_data["last_name"] = last_name
         return await self.finish_conversation(update, context)
@@ -137,7 +125,6 @@ class MentorRegistrationConversation:
         )
         await update.effective_message.reply_text(
             REGISTRATION_END.format(login=mentor.username, password=mentor.password),
-            parse_mode=ParseMode.HTML,
         )
         await self.send_confirmation_request(update, context)
         context.user_data.clear()
@@ -171,7 +158,6 @@ class MentorRegistrationConversation:
                 last_name=context.user_data.get("last_name"),
                 username=update.effective_user.username,
             ),
-            parse_mode=ParseMode.HTML,
             reply_markup=InlineKeyboardMarkup(keyboard),
         )
 
@@ -180,9 +166,7 @@ class MentorRegistrationConversation:
         """
         Прерывает процесс регистрации.
         """
-        await update.effective_message.reply_text(
-            REGISTRATION_CANCEL, parse_mode=ParseMode.HTML
-        )
+        await update.effective_message.reply_text(REGISTRATION_CANCEL)
         context.user_data.clear()
         return ConversationHandler.END
 
@@ -249,7 +233,7 @@ async def _process_mentor_registration_confirmation(update):
     id_to_confirm = int(id_to_confirm)
     if command == REGISTRATION_CONFIRM:
         await api_service.confirm_mentor_registration(id_to_confirm)
-        await update.effective_message.reply_text(CONFIRMED, parse_mode=ParseMode.HTML)
+        await update.effective_message.reply_text(CONFIRMED)
     elif command == REGISTRATION_REJECT:
         await api_service.delete_mentor(id_to_confirm)
-        await update.effective_message.reply_text(REJECTED, parse_mode=ParseMode.HTML)
+        await update.effective_message.reply_text(REJECTED)

@@ -3,7 +3,6 @@ from dataclasses import dataclass
 from typing import Tuple
 
 from telegram import ForceReply, InlineKeyboardButton, InlineKeyboardMarkup, Update
-from telegram.constants import ParseMode
 from telegram.ext import (
     CallbackQueryHandler,
     ContextTypes,
@@ -104,9 +103,7 @@ class BaseTaskConversation:
             update=update
         )
         if task_done:
-            await update.effective_message.reply_text(
-                text=TASK_ALREADY_DONE_TEXT, parse_mode=ParseMode.HTML
-            )
+            await update.effective_message.reply_text(text=TASK_ALREADY_DONE_TEXT)
             del context.user_data["current_conversation"]
             return ConversationHandler.END
 
@@ -114,7 +111,6 @@ class BaseTaskConversation:
         await update.effective_message.reply_text(
             text=self.description,
             reply_markup=NEXT_KEYBOARD,
-            parse_mode=ParseMode.HTML,
         )
         return CHOOSING
 
@@ -136,7 +132,6 @@ class BaseTaskConversation:
         await update.effective_message.reply_text(
             text=messages[0].content,
             reply_markup=get_default_inline_keyboard(self.choices),
-            parse_mode=ParseMode.HTML,
         )
         await update.callback_query.answer()
 
@@ -154,7 +149,6 @@ class BaseTaskConversation:
         message = update.effective_message
         await message.edit_text(
             text=f"{message.text_html}\n\nОтвет: {picked_choice.upper()}",
-            parse_mode=ParseMode.HTML,
         )
         current_question = context.user_data.get("current_question")
         await api_service.create_answer(
@@ -182,7 +176,6 @@ class BaseTaskConversation:
         if self.result_intro:
             await query.message.reply_text(
                 text=self.result_intro,
-                parse_mode=ParseMode.HTML,
             )
         results = await api_service.get_messages_with_results(
             telegram_id=query.from_user.id, task_number=self.task_number
@@ -190,11 +183,9 @@ class BaseTaskConversation:
         for result in results[:-1]:
             await query.message.reply_text(
                 text=result.content,
-                parse_mode=ParseMode.HTML,
             )
         await query.message.reply_text(
             text=results[-1].content,
-            parse_mode=ParseMode.HTML,
             reply_markup=InlineKeyboardMarkup(
                 (
                     (
@@ -287,9 +278,7 @@ class OneQuestionConversation(BaseTaskConversation):
             await update.callback_query.edit_message_reply_markup()
         task_done, current_question = await self.check_current_task_is_done(update)
         if task_done:
-            await update.effective_message.reply_text(
-                text=TASK_ALREADY_DONE_TEXT, parse_mode=ParseMode.HTML
-            )
+            await update.effective_message.reply_text(text=TASK_ALREADY_DONE_TEXT)
             del context.user_data["current_conversation"]
             return ConversationHandler.END
 
@@ -299,7 +288,6 @@ class OneQuestionConversation(BaseTaskConversation):
         await update.effective_message.reply_text(
             text=messages[0].content,
             reply_markup=ForceReply(selective=True),
-            parse_mode=ParseMode.HTML,
         )
         await update.callback_query.answer()
         return TYPING_ANSWER
@@ -317,7 +305,6 @@ class OneQuestionConversation(BaseTaskConversation):
         confirmation_message = await update.effective_message.reply_text(
             text=SEND_ANSWER_TEXT + '"' + answer_text + '"',
             reply_markup=CONFIRM_KEYBOARD,
-            parse_mode=ParseMode.HTML,
         )
         context.user_data["confirmation_message_id"] = confirmation_message.message_id
 
@@ -346,7 +333,6 @@ class OneQuestionConversation(BaseTaskConversation):
                     message_id=confirmation_message_id,
                     text=SEND_ANSWER_TEXT + '"' + answer_text + '"',
                     reply_markup=CONFIRM_KEYBOARD,
-                    parse_mode=ParseMode.HTML,
                 )
 
             if answer_text and answer_id:
@@ -379,7 +365,6 @@ class OneQuestionConversation(BaseTaskConversation):
         )
         await update.effective_message.reply_text(
             text=self.result_intro,
-            parse_mode=ParseMode.HTML,
             reply_markup=InlineKeyboardMarkup(
                 (
                     (

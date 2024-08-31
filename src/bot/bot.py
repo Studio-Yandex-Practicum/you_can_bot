@@ -1,4 +1,5 @@
-from telegram.ext import Application, ApplicationBuilder
+from telegram.constants import ParseMode
+from telegram.ext import Application, ApplicationBuilder, Defaults
 
 from conversations.general.handlers import acquaintance_handler
 from conversations.mentor_registration.handlers import (
@@ -34,7 +35,15 @@ def create_bot():
     Create telegram bot application
     :return: Created telegram bot application
     """
-    bot_app = ApplicationBuilder().token(TOKEN).post_init(post_init).build()
+    defaults = Defaults(parse_mode=ParseMode.HTML)
+
+    bot_app = (
+        ApplicationBuilder()
+        .token(TOKEN)
+        .defaults(defaults)
+        .post_init(post_init)
+        .build()
+    )
     bot_app.add_handler(handler=acquaintance_handler)
 
     # task handlers

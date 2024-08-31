@@ -3,7 +3,7 @@ from asyncio import sleep
 from typing import Callable, Literal, Optional, TypedDict, cast
 
 from telegram import InlineKeyboardMarkup, Update
-from telegram.constants import ChatAction, ParseMode
+from telegram.constants import ChatAction
 from telegram.ext import CallbackContext, ConversationHandler
 
 import internal_requests.service as api_service
@@ -82,16 +82,14 @@ async def show_start_of_task_8(update: Update, context: CallbackContext) -> int:
         task_number=CURRENT_TASK, telegram_id=update.effective_user.id
     )
     if task_status.is_done:
-        await update.effective_message.reply_text(
-            text=TASK_ALREADY_DONE_TEXT, parse_mode=ParseMode.HTML
-        )
+        await update.effective_message.reply_text(text=TASK_ALREADY_DONE_TEXT)
         del context.user_data["current_conversation"]
         return ConversationHandler.END
     context.user_data["current_question"] = START_QUESTION_NUMBER
     context.user_data["picked_choices"] = []
     context.user_data["result"] = []
     await update.effective_message.reply_text(
-        text=TEXT_OF_START_TASK_8, reply_markup=NEXT_KEYBOARD, parse_mode=ParseMode.HTML
+        text=TEXT_OF_START_TASK_8, reply_markup=NEXT_KEYBOARD
     )
     return TASK_DESCRIPTION_STATE
 
@@ -181,16 +179,13 @@ async def show_result(update: Update, _context: CallbackContext) -> int:
     )
     await query.message.reply_text(
         text=RESULT_TEXT,
-        parse_mode=ParseMode.HTML,
     )
     for message in messages[:-1]:
         await query.message.reply_text(
             text=message.content,
-            parse_mode=ParseMode.HTML,
         )
     await query.message.reply_text(
         text=messages[-1].content,
-        parse_mode=ParseMode.HTML,
         reply_markup=FURTHER_ACTIONS_KEYBOARD,
     )
     return FINAL_STATE
@@ -205,7 +200,6 @@ async def send_final_message(update: Update, context: CallbackContext) -> int:
     )
     await update.effective_chat.send_message(
         text=FINAL_MESSAGE_TEXT.substitute(name=user_info.name),
-        parse_mode=ParseMode.HTML,
     )
     context.user_data.clear()
     return ConversationHandler.END
@@ -232,7 +226,6 @@ async def _send_question(update: Update, context: CallbackContext) -> None:
     await update.effective_message.reply_text(
         text=messages[0].content,
         reply_markup=REPLY_KEYBOARD,
-        parse_mode=ParseMode.HTML,
     )
 
 
@@ -240,7 +233,6 @@ async def _add_answer_to_message(picked_choice, update):
     message = update.effective_message
     await message.edit_text(
         text=f"{message.text_html}\n\nОтвет: {picked_choice.upper()}",
-        parse_mode=ParseMode.HTML,
     )
 
 
