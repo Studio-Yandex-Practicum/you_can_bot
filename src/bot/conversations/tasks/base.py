@@ -17,6 +17,7 @@ from conversations.general.decorators import (
     set_conversation_name,
 )
 from conversations.menu.callback_funcs import add_task_number_to_prev_message
+from conversations.menu.handlers import cancel_handler
 from conversations.tasks.keyboards import (
     CONFIRM_KEYBOARD,
     NEXT_KEYBOARD,
@@ -247,7 +248,9 @@ class BaseTaskConversation:
         Управляет выходом из диалога.
         Используется при создании хэндлера для задания.
         """
-        return []
+        return [
+            cancel_handler,
+        ]
 
     def add_handlers(self):
         """

@@ -27,6 +27,7 @@ from conversations.mentor_registration.templates import (
     SHORT_FIRST_NAME_MSG,
     SHORT_LAST_NAME_MSG,
 )
+from conversations.menu.handlers import cancel_handler
 from internal_requests import service as api_service
 from internal_requests.entities import Mentor
 from utils.configs import MAIN_MENTOR_ID
@@ -193,7 +194,10 @@ class MentorRegistrationConversation:
         """
         Управляет выходом из диалога.
         """
-        return [MessageHandler(filters.Regex("/reg"), self.cancel)]
+        return [
+            MessageHandler(filters.Regex("/reg"), self.cancel),
+            cancel_handler,
+        ]
 
     def add_handlers(self):
         """

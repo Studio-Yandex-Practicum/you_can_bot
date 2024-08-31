@@ -1,5 +1,6 @@
 from telegram.ext import CallbackQueryHandler, ConversationHandler
 
+from conversations.menu.handlers import cancel_handler
 from conversations.task_8.callback_funcs import (
     END_STAGE,
     FINAL_STATE,
@@ -48,5 +49,5 @@ task_8_handler: ConversationHandler = ConversationHandler(
             CallbackQueryHandler(send_final_message, pattern=r"^further_actions$"),
         ],
     },
-    fallbacks=[],
+    fallbacks=[cancel_handler],
 )

@@ -13,6 +13,13 @@ from conversations.menu.templates import (
     WAITING_FOR_QUESTION_STATE,
 )
 
+# /cancel
+cancel_handler = CommandHandler(
+    "cancel",
+    callback_funcs.cancel_current_conversation,
+)
+
+
 # /tasks
 entry_point_to_tasks_handler = CommandHandler(
     "tasks", callback_funcs.show_all_user_tasks
@@ -32,7 +39,7 @@ show_all_tasks_handler = ConversationHandler(
             ),
         ]
     },
-    fallbacks=[],
+    fallbacks=[cancel_handler],
 )
 # /ask
 entry_point_to_ask_handler = CommandHandler("ask", callback_funcs.suggest_ask_question)
@@ -59,13 +66,8 @@ ask_question_handler = ConversationHandler(
         CallbackQueryHandler(
             callback_funcs.cancel_save_question, pattern=r"^cancel_question$"
         ),
+        cancel_handler,
     ],
 )
 # /info
 info_handler = CommandHandler("info", callback_funcs.show_url)
-
-# /cancel
-cancel_handler = CommandHandler(
-    "cancel",
-    callback_funcs.cancel_current_conversation,
-)
