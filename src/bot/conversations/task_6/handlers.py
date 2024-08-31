@@ -18,4 +18,4 @@ TASK_SIX_DATA = {
     "result_intro": TASK_SIX_RESULT_INTRO,
 }
 task_six = TaskSixConversation(**TASK_SIX_DATA)
-task_six_handler = task_six.add_handlers()
+task_six_conv = task_six.add_handlers()

@@ -1,16 +1,12 @@
-import logging
-from typing import Callable, Optional
+from typing import Callable
 
 from telegram import Update
 from telegram.ext import CallbackContext, ContextTypes, ConversationHandler
 
 import conversations.menu.templates as templates
 import internal_requests.service as api_service
-from conversations.general.decorators import (
-    TASK_EXECUTION,
-    not_in_conversation,
-    set_conversation_name,
-)
+from conversations.general.decorators import not_in_conversation, set_conversation_name
+from conversations.menu.cancel_command.callback_funcs import _LOGGER
 from conversations.menu.decorators import user_exists
 from conversations.menu.keyboards import (
     AGREE_OR_CANCEL_KEYBOARD,
@@ -19,8 +15,6 @@ from conversations.menu.keyboards import (
 )
 from internal_requests.entities import Problem
 from utils.error_handler import error_decorator
-
-_LOGGER = logging.getLogger(__name__)
 
 
 @error_decorator(logger=_LOGGER)
@@ -48,13 +42,6 @@ async def show_done_tasks(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return ConversationHandler.END
 
 
-async def finish_tasks_conversation(
-    _update: Update, context: ContextTypes.DEFAULT_TYPE
-) -> int:
-    context.user_data.clear()
-    return ConversationHandler.END
-
-
 async def add_task_number_to_prev_message(
     update: Update,
     context: CallbackContext,
@@ -73,7 +60,7 @@ async def add_task_number_to_prev_message(
 
 
 @user_exists
-@not_in_conversation(ConversationHandler.END)
+@not_in_conversation
 @set_conversation_name("tasks")
 @error_decorator(logger=_LOGGER)
 async def show_all_user_tasks(
@@ -98,7 +85,7 @@ async def show_all_user_tasks(
 
 
 @user_exists
-@not_in_conversation(ConversationHandler.END)
+@not_in_conversation
 @set_conversation_name("ask")
 @error_decorator(logger=_LOGGER)
 async def suggest_ask_question(
@@ -175,7 +162,7 @@ async def cancel_save_question(
     return ConversationHandler.END
 
 
-@not_in_conversation()
+@not_in_conversation
 @error_decorator(logger=_LOGGER)
 async def show_url(update: Update, _context: ContextTypes.DEFAULT_TYPE) -> None:
     """Перейти на сайт YouCan."""
@@ -183,29 +170,3 @@ async def show_url(update: Update, _context: ContextTypes.DEFAULT_TYPE) -> None:
         text=templates.GET_MORE_INFO_TEXT,
         reply_markup=URL_BUTTON,
     )
-
-
-async def cancel_current_conversation(
-    update: Update, context: ContextTypes.DEFAULT_TYPE
-) -> Optional[int]:
-    """Обрабатывает команду /cancel, отменяя текущий активный диалог."""
-    current_conversation = context.user_data.get("current_conversation")
-
-    _LOGGER.info(
-        "Пользователь %d использовал команду /cancel для %s",
-        update.effective_chat.id,
-        current_conversation or "отсутствующего диалога",
-    )
-
-    if current_conversation is None:
-        await update.message.reply_text(templates.NO_ACTIVE_TASKS_MESSAGE)
-        return None
-
-    if current_conversation == TASK_EXECUTION:
-        message = templates.TASK_CANCELLED_MESSAGE
-    else:
-        message = templates.COMMAND_CANCELLED_MESSAGE_TEMPLATE % current_conversation
-    await update.message.reply_text(message)
-
-    context.user_data.clear()
-    return ConversationHandler.END

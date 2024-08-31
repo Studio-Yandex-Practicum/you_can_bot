@@ -27,7 +27,7 @@ from conversations.mentor_registration.templates import (
     SHORT_FIRST_NAME_MSG,
     SHORT_LAST_NAME_MSG,
 )
-from conversations.menu.handlers import cancel_handler
+from conversations.menu.cancel_command.handlers import cancel_handler
 from internal_requests import service as api_service
 from internal_requests.entities import Mentor
 from utils.configs import MAIN_MENTOR_ID
@@ -48,7 +48,7 @@ class MentorRegistrationConversation:
     Класс для управления диалогом регистрации профдизайнера.
     """
 
-    @not_in_conversation(ConversationHandler.END)
+    @not_in_conversation
     @set_conversation_name("mentor_registration")
     @error_decorator(logger=_LOGGER)
     async def start(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
@@ -194,10 +194,7 @@ class MentorRegistrationConversation:
         """
         Управляет выходом из диалога.
         """
-        return [
-            MessageHandler(filters.Regex("/reg"), self.cancel),
-            cancel_handler,
-        ]
+        return [MessageHandler(filters.Regex("/reg"), self.cancel), cancel_handler]
 
     def add_handlers(self):
         """

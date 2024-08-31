@@ -14,14 +14,12 @@ from external_requests.exceptions import APIDataError, PostAPIError, UserNotFoun
 from internal_requests.entities import UserFromTelegram
 from utils.configs import ALLOWED_TARIFFS
 
-DELAY_TO_AVOID_FLOOD = 5
-
 _LOGGER = logging.getLogger(__name__)
 
 HELLO = 0
 
 
-@not_in_conversation(ConversationHandler.END)
+@not_in_conversation
 @set_conversation_name("start")
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     """Первое сообщение от бота при вводе команды /start."""

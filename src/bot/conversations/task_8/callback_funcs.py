@@ -1,9 +1,7 @@
 import logging
-from asyncio import sleep
 from typing import Callable, Literal, Optional, TypedDict, cast
 
 from telegram import InlineKeyboardMarkup, Update
-from telegram.constants import ChatAction
 from telegram.ext import CallbackContext, ConversationHandler
 
 import internal_requests.service as api_service
@@ -31,8 +29,6 @@ from internal_requests.entities import Answer
 from utils.error_handler import error_decorator
 
 _LOGGER = logging.getLogger(__name__)
-
-DELAY_TO_AVOID_FLOOD = 2
 
 (
     TASK_DESCRIPTION_STATE,
@@ -62,6 +58,7 @@ class LocationOfChoiceInTask(TypedDict):
 async def show_start_of_task_8_with_task_number(
     update: Update, context: CallbackContext
 ) -> int:
+    del context.user_data["current_conversation"]
     return await add_task_number_to_prev_message(
         update=update,
         context=context,
@@ -71,7 +68,7 @@ async def show_start_of_task_8_with_task_number(
 
 
 @error_decorator(logger=_LOGGER)
-@not_in_conversation(ConversationHandler.END)
+@not_in_conversation
 @set_conversation_name(TASK_EXECUTION)
 async def show_start_of_task_8(update: Update, context: CallbackContext) -> int:
     """Вывод описания задания 8."""
@@ -221,8 +218,6 @@ async def _send_question(update: Update, context: CallbackContext) -> None:
             task_number=CURRENT_TASK,
             question_number=question_number,
         )
-    await update.effective_chat.send_action(ChatAction.TYPING)
-    await sleep(DELAY_TO_AVOID_FLOOD)
     await update.effective_message.reply_text(
         text=messages[0].content,
         reply_markup=REPLY_KEYBOARD,

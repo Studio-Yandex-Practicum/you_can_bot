@@ -42,36 +42,54 @@ def set_conversation_name(conversation_name: str):
     return decorator
 
 
-def not_in_conversation(interrupt_value: int | None = None):
+def not_in_conversation(func):
     """
     Проверяет отсутствие активных ConversationHandler, для которых в
     `context.user_data["current_conversation"]` установлено значение.
-
-    Если обнраужено активное обсуждение, прерывает выполнение функции
-    и возвращает значение interrupt_value.
     """
 
-    def decorator(func):
-        @wraps(func)
-        async def wrapper(*args):
-            update: Update
-            context: ContextTypes.DEFAULT_TYPE
-            if len(args) == 3:
-                _instance, update, context = args
-            else:
-                update, context = args
-            current_conversation = context.user_data.get("current_conversation")
-            if current_conversation:
-                await update.effective_message.reply_text(
-                    (
-                        COMMAND_PROHIBITED_ON_TASK
-                        if current_conversation == TASK_EXECUTION
-                        else COMMAND_PROHIBITED
-                    ),
-                )
-                return interrupt_value
-            return await func(*args)
+    @wraps(func)
+    async def wrapper(*args):
+        update: Update
+        context: ContextTypes.DEFAULT_TYPE
+        if len(args) == 3:
+            _instance, update, context = args
+        else:
+            update, context = args
+        result = await check_and_notify_prohibited_command(update, context)
+        if result:
+            return None
+        return await func(*args)
 
-        return wrapper
+    return wrapper
 
-    return decorator
+
+async def check_and_notify_prohibited_command(
+    update: Update, context: ContextTypes.DEFAULT_TYPE
+) -> bool:
+    """
+    Проверяет наличие активного диалога.
+    Уведомляет пользователя о невозможности выполнить команду.
+    """
+    current_conversation = context.user_data.get("current_conversation")
+    if current_conversation:
+        await update.effective_message.reply_text(
+            (
+                COMMAND_PROHIBITED_ON_TASK
+                if current_conversation == TASK_EXECUTION
+                else COMMAND_PROHIBITED
+            ),
+        )
+        return True
+    return False
+
+
+async def handle_prohibited_command(
+    update: Update, context: ContextTypes.DEFAULT_TYPE
+) -> None:
+    """
+    Callback-функция с проверкой наличия диалога, не меняющая его state.
+    Если есть активный диалог, то уведомит пользователя об этом.
+    """
+    await check_and_notify_prohibited_command(update, context)
+    return None

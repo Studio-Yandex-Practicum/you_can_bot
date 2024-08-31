@@ -1,6 +1,6 @@
 from telegram.ext import CallbackQueryHandler, ConversationHandler
 
-from conversations.menu.handlers import cancel_handler
+from conversations.menu.cancel_command.handlers import cancel_handler
 from conversations.task_8.callback_funcs import (
     END_STAGE,
     FINAL_STATE,
@@ -20,7 +20,7 @@ from conversations.task_8.callback_funcs import (
     show_start_of_task_8_with_task_number,
 )
 
-task_8_handler: ConversationHandler = ConversationHandler(
+task_8_conv: ConversationHandler = ConversationHandler(
     entry_points=[
         CallbackQueryHandler(show_start_of_task_8, r"^start_task_8$"),
         CallbackQueryHandler(
@@ -50,4 +50,5 @@ task_8_handler: ConversationHandler = ConversationHandler(
         ],
     },
     fallbacks=[cancel_handler],
+    map_to_parent={ConversationHandler.END: ConversationHandler.END},
 )

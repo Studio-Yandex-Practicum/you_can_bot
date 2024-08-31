@@ -17,7 +17,7 @@ from conversations.general.decorators import (
     set_conversation_name,
 )
 from conversations.menu.callback_funcs import add_task_number_to_prev_message
-from conversations.menu.handlers import cancel_handler
+from conversations.menu.cancel_command.handlers import cancel_handler
 from conversations.tasks.keyboards import (
     CONFIRM_KEYBOARD,
     NEXT_KEYBOARD,
@@ -86,7 +86,7 @@ class BaseTaskConversation:
         )
         return task_status.is_done, task_status.current_question
 
-    @not_in_conversation(ConversationHandler.END)
+    @not_in_conversation
     @set_conversation_name(TASK_EXECUTION)
     @error_decorator(logger=_LOGGER)
     async def show_task_description(
@@ -209,6 +209,7 @@ class BaseTaskConversation:
         Показывает описание задание, но перед этим добавляет
         в предыдущее сообщение выбранный номер задания.
         """
+        del context.user_data["current_conversation"]
         return await add_task_number_to_prev_message(
             update=update,
             context=context,
@@ -248,9 +249,7 @@ class BaseTaskConversation:
         Управляет выходом из диалога.
         Используется при создании хэндлера для задания.
         """
-        return [
-            cancel_handler,
-        ]
+        return [cancel_handler]
 
     def add_handlers(self):
         """
@@ -260,6 +259,7 @@ class BaseTaskConversation:
             entry_points=self.set_entry_points(),
             states=self.set_states(),
             fallbacks=self.set_fallbacks(),
+            map_to_parent={ConversationHandler.END: ConversationHandler.END},
         )
 
 
@@ -270,7 +270,7 @@ class OneQuestionConversation(BaseTaskConversation):
         super().__post_init__()
         self.start_method = self.show_question
 
-    @not_in_conversation(ConversationHandler.END)
+    @not_in_conversation
     @set_conversation_name(TASK_EXECUTION)
     @error_decorator(logger=_LOGGER)
     async def show_question(
