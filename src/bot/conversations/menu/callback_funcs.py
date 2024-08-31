@@ -1,19 +1,22 @@
 import logging
-from typing import Callable
+from typing import Callable, Optional
 
 from telegram import Update
 from telegram.ext import CallbackContext, ContextTypes, ConversationHandler
 
 import conversations.menu.templates as templates
 import internal_requests.service as api_service
-from conversations.general.decorators import not_in_conversation, set_conversation_name
+from conversations.general.decorators import (
+    TASK_EXECUTION,
+    not_in_conversation,
+    set_conversation_name,
+)
 from conversations.menu.decorators import user_exists
 from conversations.menu.keyboards import (
     AGREE_OR_CANCEL_KEYBOARD,
     URL_BUTTON,
     create_inline_tasks_keyboard,
 )
-from conversations.menu.templates import PICKED_TASK
 from internal_requests.entities import Problem
 from utils.error_handler import error_decorator
 
@@ -25,20 +28,20 @@ async def show_done_tasks(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     task_number = int(query.data.split("_")[-1])
 
-    await query.message.edit_text(
+    await update.effective_message.edit_text(
         text="\n\n".join(
             (
-                query.message.text_html,
+                update.effective_message.text_html,
                 templates.PICKED_TASK.format(task_number=task_number),
             )
         ),
     )
 
     task_results = await api_service.get_messages_with_results(
-        query.message.chat.id, task_number
+        update.effective_chat.id, task_number
     )
     for result in task_results:
-        await query.message.reply_text(text=result.content)
+        await update.effective_message.reply_text(text=result.content)
 
     del context.user_data["current_conversation"]
 
@@ -46,7 +49,7 @@ async def show_done_tasks(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 async def finish_tasks_conversation(
-    update: Update, context: ContextTypes.DEFAULT_TYPE
+    _update: Update, context: ContextTypes.DEFAULT_TYPE
 ) -> int:
     context.user_data.clear()
     return ConversationHandler.END
@@ -60,7 +63,10 @@ async def add_task_number_to_prev_message(
 ) -> int:
     message = update.effective_message
     await message.edit_text(
-        text=f"{message.text_html}\n\n{PICKED_TASK.format(task_number=task_number)}",
+        text=(
+            f"{message.text_html}"
+            f"\n\n{templates.PICKED_TASK.format(task_number=task_number)}"
+        ),
         reply_markup=message.reply_markup,
     )
     return await start_task_method(update, context)
@@ -71,7 +77,7 @@ async def add_task_number_to_prev_message(
 @set_conversation_name("tasks")
 @error_decorator(logger=_LOGGER)
 async def show_all_user_tasks(
-    update: Update, context: ContextTypes.DEFAULT_TYPE
+    update: Update, _context: ContextTypes.DEFAULT_TYPE
 ) -> None:
     """Посмотреть список заданий."""
     tasks = await api_service.get_user_task_status_list(
@@ -79,7 +85,7 @@ async def show_all_user_tasks(
     )
     keyboard = create_inline_tasks_keyboard(tasks)
     if update.callback_query:
-        await update.callback_query.message.edit_text(
+        await update.effective_message.edit_text(
             text=templates.TASKS_LIST_TEXT,
             reply_markup=keyboard,
         )
@@ -96,7 +102,7 @@ async def show_all_user_tasks(
 @set_conversation_name("ask")
 @error_decorator(logger=_LOGGER)
 async def suggest_ask_question(
-    update: Update, context: ContextTypes.DEFAULT_TYPE
+    update: Update, _context: ContextTypes.DEFAULT_TYPE
 ) -> str:
     """Задать вопрос специалисту."""
     await update.message.reply_text(templates.ASK_ME_QUESTION_TEXT)
@@ -155,9 +161,7 @@ async def confirm_saving_question(
     problem = Problem(telegram_id=update.effective_user.id, message=question)
     await api_service.create_question_from_user(problem)
     context.user_data.clear()
-    await update.callback_query.message.edit_text(
-        text=templates.QUESTION_CONFIRMATION_TEXT
-    )
+    await update.effective_message.edit_text(text=templates.QUESTION_CONFIRMATION_TEXT)
     return ConversationHandler.END
 
 
@@ -167,7 +171,7 @@ async def cancel_save_question(
 ) -> int:
     """Отменяет отправку вопроса."""
     context.user_data.clear()
-    await update.callback_query.message.edit_text(text=templates.QUESTION_CANCEL)
+    await update.effective_message.edit_text(text=templates.QUESTION_CANCEL)
     return ConversationHandler.END
 
 
@@ -179,3 +183,29 @@ async def show_url(update: Update, _context: ContextTypes.DEFAULT_TYPE) -> None:
         text=templates.GET_MORE_INFO_TEXT,
         reply_markup=URL_BUTTON,
     )
+
+
+async def cancel_current_conversation(
+    update: Update, context: ContextTypes.DEFAULT_TYPE
+) -> Optional[int]:
+    """Обрабатывает команду /cancel, отменяя текущий активный диалог."""
+    current_conversation = context.user_data.get("current_conversation")
+
+    _LOGGER.info(
+        "Пользователь %d использовал команду /cancel для %s",
+        update.effective_chat.id,
+        current_conversation or "отсутствующего диалога",
+    )
+
+    if current_conversation is None:
+        await update.message.reply_text(templates.NO_ACTIVE_TASKS_MESSAGE)
+        return None
+
+    if current_conversation == TASK_EXECUTION:
+        message = templates.TASK_CANCELLED_MESSAGE
+    else:
+        message = templates.COMMAND_CANCELLED_MESSAGE_TEMPLATE % current_conversation
+    await update.message.reply_text(message)
+
+    context.user_data.clear()
+    return ConversationHandler.END

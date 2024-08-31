@@ -1,5 +1,5 @@
 from telegram.constants import ParseMode
-from telegram.ext import Application, ApplicationBuilder, Defaults
+from telegram.ext import AIORateLimiter, Application, ApplicationBuilder, Defaults
 
 from conversations.general.handlers import acquaintance_handler
 from conversations.mentor_registration.handlers import (
@@ -41,6 +41,7 @@ def create_bot():
         ApplicationBuilder()
         .token(TOKEN)
         .defaults(defaults)
+        .rate_limiter(AIORateLimiter(max_retries=3))
         .post_init(post_init)
         .build()
     )

@@ -63,3 +63,9 @@ ask_question_handler = ConversationHandler(
 )
 # /info
 info_handler = CommandHandler("info", callback_funcs.show_url)
+
+# /cancel
+cancel_handler = CommandHandler(
+    "cancel",
+    callback_funcs.cancel_current_conversation,
+)
