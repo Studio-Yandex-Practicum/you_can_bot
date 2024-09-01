@@ -2,7 +2,6 @@ import logging
 import re
 
 from telegram import Update
-from telegram.constants import ParseMode
 from telegram.ext import ContextTypes
 
 from conversations.tasks.base import CHOOSING, BaseTaskConversation
@@ -53,7 +52,6 @@ class TaskOneConversation(BaseTaskConversation):
         await update.effective_message.reply_text(
             text=messages[0].content,
             reply_markup=get_default_inline_keyboard(self.choices),
-            parse_mode=ParseMode.HTML,
         )
 
     @error_decorator(logger=_LOGGER)
@@ -73,7 +71,6 @@ class TaskOneConversation(BaseTaskConversation):
         await update.effective_message.edit_text(
             self._get_question_text(message.text_html.split("\n\n"), picked_choices),
             reply_markup=get_default_inline_keyboard(self.choices, picked_choices),
-            parse_mode=ParseMode.HTML,
         )
         current_question = context.user_data.get("current_question")
         if len(picked_choices) == len(self.choices):
@@ -82,6 +79,14 @@ class TaskOneConversation(BaseTaskConversation):
                 current_question,
                 picked_choices,
             )
+
+            _LOGGER.info(
+                "Пользователь %d ответил на вопрос №%d Задания №%d",
+                message.chat_id,
+                current_question,
+                self.task_number,
+            )
+
             if current_question == self.number_of_questions:
                 state = await self.show_result(update, context)
                 return state

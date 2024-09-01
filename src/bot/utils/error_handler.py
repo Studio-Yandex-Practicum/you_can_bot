@@ -1,8 +1,8 @@
 from functools import wraps
 from logging import Logger
 
+from httpx import HTTPStatusError
 from telegram import Update
-from telegram.constants import ParseMode
 from telegram.ext import ContextTypes, ConversationHandler
 
 
@@ -40,14 +40,19 @@ def error_decorator(logger):
 async def _send_user_error_message(update):
     await update.effective_chat.send_message(
         "Ой, что-то пошло не так! Попробуй, пожалуйста, позже.",
-        parse_mode=ParseMode.HTML,
     )
 
 
 async def _log_update_exception(context, exception, logger):
-    logger.error(
+    message = (
         f"Exception while handling an update:\n"
         f"context.chat_data = {context.chat_data}\n"
-        f"context.user_data = {context.user_data}",
+        f"context.user_data = {context.user_data}"
+    )
+    if isinstance(exception, HTTPStatusError):
+        message += "\nresponse = "
+        message += exception.response.text
+    logger.error(
+        message,
         exc_info=exception,
     )

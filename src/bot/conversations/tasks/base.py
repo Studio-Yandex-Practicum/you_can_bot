@@ -3,7 +3,6 @@ from dataclasses import dataclass
 from typing import Tuple
 
 from telegram import ForceReply, InlineKeyboardButton, InlineKeyboardMarkup, Update
-from telegram.constants import ParseMode
 from telegram.ext import (
     CallbackQueryHandler,
     ContextTypes,
@@ -18,6 +17,7 @@ from conversations.general.decorators import (
     set_conversation_name,
 )
 from conversations.menu.callback_funcs import add_task_number_to_prev_message
+from conversations.menu.cancel_command.handlers import cancel_handler
 from conversations.tasks.keyboards import (
     CONFIRM_KEYBOARD,
     NEXT_KEYBOARD,
@@ -86,7 +86,7 @@ class BaseTaskConversation:
         )
         return task_status.is_done, task_status.current_question
 
-    @not_in_conversation(ConversationHandler.END)
+    @not_in_conversation
     @set_conversation_name(TASK_EXECUTION)
     @error_decorator(logger=_LOGGER)
     async def show_task_description(
@@ -104,17 +104,20 @@ class BaseTaskConversation:
             update=update
         )
         if task_done:
-            await update.effective_message.reply_text(
-                text=TASK_ALREADY_DONE_TEXT, parse_mode=ParseMode.HTML
-            )
+            await update.effective_message.reply_text(text=TASK_ALREADY_DONE_TEXT)
             del context.user_data["current_conversation"]
             return ConversationHandler.END
+
+        _LOGGER.info(
+            "Пользователь %d начал Задание №%d",
+            update.effective_chat.id,
+            self.task_number,
+        )
 
         context.user_data["current_question"] = current_question + 1
         await update.effective_message.reply_text(
             text=self.description,
             reply_markup=NEXT_KEYBOARD,
-            parse_mode=ParseMode.HTML,
         )
         return CHOOSING
 
@@ -136,9 +139,7 @@ class BaseTaskConversation:
         await update.effective_message.reply_text(
             text=messages[0].content,
             reply_markup=get_default_inline_keyboard(self.choices),
-            parse_mode=ParseMode.HTML,
         )
-        await update.callback_query.answer()
 
     @error_decorator(logger=_LOGGER)
     async def handle_user_answer(
@@ -154,7 +155,6 @@ class BaseTaskConversation:
         message = update.effective_message
         await message.edit_text(
             text=f"{message.text_html}\n\nОтвет: {picked_choice.upper()}",
-            parse_mode=ParseMode.HTML,
         )
         current_question = context.user_data.get("current_question")
         await api_service.create_answer(
@@ -164,6 +164,12 @@ class BaseTaskConversation:
                 number=current_question,
                 content=update.callback_query.data.lower(),
             )
+        )
+        _LOGGER.info(
+            "Пользователь %d ответил на вопрос №%d Задания №%d",
+            update.effective_chat.id,
+            context.user_data["current_question"],
+            self.task_number,
         )
         if current_question == self.number_of_questions:
             state = await self.show_result(update, context)
@@ -182,7 +188,6 @@ class BaseTaskConversation:
         if self.result_intro:
             await query.message.reply_text(
                 text=self.result_intro,
-                parse_mode=ParseMode.HTML,
             )
         results = await api_service.get_messages_with_results(
             telegram_id=query.from_user.id, task_number=self.task_number
@@ -190,11 +195,9 @@ class BaseTaskConversation:
         for result in results[:-1]:
             await query.message.reply_text(
                 text=result.content,
-                parse_mode=ParseMode.HTML,
             )
         await query.message.reply_text(
             text=results[-1].content,
-            parse_mode=ParseMode.HTML,
             reply_markup=InlineKeyboardMarkup(
                 (
                     (
@@ -207,6 +210,11 @@ class BaseTaskConversation:
             ),
         )
         context.user_data.clear()
+        _LOGGER.info(
+            "Пользователь %d завершил Задание №%d",
+            update.effective_chat.id,
+            self.task_number,
+        )
         return ConversationHandler.END
 
     @error_decorator(logger=_LOGGER)
@@ -217,6 +225,7 @@ class BaseTaskConversation:
         Показывает описание задание, но перед этим добавляет
         в предыдущее сообщение выбранный номер задания.
         """
+        del context.user_data["current_conversation"]
         return await add_task_number_to_prev_message(
             update=update,
             context=context,
@@ -256,7 +265,7 @@ class BaseTaskConversation:
         Управляет выходом из диалога.
         Используется при создании хэндлера для задания.
         """
-        return []
+        return [cancel_handler]
 
     def add_handlers(self):
         """
@@ -266,6 +275,7 @@ class BaseTaskConversation:
             entry_points=self.set_entry_points(),
             states=self.set_states(),
             fallbacks=self.set_fallbacks(),
+            map_to_parent={ConversationHandler.END: ConversationHandler.END},
         )
 
 
@@ -276,7 +286,7 @@ class OneQuestionConversation(BaseTaskConversation):
         super().__post_init__()
         self.start_method = self.show_question
 
-    @not_in_conversation(ConversationHandler.END)
+    @not_in_conversation
     @set_conversation_name(TASK_EXECUTION)
     @error_decorator(logger=_LOGGER)
     async def show_question(
@@ -287,11 +297,15 @@ class OneQuestionConversation(BaseTaskConversation):
             await update.callback_query.edit_message_reply_markup()
         task_done, current_question = await self.check_current_task_is_done(update)
         if task_done:
-            await update.effective_message.reply_text(
-                text=TASK_ALREADY_DONE_TEXT, parse_mode=ParseMode.HTML
-            )
+            await update.effective_message.reply_text(text=TASK_ALREADY_DONE_TEXT)
             del context.user_data["current_conversation"]
             return ConversationHandler.END
+
+        _LOGGER.info(
+            "Пользователь %d начал Задание №%d",
+            update.effective_chat.id,
+            self.task_number,
+        )
 
         messages = await api_service.get_messages_with_question(
             task_number=self.task_number, question_number=self.number_of_questions
@@ -299,7 +313,6 @@ class OneQuestionConversation(BaseTaskConversation):
         await update.effective_message.reply_text(
             text=messages[0].content,
             reply_markup=ForceReply(selective=True),
-            parse_mode=ParseMode.HTML,
         )
         await update.callback_query.answer()
         return TYPING_ANSWER
@@ -317,7 +330,6 @@ class OneQuestionConversation(BaseTaskConversation):
         confirmation_message = await update.effective_message.reply_text(
             text=SEND_ANSWER_TEXT + '"' + answer_text + '"',
             reply_markup=CONFIRM_KEYBOARD,
-            parse_mode=ParseMode.HTML,
         )
         context.user_data["confirmation_message_id"] = confirmation_message.message_id
 
@@ -346,7 +358,6 @@ class OneQuestionConversation(BaseTaskConversation):
                     message_id=confirmation_message_id,
                     text=SEND_ANSWER_TEXT + '"' + answer_text + '"',
                     reply_markup=CONFIRM_KEYBOARD,
-                    parse_mode=ParseMode.HTML,
                 )
 
             if answer_text and answer_id:
@@ -379,7 +390,6 @@ class OneQuestionConversation(BaseTaskConversation):
         )
         await update.effective_message.reply_text(
             text=self.result_intro,
-            parse_mode=ParseMode.HTML,
             reply_markup=InlineKeyboardMarkup(
                 (
                     (
@@ -392,6 +402,11 @@ class OneQuestionConversation(BaseTaskConversation):
             ),
         )
         context.user_data.clear()
+        _LOGGER.info(
+            "Пользователь %d завершил Задание №%d",
+            update.effective_chat.id,
+            self.task_number,
+        )
         return ConversationHandler.END
 
     def set_states(self):

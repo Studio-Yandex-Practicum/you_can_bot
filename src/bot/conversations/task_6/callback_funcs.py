@@ -1,7 +1,6 @@
 import logging
 
 from telegram import ForceReply, InlineKeyboardButton, InlineKeyboardMarkup, Update
-from telegram.constants import ParseMode
 from telegram.ext import (
     CallbackQueryHandler,
     ContextTypes,
@@ -51,7 +50,6 @@ class TaskSixConversation(BaseTaskConversation):
         )
         await update.effective_message.reply_text(
             text=messages[0].content,
-            parse_mode=ParseMode.HTML,
             reply_markup=ForceReply(selective=True),
         )
         await update.callback_query.answer()
@@ -64,7 +62,6 @@ class TaskSixConversation(BaseTaskConversation):
         """
         await update.effective_message.reply_text(
             text=self.result_intro,
-            parse_mode=ParseMode.HTML,
             reply_markup=InlineKeyboardMarkup(
                 (
                     (
@@ -77,6 +74,11 @@ class TaskSixConversation(BaseTaskConversation):
             ),
         )
         context.user_data.clear()
+        _LOGGER.info(
+            "Пользователь %d завершил Задание №%d",
+            update.effective_chat.id,
+            self.task_number,
+        )
         return ConversationHandler.END
 
     @error_decorator(logger=_LOGGER)
@@ -92,7 +94,6 @@ class TaskSixConversation(BaseTaskConversation):
         confirmation_message = await update.effective_message.reply_text(
             text=SEND_ANSWER_TEXT + '"' + answer_text + '"',
             reply_markup=CONFIRM_KEYBOARD,
-            parse_mode=ParseMode.HTML,
         )
         context.user_data["confirmation_message_id"] = confirmation_message.message_id
 
@@ -121,7 +122,6 @@ class TaskSixConversation(BaseTaskConversation):
                     message_id=confirmation_message_id,
                     text=SEND_ANSWER_TEXT + '"' + answer_text + '"',
                     reply_markup=CONFIRM_KEYBOARD,
-                    parse_mode=ParseMode.HTML,
                 )
 
             if answer_text and answer_id:
@@ -154,6 +154,13 @@ class TaskSixConversation(BaseTaskConversation):
                 number=current_question_number,
                 content=answer_text,
             )
+        )
+
+        _LOGGER.info(
+            "Пользователь %d ответил на вопрос №%d Задания №%d",
+            update.effective_chat.id,
+            context.user_data["current_question"],
+            self.task_number,
         )
 
         if current_question_number == self.number_of_questions:

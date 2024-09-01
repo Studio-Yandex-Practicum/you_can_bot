@@ -16,4 +16,4 @@ TASK_SEVEN_DATA = {
 }
 
 task_seven = OneQuestionConversation(**TASK_SEVEN_DATA)
-task_seven_handler = task_seven.add_handlers()
+task_seven_conv = task_seven.add_handlers()
