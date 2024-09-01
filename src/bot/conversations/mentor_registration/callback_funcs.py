@@ -10,6 +10,7 @@ from telegram.ext import (
 )
 
 from conversations.general.decorators import not_in_conversation, set_conversation_name
+from conversations.general.logging_decorators import log_decorator
 from conversations.mentor_registration.templates import (
     ASK_FIRST_NAME,
     ASK_LAST_NAME,
@@ -49,6 +50,7 @@ class MentorRegistrationConversation:
     """
 
     @not_in_conversation
+    @log_decorator(_LOGGER)
     @set_conversation_name("mentor_registration")
     @error_decorator(logger=_LOGGER)
     async def start(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:

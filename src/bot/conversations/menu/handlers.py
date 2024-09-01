@@ -81,4 +81,4 @@ ask_question_handler = ConversationHandler(
     ],
 )
 # /info
-info_handler = CommandHandler("info", callback_funcs.show_url)
+info_handler = CommandHandler("info", callback_funcs.show_info_url)

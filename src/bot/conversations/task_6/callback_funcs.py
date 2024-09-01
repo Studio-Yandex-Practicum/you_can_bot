@@ -74,6 +74,11 @@ class TaskSixConversation(BaseTaskConversation):
             ),
         )
         context.user_data.clear()
+        _LOGGER.info(
+            "Пользователь %d завершил Задание №%d",
+            update.effective_chat.id,
+            self.task_number,
+        )
         return ConversationHandler.END
 
     @error_decorator(logger=_LOGGER)
@@ -149,6 +154,13 @@ class TaskSixConversation(BaseTaskConversation):
                 number=current_question_number,
                 content=answer_text,
             )
+        )
+
+        _LOGGER.info(
+            "Пользователь %d ответил на вопрос №%d Задания №%d",
+            update.effective_chat.id,
+            context.user_data["current_question"],
+            self.task_number,
         )
 
         if current_question_number == self.number_of_questions:

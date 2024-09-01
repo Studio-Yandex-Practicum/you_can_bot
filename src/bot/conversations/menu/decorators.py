@@ -1,3 +1,5 @@
+import functools
+
 from httpx import HTTPStatusError, codes
 from telegram import Update
 from telegram.ext import ContextTypes, ConversationHandler
@@ -8,6 +10,7 @@ from .templates import USER_NOT_FOUND
 
 
 def user_exists(func):
+    @functools.wraps(func)
     async def wrapper(update: Update, context: ContextTypes.DEFAULT_TYPE):
         telegram_id = update.effective_user.id
         try:

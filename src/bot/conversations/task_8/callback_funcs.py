@@ -82,6 +82,13 @@ async def show_start_of_task_8(update: Update, context: CallbackContext) -> int:
         await update.effective_message.reply_text(text=TASK_ALREADY_DONE_TEXT)
         del context.user_data["current_conversation"]
         return ConversationHandler.END
+
+    _LOGGER.info(
+        "Пользователь %d начал Задание №%d",
+        update.effective_chat.id,
+        CURRENT_TASK,
+    )
+
     context.user_data["current_question"] = START_QUESTION_NUMBER
     context.user_data["picked_choices"] = []
     context.user_data["result"] = []
@@ -184,6 +191,11 @@ async def show_result(update: Update, _context: CallbackContext) -> int:
     await query.message.reply_text(
         text=messages[-1].content,
         reply_markup=FURTHER_ACTIONS_KEYBOARD,
+    )
+    _LOGGER.info(
+        "Пользователь %d завершил Задание №%d",
+        update.effective_chat.id,
+        CURRENT_TASK,
     )
     return FINAL_STATE
 

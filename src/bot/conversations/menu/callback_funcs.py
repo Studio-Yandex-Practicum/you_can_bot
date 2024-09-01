@@ -6,6 +6,7 @@ from telegram.ext import CallbackContext, ContextTypes, ConversationHandler
 import conversations.menu.templates as templates
 import internal_requests.service as api_service
 from conversations.general.decorators import not_in_conversation, set_conversation_name
+from conversations.general.logging_decorators import log_decorator
 from conversations.menu.cancel_command.callback_funcs import _LOGGER
 from conversations.menu.decorators import user_exists
 from conversations.menu.keyboards import (
@@ -61,8 +62,9 @@ async def add_task_number_to_prev_message(
 
 @user_exists
 @not_in_conversation
+@log_decorator(_LOGGER)
 @set_conversation_name("tasks")
-@error_decorator(logger=_LOGGER)
+@error_decorator(_LOGGER)
 async def show_all_user_tasks(
     update: Update, _context: ContextTypes.DEFAULT_TYPE
 ) -> None:
@@ -86,8 +88,9 @@ async def show_all_user_tasks(
 
 @user_exists
 @not_in_conversation
+@log_decorator(_LOGGER)
 @set_conversation_name("ask")
-@error_decorator(logger=_LOGGER)
+@error_decorator(_LOGGER)
 async def suggest_ask_question(
     update: Update, _context: ContextTypes.DEFAULT_TYPE
 ) -> str:
@@ -163,8 +166,9 @@ async def cancel_save_question(
 
 
 @not_in_conversation
+@log_decorator(_LOGGER)
 @error_decorator(logger=_LOGGER)
-async def show_url(update: Update, _context: ContextTypes.DEFAULT_TYPE) -> None:
+async def show_info_url(update: Update, _context: ContextTypes.DEFAULT_TYPE) -> None:
     """Перейти на сайт YouCan."""
     await update.message.reply_text(
         text=templates.GET_MORE_INFO_TEXT,

@@ -108,6 +108,12 @@ class BaseTaskConversation:
             del context.user_data["current_conversation"]
             return ConversationHandler.END
 
+        _LOGGER.info(
+            "Пользователь %d начал Задание №%d",
+            update.effective_chat.id,
+            self.task_number,
+        )
+
         context.user_data["current_question"] = current_question + 1
         await update.effective_message.reply_text(
             text=self.description,
@@ -134,7 +140,6 @@ class BaseTaskConversation:
             text=messages[0].content,
             reply_markup=get_default_inline_keyboard(self.choices),
         )
-        await update.callback_query.answer()
 
     @error_decorator(logger=_LOGGER)
     async def handle_user_answer(
@@ -159,6 +164,12 @@ class BaseTaskConversation:
                 number=current_question,
                 content=update.callback_query.data.lower(),
             )
+        )
+        _LOGGER.info(
+            "Пользователь %d ответил на вопрос №%d Задания №%d",
+            update.effective_chat.id,
+            context.user_data["current_question"],
+            self.task_number,
         )
         if current_question == self.number_of_questions:
             state = await self.show_result(update, context)
@@ -199,6 +210,11 @@ class BaseTaskConversation:
             ),
         )
         context.user_data.clear()
+        _LOGGER.info(
+            "Пользователь %d завершил Задание №%d",
+            update.effective_chat.id,
+            self.task_number,
+        )
         return ConversationHandler.END
 
     @error_decorator(logger=_LOGGER)
@@ -284,6 +300,12 @@ class OneQuestionConversation(BaseTaskConversation):
             await update.effective_message.reply_text(text=TASK_ALREADY_DONE_TEXT)
             del context.user_data["current_conversation"]
             return ConversationHandler.END
+
+        _LOGGER.info(
+            "Пользователь %d начал Задание №%d",
+            update.effective_chat.id,
+            self.task_number,
+        )
 
         messages = await api_service.get_messages_with_question(
             task_number=self.task_number, question_number=self.number_of_questions
@@ -380,6 +402,11 @@ class OneQuestionConversation(BaseTaskConversation):
             ),
         )
         context.user_data.clear()
+        _LOGGER.info(
+            "Пользователь %d завершил Задание №%d",
+            update.effective_chat.id,
+            self.task_number,
+        )
         return ConversationHandler.END
 
     def set_states(self):
