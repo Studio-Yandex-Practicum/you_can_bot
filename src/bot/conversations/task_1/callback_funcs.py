@@ -79,6 +79,14 @@ class TaskOneConversation(BaseTaskConversation):
                 current_question,
                 picked_choices,
             )
+
+            _LOGGER.info(
+                "Пользователь %d ответил на вопрос №%d Задания №%d",
+                message.chat_id,
+                current_question,
+                self.task_number,
+            )
+
             if current_question == self.number_of_questions:
                 state = await self.show_result(update, context)
                 return state

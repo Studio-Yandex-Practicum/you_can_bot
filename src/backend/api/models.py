@@ -40,6 +40,8 @@ class UserFromTelegram(models.Model):
     telegram_username = models.CharField(
         "Никнейм Telegram",
         max_length=_MAX_LENGTH_OF_TELEGRAM_USERNAME,
+        null=True,
+        blank=True,
     )
     name = models.CharField(
         "Имя",
