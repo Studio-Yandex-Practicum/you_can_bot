@@ -19,4 +19,4 @@ TASK_ONE_DATA = {
 }
 
 task_one = TaskOneConversation(**TASK_ONE_DATA)
-task_one_handler = task_one.add_handlers()
+task_one_conv = task_one.add_handlers()

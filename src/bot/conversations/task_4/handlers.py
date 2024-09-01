@@ -18,4 +18,4 @@ TASK_FOUR_DATA = {
     "result_intro": TASK_FOUR_RESULT_INTRO,
 }
 task_four = BaseTaskConversation(**TASK_FOUR_DATA)
-task_four_handler = task_four.add_handlers()
+task_four_conv = task_four.add_handlers()

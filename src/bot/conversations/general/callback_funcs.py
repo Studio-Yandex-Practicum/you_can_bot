@@ -3,26 +3,27 @@ from typing import Optional
 
 from httpx import HTTPStatusError, codes
 from telegram import Update
-from telegram.constants import ParseMode
 from telegram.ext import ContextTypes, ConversationHandler
 
 import conversations.general.keyboards as keyboards
 import conversations.general.templates as templates
 import internal_requests.service as api_service
 from conversations.general.decorators import not_in_conversation, set_conversation_name
+from conversations.general.logging_decorators import log_decorator
 from external_requests import NAME, SURNAME, TARIFF, get_user_info_from_lk
 from external_requests.exceptions import APIDataError, PostAPIError, UserNotFound
 from internal_requests.entities import UserFromTelegram
 from utils.configs import ALLOWED_TARIFFS
-
-DELAY_TO_AVOID_FLOOD = 5
+from utils.error_handler import error_decorator
 
 _LOGGER = logging.getLogger(__name__)
 
 HELLO = 0
 
 
-@not_in_conversation(ConversationHandler.END)
+@not_in_conversation
+@log_decorator(_LOGGER)
+@error_decorator(_LOGGER)
 @set_conversation_name("start")
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     """Первое сообщение от бота при вводе команды /start."""
@@ -89,16 +90,10 @@ async def _get_user_info_from_lk_and_handle_it(update: Update) -> Optional[dict]
         user_info = await get_user_info_from_lk(update.effective_user.id)
         return user_info
     except UserNotFound:
-        await update.message.reply_text(
-            templates.UNKNOWN_START_MESSAGE, parse_mode=ParseMode.HTML
-        )
+        await update.message.reply_text(templates.UNKNOWN_START_MESSAGE)
     except ConnectionError:
-        await update.message.reply_text(
-            templates.CONNECTION_ERROR_MESSAGE, parse_mode=ParseMode.HTML
-        )
+        await update.message.reply_text(templates.CONNECTION_ERROR_MESSAGE)
     except (HTTPStatusError, PostAPIError, APIDataError):
-        await update.message.reply_text(
-            templates.SERVER_ERROR_MESSAGE, parse_mode=ParseMode.HTML
-        )
+        await update.message.reply_text(templates.SERVER_ERROR_MESSAGE)
     except Exception as error:
         raise error
