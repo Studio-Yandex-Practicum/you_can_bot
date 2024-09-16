@@ -1,8 +1,10 @@
 from functools import wraps
 from logging import Logger
+from typing import Optional
 
 from httpx import HTTPStatusError
 from telegram import Update
+from telegram.error import BadRequest
 from telegram.ext import ContextTypes, ConversationHandler
 
 
@@ -11,10 +13,12 @@ async def handle_error(
     context: ContextTypes.DEFAULT_TYPE,
     exception: Exception,
     logger: Logger,
-) -> int:
+) -> Optional[int]:
     """Обрабатывает непредвиденное исключение внутри ConversationHandler."""
     await _send_user_error_message(update)
     await _log_update_exception(context, exception, logger)
+    if isinstance(exception, BadRequest):
+        return None
     context.user_data.clear()
     return ConversationHandler.END
 

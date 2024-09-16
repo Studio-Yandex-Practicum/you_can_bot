@@ -130,7 +130,6 @@ def handle_answer(
 ) -> Callable:
     def decorator(func):
         async def wrapper(update: Update, context: CallbackContext) -> Optional[int]:
-            await update.effective_message.edit_reply_markup()
             picked_choice = await _validate_callback_data(update)
             await _add_answer_to_message(picked_choice, update)
             current_question = context.user_data.get("current_question")
