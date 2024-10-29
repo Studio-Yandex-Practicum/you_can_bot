@@ -45,8 +45,8 @@ FIRST_STAGE_END = 20
 SECOND_STAGE_END = FIRST_STAGE_END + FIRST_STAGE_END // 2
 TASK_END = SECOND_STAGE_END + FIRST_STAGE_END // 4
 
-FIRST_STAGE_END_MESSAGE = "Начало второго круга задания"
-SECOND_STAGE_END_MESSAGE = "Начало последнего круга задания"
+FIRST_STAGE_END_MESSAGE = "Начало второго круга задания ⬇️"
+SECOND_STAGE_END_MESSAGE = "Начало последнего круга задания ⬇️"
 
 
 class LocationOfChoiceInTask(TypedDict):
