@@ -150,11 +150,14 @@ class TaskStatusAdmin(admin.ModelAdmin):
 
 @admin.register(UserFromTelegram)
 class UserFromTelegramAdmin(admin.ModelAdmin):
+    date_hierarchy = "last_task_completed_at"
     list_display = (
         "telegram_username",
         "name",
         "surname",
         "mentor",
+        "tasks_completed_count",
+        "last_task_completed_at",
         "info_page",
     )
     search_fields = (
@@ -162,7 +165,10 @@ class UserFromTelegramAdmin(admin.ModelAdmin):
         "surname",
         "telegram_username",
     )
-    list_filter = ("mentor",)
+    list_filter = (
+        "mentor",
+        "tasks_completed_count",
+    )
     empty_value_display = "-пусто-"
     inlines = (TaskStatusInline,)
 
