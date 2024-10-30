@@ -11,6 +11,8 @@ from telegram.ext import (
     filters,
 )
 
+import conversations.tasks.keyboards as keyboards
+import conversations.tasks.states as states
 from conversations.general.decorators import (
     TASK_EXECUTION,
     not_in_conversation,
@@ -18,22 +20,11 @@ from conversations.general.decorators import (
 )
 from conversations.menu.callback_funcs import add_task_number_to_prev_message
 from conversations.menu.cancel_command.handlers import cancel_handler
-from conversations.tasks.keyboards import (
-    CONFIRM_KEYBOARD,
-    NEXT_KEYBOARD,
-    get_default_inline_keyboard,
-)
 from internal_requests import service as api_service
 from internal_requests.entities import Answer
 from utils.error_handler import error_decorator
 
-CHOOSING = 1
-TYPING_ANSWER = 2
-CONFIRMING = 3
 START_QUESTION_NUMBER = 1
-BUTTON_LABELS_PATTERN = r"^([1-9]|10|[А-Е])$"
-NEXT_BUTTON_PATTERN = r"^Далее$"
-TASK_START_BUTTON_LABEL = "Задание "
 TASK_ALREADY_DONE_TEXT = (
     "<b>Данное задание уже пройдено!</b>\n\n"
     "Если хочешь повторно посмотреть его результаты,"
@@ -43,7 +34,6 @@ SEND_ANSWER_TEXT = (
     "После подтверждения ответ будет отправлен."
     " До подтверждения ты можешь его изменить.\n\n<b>Текущий ответ:</b> "
 )
-CONFIRM_BUTTON_PATTERN = r"^confirm_answer$"
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -69,12 +59,13 @@ class BaseTaskConversation:
         шаблонного текста TASK_CANCEL_TEXT.
         Добавляет методы для отображения вопросов и обработки ответов.
         """
-        self.entry_point_button_label: str = TASK_START_BUTTON_LABEL + str(
+        self.entry_point_button_label: str = keyboards.TASK_START_BUTTON_LABEL + str(
             self.task_number
         )
         self.start_method = self.show_task_description
         self.question_method = self.show_question
         self.update_method = self.handle_user_answer
+        self.show_result_method = self.show_result
 
     async def check_current_task_is_done(self, update: Update) -> Tuple[bool, int]:
         """
@@ -117,9 +108,9 @@ class BaseTaskConversation:
         context.user_data["current_question"] = current_question + 1
         await update.effective_message.reply_text(
             text=self.description,
-            reply_markup=NEXT_KEYBOARD,
+            reply_markup=keyboards.NEXT_KEYBOARD,
         )
-        return CHOOSING
+        return states.CHOOSING
 
     @error_decorator(logger=_LOGGER)
     async def show_question(
@@ -138,7 +129,7 @@ class BaseTaskConversation:
         )
         await update.effective_message.reply_text(
             text=messages[0].content,
-            reply_markup=get_default_inline_keyboard(self.choices),
+            reply_markup=keyboards.get_default_inline_keyboard(self.choices),
         )
 
     @error_decorator(logger=_LOGGER)
@@ -172,11 +163,11 @@ class BaseTaskConversation:
             self.task_number,
         )
         if current_question == self.number_of_questions:
-            state = await self.show_result(update, context)
-            return state
+            await message.edit_reply_markup(reply_markup=keyboards.SHOW_RESULTS_BUTTON)
+            return states.LAST_QUESTION
         context.user_data["current_question"] += 1
         await self.show_question(update, context)
-        return CHOOSING
+        return states.CHOOSING
 
     @error_decorator(logger=_LOGGER)
     async def show_result(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -185,6 +176,7 @@ class BaseTaskConversation:
         после чего переходит к следующему заданию.
         """
         query = update.callback_query
+        await query.edit_message_reply_markup()
         if self.result_intro:
             await query.message.reply_text(
                 text=self.result_intro,
@@ -254,10 +246,20 @@ class BaseTaskConversation:
         Используется при создании хэндлера для задания.
         """
         return {
-            CHOOSING: [
-                CallbackQueryHandler(self.question_method, pattern=NEXT_BUTTON_PATTERN),
-                CallbackQueryHandler(self.update_method, pattern=BUTTON_LABELS_PATTERN),
-            ]
+            states.CHOOSING: [
+                CallbackQueryHandler(
+                    self.question_method, pattern=keyboards.NEXT_BUTTON_PATTERN
+                ),
+                CallbackQueryHandler(
+                    self.update_method, pattern=keyboards.BUTTON_LABELS_PATTERN
+                ),
+            ],
+            states.LAST_QUESTION: [
+                CallbackQueryHandler(
+                    self.show_result_method,
+                    pattern=keyboards.SHOW_RESULTS_BUTTON_PATTERN,
+                ),
+            ],
         }
 
     def set_fallbacks(self):
@@ -315,7 +317,7 @@ class OneQuestionConversation(BaseTaskConversation):
             reply_markup=ForceReply(selective=True),
         )
         await update.callback_query.answer()
-        return TYPING_ANSWER
+        return states.TYPING_ANSWER
 
     @error_decorator(logger=_LOGGER)
     async def handle_typed_answer(
@@ -329,14 +331,14 @@ class OneQuestionConversation(BaseTaskConversation):
         answer_id = update.message.message_id
         confirmation_message = await update.effective_message.reply_text(
             text=SEND_ANSWER_TEXT + '"' + answer_text + '"',
-            reply_markup=CONFIRM_KEYBOARD,
+            reply_markup=keyboards.CONFIRM_KEYBOARD,
         )
         context.user_data["confirmation_message_id"] = confirmation_message.message_id
 
         if answer_text and answer_id:
             context.user_data["answer_text"] = answer_text
             context.user_data["answer_id"] = answer_id
-        return CONFIRMING
+        return states.CONFIRMING
 
     @error_decorator(logger=_LOGGER)
     async def handle_answer_editing(
@@ -357,13 +359,13 @@ class OneQuestionConversation(BaseTaskConversation):
                     chat_id=update.effective_chat.id,
                     message_id=confirmation_message_id,
                     text=SEND_ANSWER_TEXT + '"' + answer_text + '"',
-                    reply_markup=CONFIRM_KEYBOARD,
+                    reply_markup=keyboards.CONFIRM_KEYBOARD,
                 )
 
             if answer_text and answer_id:
                 context.user_data["answer_text"] = answer_text
                 context.user_data["answer_id"] = answer_id
-        return CONFIRMING
+        return states.CONFIRMING
 
     @error_decorator(logger=_LOGGER)
     async def confirm_saving_answer(
@@ -412,15 +414,16 @@ class OneQuestionConversation(BaseTaskConversation):
     def set_states(self):
         """Управляет ведением диалога."""
         return {
-            TYPING_ANSWER: [
+            states.TYPING_ANSWER: [
                 MessageHandler(
                     filters=filters.TEXT & ~filters.COMMAND,
                     callback=self.handle_typed_answer,
                 )
             ],
-            CONFIRMING: [
+            states.CONFIRMING: [
                 CallbackQueryHandler(
-                    callback=self.confirm_saving_answer, pattern=CONFIRM_BUTTON_PATTERN
+                    callback=self.confirm_saving_answer,
+                    pattern=keyboards.CONFIRM_BUTTON_PATTERN,
                 ),
                 MessageHandler(
                     filters=filters.UpdateType.EDITED_MESSAGE,
