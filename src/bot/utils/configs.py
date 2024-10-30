@@ -31,7 +31,7 @@ LOG_INTERVAL = 1
 LOG_BACKUP_COUNT = 14
 LOG_ENCODING = "UTF-8"
 
-ALLOWED_TARIFFS = loads(os.getenv("ALLOWED_TARIFFS", '["midi", "maxi"]'))
+ALLOWED_TARIFFS = loads(os.getenv("ALLOWED_TARIFFS", '["maxi"]'))
 ALL_TARIFFS = loads(os.getenv("ALL_TARIFFS", '["mini", "midi", "maxi", null]'))
 YOUCANBY_URL = os.getenv("YOUCANBY_URL")
 YOUCANBY_TOKEN = os.getenv("YOUCANBY_TOKEN")
