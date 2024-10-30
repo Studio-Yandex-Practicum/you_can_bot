@@ -18,7 +18,6 @@ from conversations.general.decorators import (
     not_in_conversation,
     set_conversation_name,
 )
-from conversations.menu.callback_funcs import add_task_number_to_prev_message
 from conversations.menu.cancel_command.handlers import cancel_handler
 from internal_requests import service as api_service
 from internal_requests.entities import Answer
@@ -34,6 +33,7 @@ SEND_ANSWER_TEXT = (
     "После подтверждения ответ будет отправлен."
     " До подтверждения ты можешь его изменить.\n\n<b>Текущий ответ:</b> "
 )
+PICKED_TASK_TEXT = "<b>Задание {task_number}. {task_name} ⬇️</b>"
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -90,7 +90,15 @@ class BaseTaskConversation:
         в состояние CHOOSING.
         """
         if update.callback_query:
-            await update.callback_query.edit_message_reply_markup()
+            await update.effective_message.edit_reply_markup()
+            task_info = await api_service.get_task_info_by_number(
+                task_number=self.task_number
+            )
+            await update.effective_chat.send_message(
+                text=PICKED_TASK_TEXT.format(
+                    task_number=task_info.number, task_name=task_info.name
+                ),
+            )
         task_done, current_question = await self.check_current_task_is_done(
             update=update
         )
@@ -209,21 +217,11 @@ class BaseTaskConversation:
         )
         return ConversationHandler.END
 
-    @error_decorator(logger=_LOGGER)
-    async def show_task_description_with_number(
+    async def clear_conversation_status_of_tasks_command(
         self, update: Update, context: ContextTypes.DEFAULT_TYPE
-    ) -> int:
-        """
-        Показывает описание задание, но перед этим добавляет
-        в предыдущее сообщение выбранный номер задания.
-        """
+    ):
         del context.user_data["current_conversation"]
-        return await add_task_number_to_prev_message(
-            update=update,
-            context=context,
-            task_number=self.task_number,
-            start_task_method=self.start_method,
-        )
+        return await self.start_method(update, context)
 
     def set_entry_points(self):
         """
@@ -235,8 +233,8 @@ class BaseTaskConversation:
                 self.start_method, pattern=rf"^start_task_{self.task_number}$"
             ),
             CallbackQueryHandler(
-                self.show_task_description_with_number,
-                pattern=rf"^with_choice_start_task_{self.task_number}$",
+                self.clear_conversation_status_of_tasks_command,
+                pattern=rf"^start_task_from_command_{self.task_number}$",
             ),
         ]
 

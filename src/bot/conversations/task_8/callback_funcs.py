@@ -10,7 +10,6 @@ from conversations.general.decorators import (
     not_in_conversation,
     set_conversation_name,
 )
-from conversations.menu.callback_funcs import add_task_number_to_prev_message
 from conversations.task_8.keyboards import (
     FIRST_STAGE_END_KEYBOARD,
     FURTHER_ACTIONS_KEYBOARD,
@@ -24,7 +23,7 @@ from conversations.task_8.templates import (
     RESULT_TEXT,
     TEXT_OF_START_TASK_8,
 )
-from conversations.tasks.base import TASK_ALREADY_DONE_TEXT
+from conversations.tasks.base import PICKED_TASK_TEXT, TASK_ALREADY_DONE_TEXT
 from internal_requests.entities import Answer
 from utils.error_handler import error_decorator
 
@@ -54,17 +53,11 @@ class LocationOfChoiceInTask(TypedDict):
     choice: Literal["а"] | Literal["б"]
 
 
-@error_decorator(logger=_LOGGER)
-async def show_start_of_task_8_with_task_number(
+async def clear_conversation_status_of_tasks_command(
     update: Update, context: CallbackContext
 ) -> int:
     del context.user_data["current_conversation"]
-    return await add_task_number_to_prev_message(
-        update=update,
-        context=context,
-        task_number=CURRENT_TASK,
-        start_task_method=show_start_of_task_8,
-    )
+    return await show_start_of_task_8(update, context)
 
 
 @error_decorator(logger=_LOGGER)
@@ -72,9 +65,14 @@ async def show_start_of_task_8_with_task_number(
 @set_conversation_name(TASK_EXECUTION)
 async def show_start_of_task_8(update: Update, context: CallbackContext) -> int:
     """Вывод описания задания 8."""
-    query = update.callback_query
-    if query is not None:
-        await query.message.edit_reply_markup()
+    if update.callback_query:
+        await update.effective_message.edit_reply_markup()
+        task_info = await api_service.get_task_info_by_number(task_number=CURRENT_TASK)
+        await update.effective_chat.send_message(
+            text=PICKED_TASK_TEXT.format(
+                task_number=task_info.number, task_name=task_info.name
+            ),
+        )
     task_status = await api_service.get_user_task_status_by_number(
         task_number=CURRENT_TASK, telegram_id=update.effective_user.id
     )

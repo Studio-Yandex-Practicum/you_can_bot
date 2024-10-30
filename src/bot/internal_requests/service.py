@@ -1,7 +1,7 @@
 import logging
 import os
 from dataclasses import asdict
-from typing import List, Union
+from typing import List, Type, TypeVar, Union
 from urllib.parse import urljoin
 
 from httpx import AsyncClient, Response
@@ -13,11 +13,14 @@ from internal_requests.entities import (
     MentorRegistrationStatus,
     Message,
     Problem,
+    Task,
     TaskStatus,
     UserFromTelegram,
 )
 
 _LOGGER = logging.getLogger(__name__)
+
+Model = TypeVar("Model")
 
 INTERNAL_API_URL = os.getenv("INTERNAL_API_URL", "http://127.0.0.1:8000/api/v1/")
 
@@ -57,14 +60,30 @@ async def update_user_info(telegram_id: int, data: dict):
     return user_info_updated
 
 
+async def get_task_info_by_number(task_number: int) -> Task:
+    """Получение информации о конкретном задании."""
+    endpoint_urn = f"tasks/{task_number}/"
+    response = await _get_request(endpoint_urn)
+    result = await _parse_api_response_to_task_info(response)
+    return result
+
+
+async def get_task_info_list() -> List[Task]:
+    """Получение списка заданий."""
+    endpoint_urn = "tasks/"
+    response = await _get_request(endpoint_urn)
+    results = await _parse_api_response_to_task_info(response)
+    return results
+
+
 async def get_user_task_status_by_number(
     task_number: int, telegram_id: int
 ) -> TaskStatus:
     """Получение информации о конкретном статусе задания пользователя."""
     endpoint_urn = f"users/{telegram_id}/tasks/{task_number}/"
     response = await _get_request(endpoint_urn)
-    results = await _parse_api_response_to_task_status(response)
-    return results[0]
+    result = await _parse_api_response_to_task_status(response)
+    return result
 
 
 async def get_user_task_status_list(telegram_id: int) -> List[TaskStatus]:
@@ -234,17 +253,32 @@ async def _parse_api_response_to_mentor_registration_status(
     return MentorRegistrationStatus(**response.json())
 
 
+async def _parse_api_response_to_model(
+    response: Response, model_class: Type[Model]
+) -> Union[Model, List[Model]]:
+    """Парсит полученный json из Response в экземпляр(ы) указанной модели."""
+    json_response = response.json()
+    instances = []
+
+    if isinstance(json_response, list):
+        for item_info in json_response:
+            instance = model_class(**item_info)
+            instances.append(instance)
+    else:
+        instance = model_class(**json_response)
+        return instance
+    return instances
+
+
 async def _parse_api_response_to_task_status(
     response: Response,
 ) -> Union[TaskStatus, List[TaskStatus]]:
     """Парсит полученный json из Response в экземпляр(ы) TaskStatus."""
-    json_response = response.json()
-    tasks = []
-    if isinstance(json_response, list):
-        for task_info in json_response:
-            task = TaskStatus(**task_info)
-            tasks.append(task)
-    else:
-        task = TaskStatus(**json_response)
-        tasks.append(task)
-    return tasks
+    return await _parse_api_response_to_model(response, TaskStatus)
+
+
+async def _parse_api_response_to_task_info(
+    response: Response,
+) -> Union[Task, List[Task]]:
+    """Парсит полученный json из Response в экземпляр(ы) Task."""
+    return await _parse_api_response_to_model(response, Task)

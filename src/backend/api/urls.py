@@ -6,7 +6,7 @@ from api.views.mentors import MentorViewSet
 from api.views.problems import problem_create
 from api.views.questions import get_question, get_question_for_task_8
 from api.views.results import get_results_for_user_by_task
-from api.views.tasks import TaskStatusViewSet
+from api.views.tasks import TaskStatusViewSet, TaskViewSet
 from api.views.users import UserFromTelegramViewSet
 
 app_name = "api"
@@ -15,9 +15,10 @@ router = DefaultRouter()
 
 router.register(r"users", UserFromTelegramViewSet, basename="users")
 router.register(
-    r"users/(?P<telegram_id>\d+)/tasks", TaskStatusViewSet, basename="tasks"
+    r"users/(?P<telegram_id>\d+)/tasks", TaskStatusViewSet, basename="user-tasks"
 )
 router.register(r"mentors", MentorViewSet, basename="mentors")
+router.register(r"tasks", TaskViewSet, basename="tasks")
 
 urlpatterns = [
     path("v1/", include(router.urls)),

@@ -14,8 +14,7 @@ USER_NOT_FOUND = (
 TASKS_STATE = "TASKS"
 TASKS_BUTTON_TEXT = "Задание"
 PATTERN_DONE = "result_task_"
-PATTERN_UNDONE = "with_choice_start_task_"
-PICKED_TASK = "<b>Выбранное задание: {task_number}</b>"
+PATTERN_UNDONE = "start_task_from_command_"
 TASKS_LIST_TEXT = (
     "Нажав на кнопку с заданием, ты можешь начать, или продолжить его выполнение,"
     " или посмотреть результаты."
