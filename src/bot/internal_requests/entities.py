@@ -27,6 +27,7 @@ class UserFromTelegram:
 @dataclass
 class TaskStatus:
     number: int
+    name: str
     is_done: bool
     current_question: Optional[int] = None
 
@@ -55,3 +56,10 @@ class MentorRegistered(Mentor):
 class MentorRegistrationStatus:
     registered: bool
     confirmed: bool
+
+
+@dataclass
+class Task:
+    number: int
+    name: str
+    end_question: int

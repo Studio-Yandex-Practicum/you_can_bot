@@ -14,8 +14,7 @@ USER_NOT_FOUND = (
 TASKS_STATE = "TASKS"
 TASKS_BUTTON_TEXT = "Задание"
 PATTERN_DONE = "result_task_"
-PATTERN_UNDONE = "with_choice_start_task_"
-PICKED_TASK = "<b>Выбранное задание: {task_number}</b>"
+PATTERN_UNDONE = "start_task_from_command_"
 TASKS_LIST_TEXT = (
     "Нажав на кнопку с заданием, ты можешь начать, или продолжить его выполнение,"
     " или посмотреть результаты."
@@ -38,9 +37,10 @@ QUESTION_CANCEL = (
 )
 
 # Get more info
-GET_MORE_INFO_TEXT = "Узнай больше о проекте YOU CAN на сайте."
-URL_BUTTON_TEXT = "Перейти на сайт"
-URL = "https://youcan.by/"
+GET_MORE_INFO_TEXT = (
+    "Узнай больше о проекте — переходи на сайт, нажав одну из кнопок ниже."
+    " Контент для Беларуси и России отличается, поэтому выбирай свою страну:"
+)
 
 CONFIRM = "Подтвердить"
 CANCEL = "Отменить"

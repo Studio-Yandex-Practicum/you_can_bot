@@ -123,7 +123,9 @@ jobs:
 
             echo INTERNAL_API_URL=${{ secrets.INTERNAL_API_URL }} >> .env
             echo YOUCANBY_TOKEN=${{ secrets.YOUCANBY_TOKEN }} >> .env
-            echo YOUCANBY_URL=${{ secrets.YOUCANBY_API_URL }} >> .env
+            echo YOUCANBY_URL=${{ secrets.YOUCANBY_URL }} >> .env
+            echo ROBOTGURU_TOKEN=${{ secrets.ROBOTGURU_TOKEN }} >> .env
+            echo ROBOTGURU_URL=${{ secrets.ROBOTGURU_URL }} >> .env
 
             echo TOKEN=${{ secrets.TOKEN }} >> .env
             echo EXTERNAL_REQUESTS_ARE_MOCK=${{ vars.EXTERNAL_REQUESTS_ARE_MOCK }} >> .env

@@ -1,224 +1,125 @@
-from functools import wraps
 from logging import getLogger
-from typing import Optional
+from typing import Optional, TypedDict
 
-from httpx import AsyncClient, HTTPStatusError, RequestError, Response, codes
+from httpx import AsyncClient, Response
+from httpx._status_codes import code
 
-from external_requests import IS_APPROVED, NAME, SURNAME, TARIFF
-from external_requests.exceptions import (
-    APIDataError,
-    APIForbiddenError,
-    PostAPIError,
-    TelegramIdError,
-    UserNotFound,
+from external_requests.exceptions import TelegramIdError, UserNotFound
+from utils.configs import (
+    ALL_TARIFFS,
+    ROBOTGURU_TOKEN,
+    ROBOTGURU_URL,
+    YOUCANBY_TOKEN,
+    YOUCANBY_URL,
 )
-from utils.configs import ALL_TARIFFS, YOUCANBY_TOKEN, YOUCANBY_URL
 
-API_JSON_ERROR = "{key}: Отказ сервера {failure}."
-COMMON_ERROR = "Сбой при получении ответа от сервера: {error}"
-KEY_NOT_FOUND = "Отсутствует ключ {key} в ключах ответа сервера."
-NETWORK_ERROR = "Сбой сети {error} при запросе к {url} с телеграм id - {tid}"
-STATUS_CODE_ERROR = (
-    "Отказ сервера {status_code} при запросе к {url} с телеграм id - {tid}"
+IS_APPROVED = "isApproved"
+FIRST_NAME = "first_name"
+LAST_NAME = "last_name"
+TARIFF = "tariff"
+USER_INFO_KEYS = (
+    IS_APPROVED,
+    FIRST_NAME,
+    LAST_NAME,
+    TARIFF,
 )
-SUCCESS_RESPONSE = "Запрос на {url} с телеграм id {tid} успешен."
-TARIFF_NOT_FOUND = "Тариф {tariff} не соответствует ожидаемым {expected}."
-TELEGRAM_ID_NOT_INT = "telegram_id должен быть числом."
-TELEGRAM_ID_NOT_POSITIVE = "telegram_id должен быть положительным числом."
-TYPE_ERROR = "В ответе сервера {type_response}, ожидалось {expected_type}."
-FIELDS_TYPE_ERROR = (
-    "Для поля {key} ожидалось {expected_type}, в ответе сервера {type_response}."
-)
-VARIABLE_ENV_NOT_FOUND = "Не найдены переменные окружения: {tokens}."
-USER_NOT_FOUND = "{status_code}: при запросе к {url} пользователь с id {tid} не найден."
 
-YOUCANBY_IS_APPROVED = "isApproved"
-YOUCANBY_FULL_NAME = "full_name"
-YOUCANBY_TARIFF = "tariff"
-YOUCANBY_USER_INFO_KEYS = (YOUCANBY_TARIFF, YOUCANBY_FULL_NAME, YOUCANBY_IS_APPROVED)
+TARIFF_PRIORITY = {}
+for index, tariff in enumerate(ALL_TARIFFS):
+    TARIFF_PRIORITY[tariff] = index
+
+
+class UserInfo(TypedDict):
+    isApproved: bool
+    first_name: str
+    last_name: str
+    tariff: Optional[str]
+
 
 _LOGGER = getLogger(__name__)
 
 
-async def get_user_info_from_lk(telegram_id: int) -> Optional[dict]:
-    """Получает данные о telegram-пользователе.
-    ### Args:
-    - telegram_id (int):
-        id пользователя в telegram
-    ### Raises:
-    - APIDataError, APIForbiddenError, ConnectionError, HTTPStatusError,
-      PostAPIError, TelegramIdError, UserNotFound
-    ### Returns:
-    - Optional[dict]:
-        {'tariff': str,
-         'name': str,
-         'surname': str,
-         'is_approved': bool}
-    """
+async def get_user_info_from_lk(telegram_id: int) -> Optional[UserInfo]:
     check_telegram_id(telegram_id)
-    try:
-        user_info = await _post_request(tid=telegram_id, token=YOUCANBY_TOKEN)
-        parsed_info = await _parse_data(user_info)
-    except APIForbiddenError as exception:
-        _LOGGER.critical(COMMON_ERROR.format(error=exception))
-        raise exception
-    except UserNotFound as exception:
-        _LOGGER.debug(COMMON_ERROR.format(error=exception))
-        raise exception
-    except Exception as exception:
-        _LOGGER.error(COMMON_ERROR.format(error=exception))
-        raise exception
-    _LOGGER.debug(SUCCESS_RESPONSE.format(tid=telegram_id, url=YOUCANBY_URL))
-    return parsed_info
+
+    user_info_from_youcanby = await _get_user_info_from_youcanby(telegram_id)
+    user_info_from_robotguru = await _get_user_info_from_robotguru(telegram_id)
+
+    if user_info_from_youcanby is None and user_info_from_robotguru is None:
+        raise UserNotFound()
+    if user_info_from_youcanby is not None and user_info_from_robotguru is None:
+        return user_info_from_youcanby
+    if user_info_from_youcanby is None and user_info_from_robotguru is not None:
+        return user_info_from_robotguru
+    if (
+        TARIFF_PRIORITY[user_info_from_youcanby[TARIFF]]
+        >= TARIFF_PRIORITY[user_info_from_robotguru[TARIFF]]
+    ):
+        user_info = user_info_from_youcanby
+    else:
+        user_info = user_info_from_robotguru
+
+    return user_info
 
 
-def check_telegram_id(telegram_id: int) -> None:
-    """Проверяет корректность значения telegram_id.
-    ### Args:
-    - telegram_id (int):
-        id пользователя в telegram
-    ### Raises:
-    - TelegramIdError
-    ### Returns:
-    - None
-    """
-    if not isinstance(telegram_id, int):
-        raise TelegramIdError(TELEGRAM_ID_NOT_INT)
-    if telegram_id <= 0:
-        raise TelegramIdError(TELEGRAM_ID_NOT_POSITIVE)
+def check_telegram_id(value: int) -> int:
+    if not isinstance(value, int) or value <= 0:
+        raise TelegramIdError("Chat ID должен быть положительным целым числом.")
+    return value
 
 
-def _logging_exceptions(func):
-    """Логирование исключений запроса.
-    ### Args:
-    - func (function):
-        функция отправляющая запрос
-    ### Raises:
-    - APIForbiddenError, ConnectionError, HTTPStatusError,
-      PostAPIError, UserNotFound
-    ### Returns:
-    - dict[str, Union[str, bool]]
-    """
-
-    @wraps(func)
-    async def wrapper(*args, **kwargs):
-        try:
-            response = await func(*args, **kwargs)
-            response.raise_for_status()
-        except RequestError as error:
-            raise ConnectionError(
-                NETWORK_ERROR.format(error=error, url=error.request.url, **kwargs)
-            )
-        except HTTPStatusError as error:
-            message = STATUS_CODE_ERROR.format(
-                status_code=error.response.status_code, url=error.request.url, **kwargs
-            )
-            if error.response.status_code == codes.FORBIDDEN:
-                raise APIForbiddenError(message)
-            if error.response.status_code == codes.NOT_FOUND:
-                raise UserNotFound(
-                    USER_NOT_FOUND.format(
-                        status_code=error.response.status_code,
-                        url=error.request.url,
-                        **kwargs
-                    )
-                )
-            raise HTTPStatusError(
-                message, request=error.request, response=error.response
-            )
-        if response.status_code != codes.OK:
-            raise PostAPIError(
-                STATUS_CODE_ERROR.format(
-                    status_code=response.status_code, url=response.request.url, **kwargs
-                )
-            )
-        user_info = response.json()
-        for key in ("error", "code"):
-            if key in user_info:
-                raise PostAPIError(
-                    API_JSON_ERROR.format(key=key, failure=user_info[key])
-                )
-        return user_info
-
-    return wrapper
+async def _get_user_info_from_youcanby(telegram_id: int) -> Optional[UserInfo]:
+    return await _post_request_to_lk_api(telegram_id, YOUCANBY_URL, YOUCANBY_TOKEN)
 
 
-@_logging_exceptions
-async def _post_request(**kwargs) -> Response:
-    """Отправляет post-запрос.
-    ### Kwargs:
-    - именованные аргументы для json
-    ### Raises:
-    - APIForbiddenError, ConnectionError, HTTPStatusError,
-      PostAPIError, UserNotFound
-    ### Returns:
-    - dict[str, Union[str, bool]]
-    """
+async def _get_user_info_from_robotguru(telegram_id: int) -> Optional[UserInfo]:
+    return await _post_request_to_lk_api(telegram_id, ROBOTGURU_URL, ROBOTGURU_TOKEN)
+
+
+async def _post_request_to_lk_api(
+    telegram_id: int, url: str, token: str
+) -> Optional[UserInfo]:
+    response = await _post_request(url=url, json={"tid": telegram_id, "token": token})
+    if response.status_code == code.NOT_FOUND:
+        return None
+    response.raise_for_status()
+    user_info = await _parse_json_response_to_user_info(data=response.json())
+    return user_info
+
+
+async def _post_request(url, **kwargs) -> Response:
     async with AsyncClient() as client:
-        response = await client.post(url=YOUCANBY_URL, json=kwargs)
+        response = await client.post(url=url, json=kwargs)
+    response.raise_for_status()
     return response
 
 
-async def _split_full_name(full_name: str) -> tuple[str, str]:
-    """Делит полное имя на имя и фамилию.
-    ### Args:
-    - full_name (str):
-        полное имя
-    ### Returns:
-    - tuple[str, str]
-    """
-    surname_name = full_name.split(" ")
-    if len(surname_name) == 1:
-        return full_name, ""
-    return surname_name[1], surname_name[0]
+async def _parse_json_response_to_user_info(data: dict) -> UserInfo:
+    if not isinstance(data, dict):
+        raise ValueError("Ответом должны быть словарь.")
+    required_keys = [IS_APPROVED, FIRST_NAME, LAST_NAME, TARIFF]
 
-
-async def _parse_data(data: dict) -> dict[str, str]:
-    """Обрабатывает полученные данные.
-    Возвращает словарь с данными пользователя.
-    ### Args:
-    - response (dict):
-        ответ сервера
-    ### Raises:
-    - APIDataError
-    ### Returns:
-    - dict:
-        {'tariff': str,
-         'name': str,
-         'surname': str,
-         'is_approved': bool}
-    """
-    DATA_TYPE = dict
-    IS_APPROVED_TYPE = bool
-    FULL_NAME_TYPE = str
-    if not isinstance(data, DATA_TYPE):
-        raise APIDataError(
-            TYPE_ERROR.format(type_response=type(data), expected_type=DATA_TYPE)
-        )
-    for key in YOUCANBY_USER_INFO_KEYS:
+    for key in required_keys:
         if key not in data:
-            raise APIDataError(KEY_NOT_FOUND.format(key=key))
-    tariff = data[YOUCANBY_TARIFF]
-    if tariff not in ALL_TARIFFS:
-        raise APIDataError(TARIFF_NOT_FOUND.format(tariff=tariff, expected=ALL_TARIFFS))
-    full_name = data[YOUCANBY_FULL_NAME]
-    if not isinstance(full_name, FULL_NAME_TYPE):
-        raise APIDataError(
-            TYPE_ERROR.format(
-                type_response=type(full_name), expected_type=FULL_NAME_TYPE
-            )
+            raise KeyError(f"В ответе нет ключа: {key}")
+
+    tariff_value = data[TARIFF]
+    if tariff_value not in ALL_TARIFFS:
+        raise ValueError(
+            f"Получено некорректное значение для тарифа: {tariff_value}."
+            f" Ожидались: {ALL_TARIFFS}."
         )
-    name, surname = await _split_full_name(full_name)
-    is_approved = data[YOUCANBY_IS_APPROVED]
-    if not isinstance(is_approved, IS_APPROVED_TYPE):
-        raise APIDataError(
-            TYPE_ERROR.format(
-                type_response=type(is_approved), expected_type=IS_APPROVED_TYPE
-            )
-        )
-    return {
-        TARIFF: tariff,
-        NAME: name,
-        SURNAME: surname,
-        IS_APPROVED: is_approved,
-    }
+
+    if not isinstance(data["isApproved"], bool):
+        raise TypeError("isApproved должен соответствовать типу boolean.")
+    if not isinstance(data["first_name"], str):
+        raise TypeError("first_name должен соответствовать типу string.")
+    if not isinstance(data["last_name"], str):
+        raise TypeError("last_name должен соответствовать типу string.")
+
+    return UserInfo(
+        isApproved=data[IS_APPROVED],
+        first_name=data[FIRST_NAME],
+        last_name=data[LAST_NAME],
+        tariff=tariff_value,
+    )

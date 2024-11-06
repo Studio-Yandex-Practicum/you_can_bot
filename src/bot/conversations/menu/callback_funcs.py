@@ -1,7 +1,5 @@
-from typing import Callable
-
 from telegram import Update
-from telegram.ext import CallbackContext, ContextTypes, ConversationHandler
+from telegram.ext import ContextTypes, ConversationHandler
 
 import conversations.menu.templates as templates
 import internal_requests.service as api_service
@@ -11,9 +9,10 @@ from conversations.menu.cancel_command.callback_funcs import _LOGGER
 from conversations.menu.decorators import user_exists
 from conversations.menu.keyboards import (
     AGREE_OR_CANCEL_KEYBOARD,
-    URL_BUTTON,
+    INFO_URL_KEYBOARD,
     create_inline_tasks_keyboard,
 )
+from conversations.tasks.base import PICKED_TASK_TEXT
 from internal_requests.entities import Problem
 from utils.error_handler import error_decorator
 
@@ -23,12 +22,11 @@ async def show_done_tasks(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     task_number = int(query.data.split("_")[-1])
 
-    await update.effective_message.edit_text(
-        text="\n\n".join(
-            (
-                update.effective_message.text_html,
-                templates.PICKED_TASK.format(task_number=task_number),
-            )
+    await update.effective_message.edit_reply_markup()
+    task_info = await api_service.get_task_info_by_number(task_number=task_number)
+    await update.effective_chat.send_message(
+        text=PICKED_TASK_TEXT.format(
+            task_number=task_info.number, task_name=task_info.name
         ),
     )
 
@@ -41,23 +39,6 @@ async def show_done_tasks(update: Update, context: ContextTypes.DEFAULT_TYPE):
     del context.user_data["current_conversation"]
 
     return ConversationHandler.END
-
-
-async def add_task_number_to_prev_message(
-    update: Update,
-    context: CallbackContext,
-    task_number: int,
-    start_task_method: Callable,
-) -> int:
-    message = update.effective_message
-    await message.edit_text(
-        text=(
-            f"{message.text_html}"
-            f"\n\n{templates.PICKED_TASK.format(task_number=task_number)}"
-        ),
-        reply_markup=message.reply_markup,
-    )
-    return await start_task_method(update, context)
 
 
 @user_exists
@@ -73,16 +54,10 @@ async def show_all_user_tasks(
         telegram_id=update.effective_user.id
     )
     keyboard = create_inline_tasks_keyboard(tasks)
-    if update.callback_query:
-        await update.effective_message.edit_text(
-            text=templates.TASKS_LIST_TEXT,
-            reply_markup=keyboard,
-        )
-    else:
-        await update.effective_message.reply_text(
-            text=templates.TASKS_LIST_TEXT,
-            reply_markup=keyboard,
-        )
+    await update.effective_chat.send_message(
+        text=templates.TASKS_LIST_TEXT,
+        reply_markup=keyboard,
+    )
     return templates.TASKS_STATE
 
 
@@ -172,5 +147,5 @@ async def show_info_url(update: Update, _context: ContextTypes.DEFAULT_TYPE) -> 
     """Перейти на сайт YouCan."""
     await update.message.reply_text(
         text=templates.GET_MORE_INFO_TEXT,
-        reply_markup=URL_BUTTON,
+        reply_markup=INFO_URL_KEYBOARD,
     )

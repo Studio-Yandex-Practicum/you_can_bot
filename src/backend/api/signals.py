@@ -36,3 +36,15 @@ def create_user_profile(sender, instance, created, **kwargs):
     if created is True:
         telegram_id = getattr(instance, "_telegram_id", None)
         MentorProfile.objects.create(user=instance, telegram_id=telegram_id)
+
+
+@receiver(post_save, sender=TaskStatus)
+def update_user_progress_on_task_completion(sender, instance, created, **kwargs):
+    """
+    Обновляет количество выполненных заданий и дату последнего выполненного задания.
+    """
+    user = instance.user
+    tasks_completed_count = TaskStatus.objects.filter(user=user, is_done=True).count()
+    user.tasks_completed_count = tasks_completed_count
+    user.last_task_completed_at = instance.pass_date
+    user.save()

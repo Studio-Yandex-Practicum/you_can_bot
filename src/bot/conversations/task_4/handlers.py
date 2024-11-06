@@ -9,7 +9,7 @@ TASK_FOUR_DESCRIPTION = (
     "1 – совершенно не согласен\n"
     "10 – полностью согласен\n\n"
 )
-TASK_FOUR_RESULT_INTRO = "Твои ценностные ориентации: \n\n"
+TASK_FOUR_RESULT_INTRO = "<b>Твои ценностные ориентиры:</b> \n\n"
 TASK_FOUR_DATA = {
     "task_number": TASK_FOUR_NUMBER,
     "number_of_questions": TASK_FOUR_NUM_OF_QUESTIONS,
