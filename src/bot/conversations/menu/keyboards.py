@@ -6,6 +6,21 @@ from telegram import (
 )
 
 import conversations.menu.templates as templates
+from internal_requests.entities import TaskStatus
+
+ROBOTGURU_RU_DOMAIN = "robotguru.ru"
+YOUCAN_BY_DOMAIN = "youcan.by"
+
+INFO_URL_KEYBOARD = InlineKeyboardMarkup.from_column(
+    [
+        InlineKeyboardButton(
+            text=f"🇧🇾 {YOUCAN_BY_DOMAIN}", url=f"https://{YOUCAN_BY_DOMAIN}/"
+        ),
+        InlineKeyboardButton(
+            text=f"🇷🇺 {ROBOTGURU_RU_DOMAIN}", url=f"https://{ROBOTGURU_RU_DOMAIN}/"
+        ),
+    ]
+)
 
 CANCEL_BUTTON = [KeyboardButton(text=templates.CANCEL)]
 AGREE_OR_CANCEL_KEYBOARD = InlineKeyboardMarkup(
@@ -19,10 +34,6 @@ AGREE_OR_CANCEL_KEYBOARD = InlineKeyboardMarkup(
 
 CONFIRMATION_BUTTONS = [[KeyboardButton(text=templates.CONFIRM)], CANCEL_BUTTON]
 
-URL_BUTTON = InlineKeyboardMarkup.from_button(
-    InlineKeyboardButton(text=templates.URL_BUTTON_TEXT, url=templates.URL)
-)
-
 
 def get_main_menu_commands() -> list[BotCommand]:
     """Создает кнопку с меню бота и добавляет в нее команды."""
@@ -31,27 +42,26 @@ def get_main_menu_commands() -> list[BotCommand]:
     ]
 
 
-def create_inline_tasks_keyboard(tasks):
+def create_inline_tasks_keyboard(task_statuses: list[TaskStatus]):
     """Создает инлайн клавиатуру со списком заданий."""
     tasks_keyboard = InlineKeyboardMarkup(
         inline_keyboard=[
             [
                 InlineKeyboardButton(
                     text=(
-                        f"{'✅' if info.is_done else '❌'} "
-                        f"{templates.TASKS_BUTTON_TEXT + ' ' + str(info.number)}"
+                        f"{'✅' if task.is_done else '❌'} {task.number}. {task.name}"
                     ),
                     callback_data=(
                         (
                             templates.PATTERN_DONE
-                            if info.is_done
+                            if task.is_done
                             else templates.PATTERN_UNDONE
                         )
-                        + str(info.number)
+                        + str(task.number)
                     ),
                 )
             ]
-            for info in tasks
+            for task in task_statuses
         ]
     )
     return tasks_keyboard

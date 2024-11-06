@@ -11,13 +11,13 @@ from api.models import (
     Problem,
     Question,
     ResultStatus,
+    Task,
     TaskStatus,
     UserFromTelegram,
 )
 from api.utils import create_available_username
 
 User = get_user_model()
-
 
 MENTOR_CREATE_ERROR = "Учетная запись с указанным telegram_id уже существует."
 
@@ -125,10 +125,11 @@ class TaskStatusSerializer(serializers.ModelSerializer):
     """
 
     number = serializers.IntegerField(source="task.number", read_only=True)
+    name = serializers.CharField(source="task.name", read_only=True)
 
     class Meta:
         model = TaskStatus
-        fields = ["number", "is_done"]
+        fields = ("number", "name", "is_done")
 
 
 class TaskStatusRetrieveSerializer(TaskStatusSerializer):
@@ -140,7 +141,7 @@ class TaskStatusRetrieveSerializer(TaskStatusSerializer):
 
     class Meta:
         model = TaskStatus
-        fields = ["number", "current_question", "is_done"]
+        fields = ("number", "name", "current_question", "is_done")
 
 
 class TaskResultsForUserSerializer(serializers.ModelSerializer):
@@ -257,3 +258,9 @@ class MentorSerializer(serializers.ModelSerializer):
         mentor_group = Group.objects.get(name="Mentor")
         mentor.groups.add(mentor_group)
         return mentor
+
+
+class TaskSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Task
+        fields = ("number", "name", "end_question")

@@ -4,8 +4,12 @@ import re
 from telegram import Update
 from telegram.ext import ContextTypes
 
-from conversations.tasks.base import CHOOSING, BaseTaskConversation
-from conversations.tasks.keyboards import get_default_inline_keyboard
+from conversations.tasks.base import BaseTaskConversation
+from conversations.tasks.keyboards import (
+    SHOW_RESULTS_BUTTON,
+    get_default_inline_keyboard,
+)
+from conversations.tasks.states import CHOOSING, LAST_QUESTION
 from internal_requests import service as api_service
 from internal_requests.entities import Answer
 from utils.error_handler import error_decorator
@@ -88,8 +92,8 @@ class TaskOneConversation(BaseTaskConversation):
             )
 
             if current_question == self.number_of_questions:
-                state = await self.show_result(update, context)
-                return state
+                await message.edit_reply_markup(reply_markup=SHOW_RESULTS_BUTTON)
+                return LAST_QUESTION
             context.user_data["current_question"] += 1
             await self.show_question(update, context)
         return CHOOSING

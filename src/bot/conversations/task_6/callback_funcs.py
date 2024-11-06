@@ -9,16 +9,13 @@ from telegram.ext import (
     filters,
 )
 
-from conversations.tasks.base import (
-    CHOOSING,
+from conversations.tasks.base import SEND_ANSWER_TEXT, BaseTaskConversation
+from conversations.tasks.keyboards import (
     CONFIRM_BUTTON_PATTERN,
-    CONFIRMING,
+    CONFIRM_KEYBOARD,
     NEXT_BUTTON_PATTERN,
-    SEND_ANSWER_TEXT,
-    TYPING_ANSWER,
-    BaseTaskConversation,
 )
-from conversations.tasks.keyboards import CONFIRM_KEYBOARD
+from conversations.tasks.states import CHOOSING, CONFIRMING, TYPING_ANSWER
 from internal_requests import service as api_service
 from internal_requests.entities import Answer
 from utils.error_handler import error_decorator

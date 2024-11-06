@@ -1,9 +1,12 @@
 {% load static %}
 <nav class="navbar navbar-expand-lg" style="background-color: #f8bc43;">
   <div class="container">
-    <a class="navbar-brand" href="{% url 'admin:index' %}">
+    <a class="navbar-brand d-flex align-items-center" href="{% url 'admin:index' %}">
       <img src="{% static 'logo.png' %}" alt="логотип" width="56" height="52" class="d-inline-block align-text-middle" id="logo">
-      <span class="fs-3">YouCan</span>
+      <div class="d-inline-block ms-2" style="line-height: 1;">
+        <span class="fs-5 d-block">Помогаем реализовать</span>
+        <span class="fs-5 d-block">твои таланты</span>
+      </div>
     </a>
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav">

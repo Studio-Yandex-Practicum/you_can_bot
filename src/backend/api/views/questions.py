@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.template.loader import render_to_string
+from django.views.decorators.cache import cache_page
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.exceptions import NotFound
@@ -9,6 +10,7 @@ from api.models import Task
 from api.serializers import QuestionSerializer
 
 
+@cache_page(60 * 60 * 2)
 @api_view(("GET",))
 def get_question(request, task_number, question_number):
     """Получение оформленного сообщения Question."""

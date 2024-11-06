@@ -8,6 +8,7 @@ from conversations.task_8.callback_funcs import (
     STAGE_2,
     STAGE_3,
     TASK_DESCRIPTION_STATE,
+    clear_conversation_status_of_tasks_command,
     handle_answer_on_stage_1,
     handle_answer_on_stage_2,
     handle_answer_on_stage_3,
@@ -17,14 +18,14 @@ from conversations.task_8.callback_funcs import (
     send_next_stage_3_message,
     show_result,
     show_start_of_task_8,
-    show_start_of_task_8_with_task_number,
 )
 
 task_8_conv: ConversationHandler = ConversationHandler(
     entry_points=[
         CallbackQueryHandler(show_start_of_task_8, r"^start_task_8$"),
         CallbackQueryHandler(
-            show_start_of_task_8_with_task_number, r"^with_choice_start_task_8$"
+            clear_conversation_status_of_tasks_command,
+            pattern=r"^start_task_from_command_8$",
         ),
     ],
     states={

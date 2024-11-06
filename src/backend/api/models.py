@@ -57,9 +57,18 @@ class UserFromTelegram(models.Model):
         on_delete=models.SET_NULL,
         null=True,
     )
+    last_task_completed_at = models.DateTimeField(
+        "Последнее задание выполнено",
+        null=True,
+        blank=True,
+    )
+    tasks_completed_count = models.PositiveSmallIntegerField(
+        "Выполненных заданий",
+        default=0,
+    )
 
     class Meta:
-        ordering = ("pk",)
+        ordering = ("-last_task_completed_at",)
         verbose_name = "пользователя"
         verbose_name_plural = "Пользователи из Telegram"
 
