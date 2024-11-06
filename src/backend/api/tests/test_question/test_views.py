@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.test.utils import override_settings
 
 from api.tests.test_question.fixtures import BaseCaseForQuestionTests
 
@@ -24,6 +25,9 @@ class QuestionViewTests(BaseCaseForQuestionTests):
             error_message,
         )
 
+    @override_settings(
+        CACHES={"default": {"BACKEND": "django.core.cache.backends.dummy.DummyCache"}}
+    )
     def test_question_get_correct_context(self):
         """Проверка response на формирование правильного контекста."""
         question = self.question

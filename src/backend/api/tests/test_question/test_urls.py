@@ -1,5 +1,6 @@
 from http import HTTPStatus
 
+from django.test.utils import override_settings
 from rest_framework import status
 
 from api.tests.test_question.fixtures import BaseCaseForQuestionTests
@@ -44,6 +45,9 @@ class QuestionURLTests(BaseCaseForQuestionTests):
                     self.client.get(url).status_code, expected_status, error_message
                 )
 
+    @override_settings(
+        CACHES={"default": {"BACKEND": "django.core.cache.backends.dummy.DummyCache"}}
+    )
     def test_question_url_uses_correct_template(self):
         """Проверка ожидаемого шаблона."""
         template = "questions/standard_question_format.html"
