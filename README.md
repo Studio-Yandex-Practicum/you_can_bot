@@ -217,11 +217,6 @@ python run_bot.py
 cd src/backend/
 python manage.py test
 ```
-2. Для тестирования бота
-```SHELL
-cd src/bot/
-python -m unittest
-```
 
 ### Установка и запуск в Docker-контейнерах:<a name="docker"></a>
 

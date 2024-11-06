@@ -9,7 +9,7 @@ from conversations.menu.cancel_command.callback_funcs import _LOGGER
 from conversations.menu.decorators import user_exists
 from conversations.menu.keyboards import (
     AGREE_OR_CANCEL_KEYBOARD,
-    URL_BUTTON,
+    INFO_URL_KEYBOARD,
     create_inline_tasks_keyboard,
 )
 from conversations.tasks.base import PICKED_TASK_TEXT
@@ -147,5 +147,5 @@ async def show_info_url(update: Update, _context: ContextTypes.DEFAULT_TYPE) -> 
     """Перейти на сайт YouCan."""
     await update.message.reply_text(
         text=templates.GET_MORE_INFO_TEXT,
-        reply_markup=URL_BUTTON,
+        reply_markup=INFO_URL_KEYBOARD,
     )

@@ -37,9 +37,10 @@ QUESTION_CANCEL = (
 )
 
 # Get more info
-GET_MORE_INFO_TEXT = "Узнай больше о проекте YOU CAN на сайте."
-URL_BUTTON_TEXT = "Перейти на сайт"
-URL = "https://youcan.by/"
+GET_MORE_INFO_TEXT = (
+    "Узнай больше о проекте — переходи на сайт, нажав одну из кнопок ниже."
+    " Контент для Беларуси и России отличается, поэтому выбирай свою страну:"
+)
 
 CONFIRM = "Подтвердить"
 CANCEL = "Отменить"

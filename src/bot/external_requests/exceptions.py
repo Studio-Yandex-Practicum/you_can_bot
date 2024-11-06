@@ -1,48 +1,10 @@
-class PostAPIError(Exception):
-    """Ошибка в ответе сервера."""
-
-    def __init__(self, message):
-        self.message = message
-
-    def __str__(self):
-        return self.message
-
-
 class TelegramIdError(Exception):
-    """Некорректный телеграм id."""
+    """Исключение при получении некорректного значения Chat ID."""
 
-    def __init__(self, message):
-        self.message = message
-
-    def __str__(self):
-        return self.message
+    pass
 
 
-class APIDataError(PostAPIError):
-    """Ошибка в данных ответа сервера."""
+class UserNotFound(Exception):
+    """Исключение при статусе 404 в ответах от API личных кабинетов."""
 
-    def __init__(self, message):
-        self.message = message
-
-    def __str__(self):
-        return self.message
-
-
-class APIForbiddenError(PostAPIError):
-    """Ошибка 403 в ответе сервера."""
-
-    def __init__(self, message):
-        self.message = message
-
-    def __str__(self):
-        return self.message
-
-
-class UserNotFound(PostAPIError):
-    """Ошибка 404 в ответе сервера."""
-
-    def __init__(self, message):
-        self.message = message
-
-    def __str__(self):
-        return self.message
+    pass

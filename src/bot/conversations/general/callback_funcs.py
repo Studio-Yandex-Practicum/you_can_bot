@@ -10,8 +10,9 @@ import conversations.general.templates as templates
 import internal_requests.service as api_service
 from conversations.general.decorators import not_in_conversation, set_conversation_name
 from conversations.general.logging_decorators import log_decorator
-from external_requests import NAME, SURNAME, TARIFF, get_user_info_from_lk
-from external_requests.exceptions import APIDataError, PostAPIError, UserNotFound
+from external_requests import get_user_info_from_lk
+from external_requests.exceptions import UserNotFound
+from external_requests.service import FIRST_NAME, LAST_NAME, TARIFF, UserInfo
 from internal_requests.entities import UserFromTelegram
 from utils.configs import ALLOWED_TARIFFS
 from utils.error_handler import error_decorator
@@ -41,7 +42,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
         if user_info_from_lk[TARIFF] not in ALLOWED_TARIFFS:
             await update.effective_chat.send_message(
                 templates.NOT_ALLOWED_TARIFFS_START_MESSAGE.format(
-                    name=user_info_from_lk[NAME]
+                    name=user_info_from_lk[FIRST_NAME]
                 )
             )
             del context.user_data["current_conversation"]
@@ -77,23 +78,19 @@ async def _save_user_info_to_db(update: Update, user_info: dict) -> UserFromTele
     user_info = UserFromTelegram(
         telegram_id=telegram_id,
         telegram_username=update.effective_user.username,
-        name=user_info[NAME],
-        surname=user_info[SURNAME],
+        name=user_info[FIRST_NAME],
+        surname=user_info[LAST_NAME],
     )
     await api_service.create_user(user=user_info)
     return user_info
 
 
-async def _get_user_info_from_lk_and_handle_it(update: Update) -> Optional[dict]:
+async def _get_user_info_from_lk_and_handle_it(update: Update) -> Optional[UserInfo]:
     """Совершает запрос к ЛК и возвращает полученный словарь, обрабатывает ошибки."""
     try:
         user_info = await get_user_info_from_lk(update.effective_user.id)
         return user_info
     except UserNotFound:
         await update.message.reply_text(templates.UNKNOWN_START_MESSAGE)
-    except ConnectionError:
-        await update.message.reply_text(templates.CONNECTION_ERROR_MESSAGE)
-    except (HTTPStatusError, PostAPIError, APIDataError):
-        await update.message.reply_text(templates.SERVER_ERROR_MESSAGE)
     except Exception as error:
         raise error
