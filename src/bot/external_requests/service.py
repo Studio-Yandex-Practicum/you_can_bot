@@ -1,10 +1,13 @@
 from logging import getLogger
 from typing import Optional, TypedDict
 
-from httpx import AsyncClient, Response
-from httpx._status_codes import code
+from httpx import AsyncClient, Response, codes
 
-from external_requests.exceptions import TelegramIdError, UserNotFound
+from external_requests.exceptions import (
+    TelegramIdError,
+    UserNotFound,
+    ValidationExternalResponseError,
+)
 from utils.configs import (
     ALL_TARIFFS,
     ROBOTGURU_TOKEN,
@@ -79,43 +82,49 @@ async def _get_user_info_from_robotguru(telegram_id: int) -> Optional[UserInfo]:
 async def _post_request_to_lk_api(
     telegram_id: int, url: str, token: str
 ) -> Optional[UserInfo]:
-    response = await _post_request(url=url, json={"tid": telegram_id, "token": token})
-    if response.status_code == code.NOT_FOUND:
+    response = await _post_request(url=url, data={"tid": telegram_id, "token": token})
+    if response.status_code == codes.NOT_FOUND:
         return None
     response.raise_for_status()
     user_info = await _parse_json_response_to_user_info(data=response.json())
     return user_info
 
 
-async def _post_request(url, **kwargs) -> Response:
+async def _post_request(url, data) -> Response:
     async with AsyncClient() as client:
-        response = await client.post(url=url, json=kwargs)
+        response = await client.post(url=url, json=data)
     response.raise_for_status()
     return response
 
 
 async def _parse_json_response_to_user_info(data: dict) -> UserInfo:
     if not isinstance(data, dict):
-        raise ValueError("Ответом должны быть словарь.")
+        raise ValidationExternalResponseError("Ответом должны быть словарь.")
     required_keys = [IS_APPROVED, FIRST_NAME, LAST_NAME, TARIFF]
 
     for key in required_keys:
         if key not in data:
-            raise KeyError(f"В ответе нет ключа: {key}")
+            raise ValidationExternalResponseError(f"В ответе нет ключа: {key}")
 
     tariff_value = data[TARIFF]
     if tariff_value not in ALL_TARIFFS:
-        raise ValueError(
+        raise ValidationExternalResponseError(
             f"Получено некорректное значение для тарифа: {tariff_value}."
             f" Ожидались: {ALL_TARIFFS}."
         )
 
-    if not isinstance(data["isApproved"], bool):
-        raise TypeError("isApproved должен соответствовать типу boolean.")
-    if not isinstance(data["first_name"], str):
-        raise TypeError("first_name должен соответствовать типу string.")
-    if not isinstance(data["last_name"], str):
-        raise TypeError("last_name должен соответствовать типу string.")
+    fields = {
+        "isApproved": bool,
+        "first_name": str,
+        "last_name": str,
+    }
+
+    for field, expected_type in fields.items():
+        if not isinstance(data.get(field), expected_type):
+            raise ValidationExternalResponseError(
+                f"{field} должен соответствовать типу {expected_type.__name__}. "
+                f"Получен {type(data.get(field)).__name__}."
+            )
 
     return UserInfo(
         isApproved=data[IS_APPROVED],
