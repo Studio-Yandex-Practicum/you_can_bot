@@ -7,6 +7,8 @@ from telegram import Update
 from telegram.error import BadRequest
 from telegram.ext import ContextTypes, ConversationHandler
 
+from external_requests.exceptions import ValidationExternalResponseError
+
 
 async def handle_error(
     update: Update,
@@ -15,7 +17,16 @@ async def handle_error(
     logger: Logger,
 ) -> Optional[int]:
     """Обрабатывает непредвиденное исключение внутри ConversationHandler."""
-    await _send_user_error_message(update)
+    if isinstance(exception, ValidationExternalResponseError):
+        await _send_user_error_message(
+            update,
+            msg=(
+                "Данные из личного кабинета оказались некорректными."
+                " Пожалуйста, попробуй ещё раз позже."
+            ),
+        )
+    else:
+        await _send_user_error_message(update)
     await _log_update_exception(context, exception, logger)
     if isinstance(exception, BadRequest):
         return None
@@ -41,9 +52,11 @@ def error_decorator(logger):
     return decorator
 
 
-async def _send_user_error_message(update):
+async def _send_user_error_message(
+    update, msg="Ой, что-то пошло не так! Попробуй, пожалуйста, позже."
+):
     await update.effective_chat.send_message(
-        "Ой, что-то пошло не так! Попробуй, пожалуйста, позже.",
+        msg,
     )
 
 
