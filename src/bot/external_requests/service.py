@@ -1,7 +1,7 @@
 from logging import getLogger
 from typing import Optional, TypedDict
 
-from httpx import AsyncClient, Response, codes
+from httpx import AsyncClient, HTTPStatusError, Response, codes
 
 from external_requests.exceptions import (
     TelegramIdError,
@@ -82,10 +82,15 @@ async def _get_user_info_from_robotguru(telegram_id: int) -> Optional[UserInfo]:
 async def _post_request_to_lk_api(
     telegram_id: int, url: str, token: str
 ) -> Optional[UserInfo]:
-    response = await _post_request(url=url, data={"tid": telegram_id, "token": token})
-    if response.status_code == codes.NOT_FOUND:
-        return None
-    response.raise_for_status()
+    try:
+        response = await _post_request(
+            url=url, data={"tid": telegram_id, "token": token}
+        )
+    except HTTPStatusError as exc:
+        if exc.response.status_code == codes.NOT_FOUND:
+            return None
+        raise exc
+
     user_info = await _parse_json_response_to_user_info(data=response.json())
     return user_info
 
