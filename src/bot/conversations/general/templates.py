@@ -1,5 +1,5 @@
 GO_BUTTON_LABEL = "Начать"
-HELLO_BUTTON_LABEL = "Привет"
+HELLO_BUTTON_LABEL = "Привет!"
 FIRST_TASK_BUTTON_LABEL = "Задание 1"
 
 START = "start"
