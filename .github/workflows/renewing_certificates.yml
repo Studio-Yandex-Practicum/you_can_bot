@@ -1,9 +1,6 @@
 name: Automatically renewing certificates
 
 on:
-  push:
-    branches:
-        - feature/certificate_workflow
   schedule:
     - cron:  '0 1 1 */2 *'
   workflow_dispatch:
