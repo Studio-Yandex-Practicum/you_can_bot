@@ -1,0 +1,35 @@
+# 0 5 1 * *   docker compose --env-file ~/you_can_bot/.env -f ~/you_can_bot/infra/docker-compose.prod.yml up certbot -d
+name: Automatically renewing certificates
+
+on:
+  schedule:
+    - cron:  '0 1 1 */2 *'
+  workflow_dispatch:
+
+env:
+  REGISTRY: ghcr.io
+  REP_OWNER: studio-yandex-practicum
+  IMAGE_NAME: you_can_bot
+  DEPLOY_PATH: ~/you_can_bot
+
+defaults:
+  run:
+    working-directory: .
+
+jobs:
+  renew:
+    name: Renewing certificates
+    runs-on: ubuntu-latest
+    environment:
+      name: prod
+    steps:
+      - name: Executing remote ssh commands
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.SSH_USER }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          script: |
+            cd ${{ env.DEPLOY_PATH }}
+            docker compose --env-file .env -f infra/docker-compose.prod.yml up certbot
+            docker compose --env-file .env -f infra/docker-compose.prod.yml restart nginx
