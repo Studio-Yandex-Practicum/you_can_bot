@@ -66,6 +66,12 @@ class UserFromTelegram(models.Model):
         "Выполненных заданий",
         default=0,
     )
+    test_summary = models.TextField(
+        "Расшифровка от профдизайнера",
+        blank=True,
+        default="",
+        help_text="Итоговая расшифровка теста для отображения в PDF",
+    )
 
     class Meta:
         ordering = ("-last_task_completed_at",)
