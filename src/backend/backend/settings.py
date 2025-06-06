@@ -21,6 +21,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "rest_framework",
+    "tinymce",
     "api.apps.ApiConfig",
     "info_pages.apps.InfoPagesConfig",
 ]
@@ -154,6 +155,9 @@ LOGGING = {
 REST_FRAMEWORK = {
     "TEST_REQUEST_DEFAULT_FORMAT": "json",
 }
+
+TINYMCE_JS_URL = "https://cdnjs.cloudflare.com/ajax/libs/tinymce/7.6.1/tinymce.min.js"
+TINYMCE_COMPRESSOR = False
 
 MAIN_MENTOR_ID = os.getenv(
     "MAIN_MENTOR_ID"

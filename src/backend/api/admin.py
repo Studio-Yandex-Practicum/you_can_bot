@@ -6,6 +6,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.admin import UserAdmin
 from django.urls import reverse
 from django.utils.html import format_html
+from tinymce.widgets import TinyMCE
 
 from api.models import (
     Answer,
@@ -148,8 +149,16 @@ class TaskStatusAdmin(admin.ModelAdmin):
     readonly_fields = ["user", "task", "pass_date"]
 
 
+class UserFromTelegramForm(forms.ModelForm):
+    class Meta:
+        model = UserFromTelegram
+        widgets = {"test_summary": TinyMCE(attrs={"cols": 80, "rows": 30})}
+        fields = "__all__"
+
+
 @admin.register(UserFromTelegram)
 class UserFromTelegramAdmin(admin.ModelAdmin):
+    form = UserFromTelegramForm
     date_hierarchy = "last_task_completed_at"
     list_display = (
         "telegram_username",

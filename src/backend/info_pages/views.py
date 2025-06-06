@@ -42,4 +42,6 @@ class UserDetailView(IsStaffMixin, DetailView):
         context["passed_tasks"] = ", ".join(passed_tasks)
         context["unfinished_tasks"] = ", ".join(unfinished_tasks)
 
+        context["test_summary"] = self.object.test_summary
+
         return context
