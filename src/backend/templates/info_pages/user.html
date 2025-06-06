@@ -31,12 +31,20 @@
 
     <hr>
 
+    {% if test_summary %}
+    <div>
+      {{ test_summary|safe }}
+    </div>
+    <hr>
+    {% endif %}
+
+
     {% for task_status in tasks %}
       {% if task_status.is_done %}
-        {% if forloop.first %}
-        <div class="row g-2 col-12 mb-4">
+        {% if forloop.first and test_summary == "" %}
+          <div class="row g-2 col-12 mb-4">
         {% else %}
-        <div class="row g-2 col-12 mb-4 page-break">
+          <div class="row g-2 col-12 mb-4 page-break">
         {% endif %}
         <div class="fs-2"><strong>Задание №{{ task_status.task.number }}. {{ task_status.task.name }}</strong></div>
         <div class="pb-2"><strong>Тест пройден:</strong> {{ task_status.pass_date }}</div>
