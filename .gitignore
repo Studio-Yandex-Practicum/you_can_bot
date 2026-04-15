@@ -165,3 +165,6 @@ src/backend/static/
 
 # VSCode
 .vscode/
+
+# Claude Code
+.claude/
