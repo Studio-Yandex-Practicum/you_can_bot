@@ -1,7 +1,11 @@
 # .github/workflows/**main.yml**
 name: Test flake8 and isort workflow
 
-on: [pull_request]
+on:
+  push:
+    branches:
+      - master
+  pull_request:
 
 jobs:
   setup:
