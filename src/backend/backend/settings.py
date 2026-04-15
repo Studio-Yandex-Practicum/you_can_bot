@@ -11,6 +11,8 @@ DEBUG = os.getenv("DEBUG", default=False)
 
 ALLOWED_HOSTS = [os.getenv("ALLOWED_HOSTS", default="*")]
 DOMAIN = os.getenv("DOMAIN", default="127.0.0.1")
+TOKEN = os.getenv("TOKEN")
+SOCKS5_PROXY_URL = os.getenv("SOCKS5_PROXY_URL")
 CSRF_TRUSTED_ORIGINS = (f"http://{DOMAIN}", f"https://{DOMAIN}")
 
 INSTALLED_APPS = [
@@ -148,6 +150,14 @@ LOGGING = {
         },
         "api": {
             "handlers": ["console", "file"],
+        },
+        "httpx": {
+            "handlers": ["console", "file"],
+            "level": "WARNING",
+        },
+        "httpcore": {
+            "handlers": ["console", "file"],
+            "level": "WARNING",
         },
     },
 }

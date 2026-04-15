@@ -332,6 +332,7 @@ anyio = "*"
 certifi = "*"
 httpcore = "==1.*"
 idna = "*"
+socksio = {version = "==1.*", optional = true, markers = "extra == \"socks\""}
 
 [package.extras]
 brotli = ["brotli ; platform_python_implementation == \"CPython\"", "brotlicffi ; platform_python_implementation != \"CPython\""]
@@ -719,30 +720,33 @@ unidecode = ["Unidecode (>=1.1.1)"]
 
 [[package]]
 name = "python-telegram-bot"
-version = "22.1"
+version = "22.7"
 description = "We have made you a wrapper you can't refuse"
 optional = false
-python-versions = ">=3.9"
+python-versions = ">=3.10"
 groups = ["main"]
 files = [
-    {file = "python_telegram_bot-22.1-py3-none-any.whl", hash = "sha256:71afd091fde9037ac44728c2768eb958682140dcc350900a191da0e9cef319d3"},
-    {file = "python_telegram_bot-22.1.tar.gz", hash = "sha256:b6c7fc1f3635cef6aff0c431827407cafde183e7e1992060edeacc2bf08d23d8"},
+    {file = "python_telegram_bot-22.7-py3-none-any.whl", hash = "sha256:d72eed532cf763758cd9331b57a6d790aff0bb4d37d8f4e92149436fe21c6475"},
+    {file = "python_telegram_bot-22.7.tar.gz", hash = "sha256:784b59ea3852fe4616ad63b4a0264c755637f5d725e87755ecdee28300febf61"},
 ]
 
 [package.dependencies]
 aiolimiter = {version = ">=1.1,<1.3", optional = true, markers = "extra == \"rate-limiter\""}
-httpx = ">=0.27,<1.0"
+httpx = [
+    {version = ">=0.27,<0.29"},
+    {version = "*", extras = ["socks"], optional = true, markers = "extra == \"socks\""},
+]
 
 [package.extras]
-all = ["aiolimiter (>=1.1,<1.3)", "apscheduler (>=3.10.4,<3.12.0)", "cachetools (>=5.3.3,<5.6.0)", "cffi (>=1.17.0rc1) ; python_version > \"3.12\"", "cryptography (>=39.0.1)", "httpx[http2]", "httpx[socks]", "tornado (>=6.4,<7.0)"]
-callback-data = ["cachetools (>=5.3.3,<5.6.0)"]
-ext = ["aiolimiter (>=1.1,<1.3)", "apscheduler (>=3.10.4,<3.12.0)", "cachetools (>=5.3.3,<5.6.0)", "tornado (>=6.4,<7.0)"]
+all = ["aiolimiter (>=1.1,<1.3)", "apscheduler (>=3.10.4,<3.12.0)", "cachetools (>=7.0.0,<8.0.0)", "cffi (>=1.17.0rc1) ; python_version > \"3.12\"", "cryptography (>=39.0.1)", "httpx[http2]", "httpx[socks]", "tornado (>=6.5,<7.0)"]
+callback-data = ["cachetools (>=7.0.0,<8.0.0)"]
+ext = ["aiolimiter (>=1.1,<1.3)", "apscheduler (>=3.10.4,<3.12.0)", "cachetools (>=7.0.0,<8.0.0)", "tornado (>=6.5,<7.0)"]
 http2 = ["httpx[http2]"]
 job-queue = ["apscheduler (>=3.10.4,<3.12.0)"]
 passport = ["cffi (>=1.17.0rc1) ; python_version > \"3.12\"", "cryptography (>=39.0.1)"]
 rate-limiter = ["aiolimiter (>=1.1,<1.3)"]
 socks = ["httpx[socks]"]
-webhooks = ["tornado (>=6.4,<7.0)"]
+webhooks = ["tornado (>=6.5,<7.0)"]
 
 [[package]]
 name = "pyyaml"
@@ -817,6 +821,18 @@ groups = ["main"]
 files = [
     {file = "sniffio-1.3.1-py3-none-any.whl", hash = "sha256:2f6da418d1f1e0fddd844478f41680e794e6051915791a034ff65e5f100525a2"},
     {file = "sniffio-1.3.1.tar.gz", hash = "sha256:f4324edc670a0f49750a81b895f35c3adb843cca46f0530f79fc1babb23789dc"},
+]
+
+[[package]]
+name = "socksio"
+version = "1.0.0"
+description = "Sans-I/O implementation of SOCKS4, SOCKS4A, and SOCKS5."
+optional = false
+python-versions = ">=3.6"
+groups = ["main"]
+files = [
+    {file = "socksio-1.0.0-py3-none-any.whl", hash = "sha256:95dc1f15f9b34e8d7b16f06d74b8ccf48f609af32ab33c608d08761c5dcbb1f3"},
+    {file = "socksio-1.0.0.tar.gz", hash = "sha256:f88beb3da5b5c38b9890469de67d0cb0f9d494b78b106ca1845f96c10b91c4ac"},
 ]
 
 [[package]]
@@ -896,4 +912,4 @@ test = ["covdefaults (>=2.3)", "coverage (>=7.2.7)", "coverage-enable-subprocess
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.11,<3.12"
-content-hash = "40e4b99e9793d0ba2d0826015724e30f9a6c560fe3d042d7b290f70357dda2c9"
+content-hash = "b356fba98b43f3d3050fdb4c62eda67e214572cd42df62d00eec878ef0d1cf38"

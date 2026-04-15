@@ -279,6 +279,34 @@ docker-compose exec backend python backend/manage.py collectstatic --no-input
 
 Админка будет доступна по адресу http://127.0.0.1/admin/
 
+### Настройка Nginx Proxy Manager (продакшен)<a name="npm-setup"></a>
+
+На продакшене вместо nginx используется [Nginx Proxy Manager](https://nginxproxymanager.com/) (NPM). После деплоя необходимо настроить проксирование через веб-интерфейс NPM:
+
+1. Подключитесь к серверу с пробросом порта:
+   ```shell
+   ssh -L 81:localhost:81 user@<HOST>
+   ```
+2. Откройте `http://localhost:81` и войдите с [дефолтными credentials](https://nginxproxymanager.com/guide/#quick-setup).
+3. Смените пароль администратора.
+4. Создайте **Proxy Host** для домена `bot.youcan.by`:
+   - Включите **SSL** → **Let's Encrypt**
+5. В поле **Advanced** добавьте проксирование `/admin/` и раздачу статики/медиа:
+   ```nginx
+   location /admin/ {
+       proxy_pass http://backend:8000/admin/;
+   }
+
+   location /static/ {
+       alias /data/static/;
+   }
+
+   location /media/ {
+       alias /data/media/;
+   }
+   ```
+   Эти директории монтируются в контейнер NPM через volumes в `docker-compose.prod.yml`.
+
 ## Рекомендации для разработчиков<a name="development"></a>
 
 ### Форматирование кода<a name="formatting"></a>
@@ -330,10 +358,11 @@ poetry add <package_name>
 
 ### Ветки<a name="branches"></a>
 
-При создании новой ветки наследоваться от develop, не забыв спуллить себе последние изменения
+В проекте используется стратегия Trunk-Based Development (TBD) — основная ветка `master`.
+При создании новой ветки наследоваться от `master`, не забыв спуллить себе последние изменения.
 Пример наименования веток:
    - `feature/send-sandwiches`
-   - `fix/process-bread-not-found.`
+   - `fix/process-bread-not-found`
 
 
 <!-- MARKDOWN LINKS & BADGES -->

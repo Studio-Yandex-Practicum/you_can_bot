@@ -23,7 +23,7 @@ from conversations.task_5.handlers import task_five_conv
 from conversations.task_6.handlers import task_six_conv
 from conversations.task_7.handlers import task_seven_conv
 from conversations.task_8.handlers import task_8_conv
-from utils.configs import TOKEN
+from utils.configs import SOCKS5_PROXY_URL, TOKEN
 
 
 async def post_init(application: Application) -> None:
@@ -41,14 +41,16 @@ def create_bot():
     """
     defaults = Defaults(parse_mode=ParseMode.HTML)
 
-    bot_app = (
+    builder = (
         ApplicationBuilder()
         .token(TOKEN)
         .defaults(defaults)
         .rate_limiter(AIORateLimiter(max_retries=3))
         .post_init(post_init)
-        .build()
     )
+    if SOCKS5_PROXY_URL:
+        builder = builder.proxy(SOCKS5_PROXY_URL).get_updates_proxy(SOCKS5_PROXY_URL)
+    bot_app = builder.build()
 
     # mentor registration handlers
     bot_app.add_handler(handler=mentor_registration_handler)

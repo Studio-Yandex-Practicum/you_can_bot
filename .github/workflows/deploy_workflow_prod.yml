@@ -1,11 +1,11 @@
 name: Deploy project to prod server
 
 on:
-  pull_request:
-    branches:
-      - master
+  workflow_run:
+    workflows: ["CI Lint & Tests"]
     types:
-      - closed
+      - completed
+    branches: [master]
   workflow_dispatch:
 
 env:
@@ -19,44 +19,12 @@ defaults:
     working-directory: .
 
 jobs:
-  testing:
-    environment:
-      name: prod
-    runs-on: ubuntu-latest
-    steps:
-    - name: Check out the repo
-      uses: actions/checkout@v4
-      with:
-        ref: master
-    - name: Setup Poetry
-      uses: Gr1N/setup-poetry@v9
-      with:
-        poetry-version: "1.8.2"
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: "3.11"
-    - name: Install dependencies
-      run: |
-        poetry install
-    - name: Django tests
-      env:
-        NEED_SQLITE: True
-      run: |
-        poetry run python src/backend/manage.py test src/backend
-    - name: Bot tests
-      env:
-        NEED_SQLITE: True
-      run: |
-        cd src/bot
-        poetry run python -m unittest
-
   build-and-push-image-to-github-packages:
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
     environment:
       name: prod
     name: Push Docker image to GitHub Packages
     runs-on: ubuntu-latest
-    needs: testing
     permissions:
       contents: read
       packages: write
@@ -98,7 +66,7 @@ jobs:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.SSH_USER }}
           password: ${{ secrets.SSH_PASSWORD }}
-          source: "./infra/docker-compose.prod.yml, ./infra/default.prod.conf"
+          source: "./infra/docker-compose.prod.yml"
           target: ${{ env.DEPLOY_PATH }}
 
       - name: Executing remote ssh commands to deploy
@@ -118,9 +86,7 @@ jobs:
             echo DEBUG=${{ vars.DEBUG }} >> .env
             echo ALLOWED_HOSTS=${{ secrets.DJANGO_ALLOWED_HOSTS }} >> .env
             echo HOST=${{ secrets.HOST }} >> .env
-            echo CERT_EMAIL=${{ secrets.CERT_EMAIL }} >> .env
             echo DOMAIN=${{ secrets.DOMAIN }} >> .env
-
             echo INTERNAL_API_URL=${{ secrets.INTERNAL_API_URL }} >> .env
             echo YOUCANBY_TOKEN=${{ secrets.YOUCANBY_TOKEN }} >> .env
             echo YOUCANBY_URL=${{ secrets.YOUCANBY_URL }} >> .env
@@ -128,6 +94,7 @@ jobs:
             echo ROBOTGURU_URL=${{ secrets.ROBOTGURU_URL }} >> .env
 
             echo TOKEN=${{ secrets.TOKEN }} >> .env
+            echo SOCKS5_PROXY_URL='${{ secrets.SOCKS5_PROXY_URL }}' >> .env
             echo EXTERNAL_REQUESTS_ARE_MOCK=${{ vars.EXTERNAL_REQUESTS_ARE_MOCK }} >> .env
             echo MAIN_MENTOR_ID=${{ secrets.MAIN_MENTOR_ID }} >> .env
             echo DEVELOPER_CHAT_ID=${{ secrets.DEVELOPER_CHAT_ID }} >> .env
@@ -136,7 +103,7 @@ jobs:
 
             docker image prune -f
 
-            docker compose -f infra/docker-compose.prod.yml stop nginx backend bot db
+            docker compose -f infra/docker-compose.prod.yml stop npm backend bot db
             docker compose -f infra/docker-compose.prod.yml rm backend -f
             docker compose -f infra/docker-compose.prod.yml rm bot -f
             docker compose --env-file .env -f infra/docker-compose.prod.yml up -d

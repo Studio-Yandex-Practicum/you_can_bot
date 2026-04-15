@@ -1,13 +1,44 @@
-name: Django and bot tests
+name: CI Lint & Tests
 
 on:
   push:
-    branches: [develop]
+    branches:
+      - master
   pull_request:
-    branches: [develop]
 
 jobs:
-  testing:
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+    -
+      name: Check out the repo
+      uses: actions/checkout@v4
+    -
+      name: Setup Poetry
+      uses: Gr1N/setup-poetry@v9
+      with:
+        poetry-version: "1.8.2"
+    -
+      name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.11"
+    -
+      name: Install dependencies
+      run: |
+        poetry install
+    -
+      name: Test with flake8
+      run: |
+        poetry run flake8 .
+    -
+      name: Test with isort
+      run: |
+        poetry run isort . --check --diff
+
+  tests:
+    needs: lint
     runs-on: ubuntu-latest
 
     steps:
