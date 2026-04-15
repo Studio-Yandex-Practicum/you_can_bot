@@ -10,7 +10,7 @@ package-mode = false
 python = ">=3.11,<3.12"
 Django = "~4.2"
 djangorestframework = "^3.16.0"
-python-telegram-bot = {extras = ["rate-limiter"], version = "^22.1"}
+python-telegram-bot = {extras = ["rate-limiter", "socks"], version = "^22.7"}
 psycopg2-binary = "^2.9.10"
 gunicorn = "^23.0.0"
 pillow = "^11.2.1"

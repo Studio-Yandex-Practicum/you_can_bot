@@ -16,6 +16,7 @@ LOG_LEVELS = {
 }
 
 TOKEN = os.getenv("TOKEN")
+SOCKS5_PROXY_URL = os.getenv("SOCKS5_PROXY_URL")
 
 BASE_DIR = Path(__file__).parent.parent
 
