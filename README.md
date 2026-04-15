@@ -330,10 +330,11 @@ poetry add <package_name>
 
 ### Ветки<a name="branches"></a>
 
-При создании новой ветки наследоваться от develop, не забыв спуллить себе последние изменения
+В проекте используется стратегия Trunk-Based Development (TBD) — основная ветка `master`.
+При создании новой ветки наследоваться от `master`, не забыв спуллить себе последние изменения.
 Пример наименования веток:
    - `feature/send-sandwiches`
-   - `fix/process-bread-not-found.`
+   - `fix/process-bread-not-found`
 
 
 <!-- MARKDOWN LINKS & BADGES -->
