@@ -7,9 +7,12 @@ load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv("SECRET_KEY", default="secret_key")
-DEBUG = os.getenv("DEBUG", default=False)
+DEBUG = os.getenv("DEBUG", default="False").lower() in ("true", "1", "yes")
 
-ALLOWED_HOSTS = [os.getenv("ALLOWED_HOSTS", default="*")]
+ALLOWED_HOSTS = [
+    host.strip()
+    for host in os.getenv("ALLOWED_HOSTS", default="*").split(",")
+]
 DOMAIN = os.getenv("DOMAIN", default="127.0.0.1")
 TOKEN = os.getenv("TOKEN")
 SOCKS5_PROXY_URL = os.getenv("SOCKS5_PROXY_URL")
