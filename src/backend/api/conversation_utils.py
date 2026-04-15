@@ -1,16 +1,12 @@
-import os
-
+from django.conf import settings
 from telegram import Bot
 from telegram.request import HTTPXRequest
 
-TOKEN = os.getenv("TOKEN")
-SOCKS5_PROXY_URL = os.getenv("SOCKS5_PROXY_URL")
-
 
 def _build_bot():
-    kwargs = {"token": TOKEN}
-    if SOCKS5_PROXY_URL:
-        kwargs["request"] = HTTPXRequest(proxy=SOCKS5_PROXY_URL)
+    kwargs = {"token": settings.TOKEN}
+    if settings.SOCKS5_PROXY_URL:
+        kwargs["request"] = HTTPXRequest(proxy=settings.SOCKS5_PROXY_URL)
     return Bot(**kwargs)
 
 
