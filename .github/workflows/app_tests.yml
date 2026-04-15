@@ -1,45 +1,15 @@
 name: Django and bot tests
 
 on:
-  push:
-    branches:
-      - master
-  pull_request:
+  workflow_run:
+    workflows: ["Test flake8 and isort workflow"]
+    types:
+      - completed
   workflow_dispatch:
 
 jobs:
-  lint:
-    runs-on: ubuntu-latest
-
-    steps:
-    -
-      name: Check out the repo
-      uses: actions/checkout@v4
-    -
-      name: Setup Poetry
-      uses: Gr1N/setup-poetry@v9
-      with:
-        poetry-version: "1.8.2"
-    -
-      name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: "3.11"
-    -
-      name: Install dependencies
-      run: |
-        poetry install
-    -
-      name: Test with flake8
-      run: |
-        poetry run flake8 .
-    -
-      name: Test with isort
-      run: |
-        poetry run isort . --check --diff
-
   testing:
-    needs: lint
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
 
     steps:

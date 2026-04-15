@@ -1,0 +1,39 @@
+# .github/workflows/**main.yml**
+name: Test flake8 and isort workflow
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+
+    steps:
+    -
+      name: Check out the repo
+      uses: actions/checkout@v4
+    -
+      name: Setup Poetry
+      uses: Gr1N/setup-poetry@v9
+      with:
+        poetry-version: "1.8.2"
+    -
+      name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.11"
+    -
+      name: Install dependencies
+      run: |
+        poetry install
+    -
+      name: Test with flake8
+      run: |
+        poetry run flake8 .
+    -
+      name: Test with isort
+      run: |
+        poetry run isort . --check --diff
