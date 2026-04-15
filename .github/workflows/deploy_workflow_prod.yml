@@ -66,7 +66,7 @@ jobs:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.SSH_USER }}
           password: ${{ secrets.SSH_PASSWORD }}
-          source: "./infra/docker-compose.prod.yml, ./infra/default.prod.conf"
+          source: "./infra/docker-compose.prod.yml"
           target: ${{ env.DEPLOY_PATH }}
 
       - name: Executing remote ssh commands to deploy
@@ -86,9 +86,7 @@ jobs:
             echo DEBUG=${{ vars.DEBUG }} >> .env
             echo ALLOWED_HOSTS=${{ secrets.DJANGO_ALLOWED_HOSTS }} >> .env
             echo HOST=${{ secrets.HOST }} >> .env
-            echo CERT_EMAIL=${{ secrets.CERT_EMAIL }} >> .env
             echo DOMAIN=${{ secrets.DOMAIN }} >> .env
-
             echo INTERNAL_API_URL=${{ secrets.INTERNAL_API_URL }} >> .env
             echo YOUCANBY_TOKEN=${{ secrets.YOUCANBY_TOKEN }} >> .env
             echo YOUCANBY_URL=${{ secrets.YOUCANBY_URL }} >> .env
@@ -105,7 +103,7 @@ jobs:
 
             docker image prune -f
 
-            docker compose -f infra/docker-compose.prod.yml stop nginx backend bot db
+            docker compose -f infra/docker-compose.prod.yml stop npm backend bot db
             docker compose -f infra/docker-compose.prod.yml rm backend -f
             docker compose -f infra/docker-compose.prod.yml rm bot -f
             docker compose --env-file .env -f infra/docker-compose.prod.yml up -d
