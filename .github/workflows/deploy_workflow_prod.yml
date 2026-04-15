@@ -2,7 +2,7 @@ name: Deploy project to prod server
 
 on:
   workflow_run:
-    workflows: ["Django and bot tests"]
+    workflows: ["CI Lint & Tests"]
     types:
       - completed
     branches: [master]
