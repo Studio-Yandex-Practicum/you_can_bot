@@ -39,7 +39,6 @@ class TaskSixConversation(BaseTaskConversation):
         """
         current_question = context.user_data["current_question"]
         if current_question == 1:
-            await update.callback_query.answer()
             await update.callback_query.edit_message_reply_markup()
         messages = await api_service.get_messages_with_question(
             task_number=self.task_number,
@@ -49,7 +48,6 @@ class TaskSixConversation(BaseTaskConversation):
             text=messages[0].content,
             reply_markup=ForceReply(selective=True),
         )
-        await update.callback_query.answer()
         return TYPING_ANSWER
 
     async def show_result(self, update: Update, context: ContextTypes.DEFAULT_TYPE):

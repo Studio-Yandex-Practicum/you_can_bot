@@ -57,18 +57,17 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     return HELLO
 
 
+@error_decorator(_LOGGER)
 async def show_skill_set_info(
     update: Update, context: ContextTypes.DEFAULT_TYPE
 ) -> int:
     """Выводит сообщение пользователю о том, зачем ему бот."""
-    query = update.callback_query
-    await query.answer()
     await update.effective_chat.send_message(
         templates.SKILL_SET_INFORMATION,
         reply_markup=keyboards.FIRST_TASK_KEYBOARD,
     )
     await update.callback_query.edit_message_reply_markup()
-    del context.user_data["current_conversation"]
+    context.user_data.pop("current_conversation", None)
     return ConversationHandler.END
 
 

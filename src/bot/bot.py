@@ -1,7 +1,13 @@
 import logging
 
 from telegram.constants import ParseMode
-from telegram.ext import AIORateLimiter, Application, ApplicationBuilder, Defaults
+from telegram.ext import (
+    AIORateLimiter,
+    Application,
+    ApplicationBuilder,
+    Defaults,
+    PicklePersistence,
+)
 
 from conversations.general.handlers import acquaintance_handler
 from conversations.mentor_registration.handlers import (
@@ -23,7 +29,12 @@ from conversations.task_5.handlers import task_five_conv
 from conversations.task_6.handlers import task_six_conv
 from conversations.task_7.handlers import task_seven_conv
 from conversations.task_8.handlers import task_8_conv
-from utils.configs import SOCKS5_PROXY_URL, TOKEN
+from utils.configs import (
+    PERSISTENCE_DIR,
+    PERSISTENCE_FILE_PATH,
+    SOCKS5_PROXY_URL,
+    TOKEN,
+)
 
 
 async def post_init(application: Application) -> None:
@@ -41,11 +52,13 @@ def create_bot():
     """
     defaults = Defaults(parse_mode=ParseMode.HTML)
 
+    PERSISTENCE_DIR.mkdir(parents=True, exist_ok=True)
     builder = (
         ApplicationBuilder()
         .token(TOKEN)
         .defaults(defaults)
         .rate_limiter(AIORateLimiter(max_retries=3))
+        .persistence(PicklePersistence(filepath=PERSISTENCE_FILE_PATH))
         .post_init(post_init)
     )
     if SOCKS5_PROXY_URL:

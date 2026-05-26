@@ -35,7 +35,7 @@ async def cancel_current_conversation(
 
 
 async def cancel_no_active_dialog(
-    update: Update, _context: ContextTypes.DEFAULT_TYPE
+    update: Update, context: ContextTypes.DEFAULT_TYPE
 ) -> None:
     """Обрабатывает команду /cancel, когда активный диалог отсутствует."""
     _LOGGER.info(
@@ -43,4 +43,5 @@ async def cancel_no_active_dialog(
         update.effective_chat.id,
     )
     await update.message.reply_text(templates.NO_ACTIVE_TASKS_MESSAGE)
+    context.user_data.clear()
     return None

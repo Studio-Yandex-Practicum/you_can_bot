@@ -44,6 +44,7 @@ services:
       restart: always
       volumes:
         - ../.data/logs/:/app/.data/logs/
+        - ../.data/persistence/:/app/.data/persistence/
       depends_on:
         - backend
       image: you_can_bot:latest

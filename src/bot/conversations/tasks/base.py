@@ -276,6 +276,8 @@ class BaseTaskConversation:
             states=self.set_states(),
             fallbacks=self.set_fallbacks(),
             map_to_parent={ConversationHandler.END: ConversationHandler.END},
+            name=f"task_{self.task_number}",
+            persistent=True,
         )
 
 
@@ -314,7 +316,6 @@ class OneQuestionConversation(BaseTaskConversation):
             text=messages[0].content,
             reply_markup=ForceReply(selective=True),
         )
-        await update.callback_query.answer()
         return states.TYPING_ANSWER
 
     @error_decorator(logger=_LOGGER)

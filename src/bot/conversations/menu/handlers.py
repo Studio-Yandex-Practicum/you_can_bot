@@ -79,6 +79,8 @@ ask_question_handler = ConversationHandler(
         cancel_handler,
         CommandHandler("ask", handle_prohibited_command),
     ],
+    name="ask_question",
+    persistent=True,
 )
 # /info
 info_handler = CommandHandler("info", callback_funcs.show_info_url)

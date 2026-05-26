@@ -52,4 +52,6 @@ task_8_conv: ConversationHandler = ConversationHandler(
     },
     fallbacks=[cancel_handler],
     map_to_parent={ConversationHandler.END: ConversationHandler.END},
+    name="task_8",
+    persistent=True,
 )
