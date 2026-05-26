@@ -31,8 +31,6 @@ async def handle_error(
     else:
         await _send_user_error_message(update)
     await _log_update_exception(context, exception, logger)
-    if isinstance(exception, BadRequest):
-        return None
     context.user_data.clear()
     return ConversationHandler.END
 
