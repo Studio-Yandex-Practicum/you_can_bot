@@ -69,8 +69,12 @@ class TaskOneConversation(BaseTaskConversation):
         picked_choices.
         """
         choice = update.callback_query.data
-        context.user_data["picked_choices"] += choice
-        picked_choices = context.user_data.get("picked_choices")
+        await update.callback_query.answer()
+        picked_choices = context.user_data.get("picked_choices", "")
+        if choice in picked_choices:
+            return CHOOSING
+        context.user_data["picked_choices"] = picked_choices + choice
+        picked_choices = context.user_data["picked_choices"]
         message = update.effective_message
         await update.effective_message.edit_text(
             self._get_question_text(message.text_html.split("\n\n"), picked_choices),
