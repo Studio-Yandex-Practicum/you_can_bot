@@ -18,6 +18,4 @@ acquaintance_handler: ConversationHandler = ConversationHandler(
         cancel_handler,
         CommandHandler("start", handle_prohibited_command),
     ],
-    name="acquaintance",
-    persistent=True,
 )
