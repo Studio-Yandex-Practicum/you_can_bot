@@ -22,6 +22,7 @@ BASE_DIR = Path(__file__).parent.parent
 
 LOG_DIR = BASE_DIR.parent / ".data" / os.getenv("LOG_DIR", default="logs")
 LOG_FILE_PATH = LOG_DIR / "bot.log"
+PERSISTENCE_FILE_PATH = LOG_DIR / "bot_persistence.pkl"
 LOG_LEVEL = LOG_LEVELS.get(os.getenv("LOG_LEVEL", default="INFO"), logging.INFO)
 
 LOG_FORMAT = "[%(asctime)s,%(msecs)d] %(levelname)s [%(name)s:%(lineno)s] %(message)s"

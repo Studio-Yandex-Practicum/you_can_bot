@@ -276,6 +276,8 @@ class BaseTaskConversation:
             states=self.set_states(),
             fallbacks=self.set_fallbacks(),
             map_to_parent={ConversationHandler.END: ConversationHandler.END},
+            name=f"task_{self.task_number}",
+            persistent=True,
         )
 
 

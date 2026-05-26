@@ -50,6 +50,8 @@ show_all_tasks_handler = ConversationHandler(
         cancel_handler,
         CommandHandler("tasks", handle_prohibited_command),
     ],
+    name="show_all_tasks",
+    persistent=True,
 )
 # /ask
 entry_point_to_ask_handler = CommandHandler("ask", callback_funcs.suggest_ask_question)
@@ -79,6 +81,8 @@ ask_question_handler = ConversationHandler(
         cancel_handler,
         CommandHandler("ask", handle_prohibited_command),
     ],
+    name="ask_question",
+    persistent=True,
 )
 # /info
 info_handler = CommandHandler("info", callback_funcs.show_info_url)

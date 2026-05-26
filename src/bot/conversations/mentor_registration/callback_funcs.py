@@ -206,6 +206,8 @@ class MentorRegistrationConversation:
             entry_points=self.set_entry_points(),
             states=self.set_states(),
             fallbacks=self.set_fallbacks(),
+            name="mentor_registration",
+            persistent=True,
         )
 
 
