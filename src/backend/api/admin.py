@@ -1,4 +1,5 @@
 import asyncio
+import html
 
 from django import forms
 from django.contrib import admin
@@ -103,7 +104,7 @@ class ProblemAdmin(admin.ModelAdmin):
             asyncio.run(
                 non_context_send_message(
                     text=PROBLEM_ANSWER.format(
-                        question=obj.message, content=obj.answer
+                        question=html.escape(obj.message), content=obj.answer
                     ),
                     user_id=obj.user.telegram_id,
                     parse_mode="HTML",
