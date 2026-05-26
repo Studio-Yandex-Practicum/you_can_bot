@@ -314,7 +314,6 @@ class OneQuestionConversation(BaseTaskConversation):
             text=messages[0].content,
             reply_markup=ForceReply(selective=True),
         )
-        await update.callback_query.answer()
         return states.TYPING_ANSWER
 
     @error_decorator(logger=_LOGGER)

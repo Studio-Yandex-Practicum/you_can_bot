@@ -229,7 +229,6 @@ async def registration_confirmation(
 
 
 async def _process_mentor_registration_confirmation(update):
-    await update.callback_query.answer()
     await update.callback_query.edit_message_reply_markup()
     picked_choice = update.callback_query.data
     command, id_to_confirm = picked_choice.split(".")
