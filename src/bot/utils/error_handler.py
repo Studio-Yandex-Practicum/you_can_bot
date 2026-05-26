@@ -17,6 +17,9 @@ async def handle_error(
     logger: Logger,
 ) -> Optional[int]:
     """Обрабатывает непредвиденное исключение внутри ConversationHandler."""
+    if isinstance(exception, BadRequest) and "not modified" in str(exception).lower():
+        logger.debug("Игнорируем повторный edit_text с тем же содержимым: %s", exception)
+        return None
     if isinstance(exception, ValidationExternalResponseError):
         await _send_user_error_message(
             update,
