@@ -106,6 +106,7 @@ class ProblemAdmin(admin.ModelAdmin):
                         question=obj.message, content=obj.answer
                     ),
                     user_id=obj.user.telegram_id,
+                    parse_mode="HTML",
                 )
             )
         super().save_model(request, obj, form, change)

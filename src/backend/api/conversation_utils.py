@@ -10,10 +10,10 @@ def _build_bot():
     return Bot(**kwargs)
 
 
-async def non_context_send_message(text, user_id):
+async def non_context_send_message(text, user_id, parse_mode=None):
     """
     Отправляет сообщение пользователю без update и context.
     Отправляет сообщение куратору, когда задание выполнено студентом.
     """
     async with _build_bot() as bot:
-        await bot.send_message(chat_id=user_id, text=text)
+        await bot.send_message(chat_id=user_id, text=text, parse_mode=parse_mode)
