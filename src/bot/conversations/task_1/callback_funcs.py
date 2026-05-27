@@ -74,7 +74,6 @@ class TaskOneConversation(BaseTaskConversation):
     ) -> int:
         """Dispatch a callback from the Task 1 keyboard to the right handler."""
         query = update.callback_query
-        await query.answer()
         context.user_data[COMMITTING_KEY] = False
         data = query.data
         if data == CONFIRM_CALLBACK:
