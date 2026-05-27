@@ -35,6 +35,7 @@ from utils.configs import (
     SOCKS5_PROXY_URL,
     TOKEN,
 )
+from utils.telegram_retry import RetryingHTTPXRequest
 
 
 async def post_init(application: Application) -> None:
@@ -61,8 +62,9 @@ def create_bot():
         .persistence(PicklePersistence(filepath=PERSISTENCE_FILE_PATH))
         .post_init(post_init)
     )
-    if SOCKS5_PROXY_URL:
-        builder = builder.proxy(SOCKS5_PROXY_URL).get_updates_proxy(SOCKS5_PROXY_URL)
+    builder = builder.request(
+        RetryingHTTPXRequest(proxy=SOCKS5_PROXY_URL or None, connection_pool_size=256)
+    ).get_updates_request(RetryingHTTPXRequest(proxy=SOCKS5_PROXY_URL or None))
     bot_app = builder.build()
 
     # mentor registration handlers
