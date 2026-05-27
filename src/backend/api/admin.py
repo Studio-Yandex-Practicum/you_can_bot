@@ -1,11 +1,21 @@
 import asyncio
+import html
+import logging
 
 from django import forms
 from django.contrib import admin
 from django.contrib.auth import get_user_model
 from django.contrib.auth.admin import UserAdmin
+from django.core.exceptions import ValidationError
 from django.urls import reverse
 from django.utils.html import format_html
+from telegram.error import (
+    BadRequest,
+    Forbidden,
+    NetworkError,
+    RetryAfter,
+    TelegramError,
+)
 from tinymce.widgets import TinyMCE
 
 from api.models import (
@@ -25,10 +35,30 @@ from api.models import (
 from .conversation_utils import non_context_send_message
 from .filters import ANSWER_NOT_RECEIVED, ANSWER_RECEIVED, ProblemAnswerFilter
 
+logger = logging.getLogger(__name__)
 User = get_user_model()
 
 PROBLEM_ANSWER = (
     "Профдизайнер ответил на ваш вопрос: «{question}».\n\n<b>Ответ:</b> «{content}»"
+)
+ANSWER_HELP_TEXT = (
+    "Сообщение пользователю рендерится с HTML-разметкой Telegram. "
+    "Поддерживаются теги &lt;b&gt;, &lt;i&gt;, &lt;a href=&quot;...&quot;&gt;, "
+    "&lt;code&gt;, &lt;pre&gt;. "
+    "Не используйте в тексте символы &lt;, &gt; и &amp; вне HTML-тегов — "
+    "Telegram воспримет их как разметку и не отправит сообщение."
+)
+SEND_ERROR_BAD_REQUEST = (
+    "Telegram отверг сообщение. Скорее всего, в ответе есть символы «<», «>» "
+    "или «&», либо неподдерживаемый HTML-тег. Уберите их и сохраните ещё раз. "
+    "Ответ не сохранён."
+)
+SEND_ERROR_FORBIDDEN = (
+    "Пользователь заблокировал бота, доставить ответ невозможно. " "Ответ не сохранён."
+)
+SEND_ERROR_NETWORK = (
+    "Не удалось доставить ответ пользователю в Telegram (сетевая ошибка). "
+    "Ответ не сохранён, попробуйте ещё раз через минуту."
 )
 
 
@@ -79,8 +109,64 @@ class TaskStatusInline(admin.TabularInline):
     readonly_fields = ["user", "task", "pass_date", "is_done", "current_question"]
 
 
+class ProblemForm(forms.ModelForm):
+    """Форма Problem: отправляет ответ в Telegram до сохранения в БД."""
+
+    class Meta:
+        model = Problem
+        fields = "__all__"
+        help_texts = {"answer": ANSWER_HELP_TEXT}
+
+    def clean(self):
+        cleaned = super().clean()
+        if self._should_notify(cleaned):
+            self._notify_user(cleaned["answer"])
+        return cleaned
+
+    def _should_notify(self, cleaned):
+        return bool(
+            self.instance.pk and "answer" in self.changed_data and cleaned.get("answer")
+        )
+
+    def _notify_user(self, answer):
+        try:
+            asyncio.run(
+                non_context_send_message(
+                    text=PROBLEM_ANSWER.format(
+                        question=html.escape(self.instance.message),
+                        content=answer,
+                    ),
+                    user_id=self.instance.user.telegram_id,
+                    parse_mode="HTML",
+                )
+            )
+        except BadRequest as error:
+            logger.warning(
+                "Telegram BadRequest при отправке ответа problem %s: %s",
+                self.instance.pk,
+                error,
+            )
+            raise ValidationError({"answer": SEND_ERROR_BAD_REQUEST})
+        except Forbidden as error:
+            logger.info(
+                "Пользователь %s заблокировал бота, ответ problem %s не доставлен: %s",
+                self.instance.user.telegram_id,
+                self.instance.pk,
+                error,
+            )
+            raise ValidationError({"answer": SEND_ERROR_FORBIDDEN})
+        except (RetryAfter, NetworkError, TelegramError) as error:
+            logger.warning(
+                "Не удалось доставить ответ problem %s: %s",
+                self.instance.pk,
+                error,
+            )
+            raise ValidationError({"answer": SEND_ERROR_NETWORK})
+
+
 @admin.register(Problem)
 class ProblemAdmin(admin.ModelAdmin):
+    form = ProblemForm
     list_display = (
         "user",
         "message",
@@ -97,18 +183,6 @@ class ProblemAdmin(admin.ModelAdmin):
     date_hierarchy = "create_date"
     empty_value_display = "-пусто-"
     list_filter = (ProblemAnswerFilter,)
-
-    def save_model(self, request, obj, form, change):
-        if change and "answer" in form.changed_data:
-            asyncio.run(
-                non_context_send_message(
-                    text=PROBLEM_ANSWER.format(
-                        question=obj.message, content=obj.answer
-                    ),
-                    user_id=obj.user.telegram_id,
-                )
-            )
-        super().save_model(request, obj, form, change)
 
     @admin.display(description="Статус ответа")
     def get_answer_status(self, obj):
