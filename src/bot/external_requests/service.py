@@ -1,5 +1,5 @@
 from logging import getLogger
-from typing import Optional, TypedDict
+from typing import Awaitable, Callable, Optional, Tuple, TypedDict
 
 from httpx import AsyncClient, HTTPStatusError, Response, codes
 
@@ -15,6 +15,8 @@ from utils.configs import (
     YOUCANBY_TOKEN,
     YOUCANBY_URL,
 )
+
+EMPTY_TARIFF_ALIASES = frozenset({"", "none", "null"})
 
 IS_APPROVED = "isApproved"
 FIRST_NAME = "first_name"
@@ -45,24 +47,44 @@ _LOGGER = getLogger(__name__)
 async def get_user_info_from_lk(telegram_id: int) -> Optional[UserInfo]:
     check_telegram_id(telegram_id)
 
-    user_info_from_youcanby = await _get_user_info_from_youcanby(telegram_id)
-    user_info_from_robotguru = await _get_user_info_from_robotguru(telegram_id)
+    user_info_from_youcanby, youcanby_error = await _safe_get_lk_info(
+        _get_user_info_from_youcanby, telegram_id, "youcan.by"
+    )
+    user_info_from_robotguru, robotguru_error = await _safe_get_lk_info(
+        _get_user_info_from_robotguru, telegram_id, "robotguru"
+    )
 
     if user_info_from_youcanby is None and user_info_from_robotguru is None:
+        if youcanby_error is not None and robotguru_error is not None:
+            raise youcanby_error
         raise UserNotFound()
-    if user_info_from_youcanby is not None and user_info_from_robotguru is None:
+    if user_info_from_robotguru is None:
         return user_info_from_youcanby
-    if user_info_from_youcanby is None and user_info_from_robotguru is not None:
+    if user_info_from_youcanby is None:
         return user_info_from_robotguru
     if (
         TARIFF_PRIORITY[user_info_from_youcanby[TARIFF]]
         >= TARIFF_PRIORITY[user_info_from_robotguru[TARIFF]]
     ):
-        user_info = user_info_from_youcanby
-    else:
-        user_info = user_info_from_robotguru
+        return user_info_from_youcanby
+    return user_info_from_robotguru
 
-    return user_info
+
+async def _safe_get_lk_info(
+    fetch: Callable[[int], Awaitable[Optional[UserInfo]]],
+    telegram_id: int,
+    source_name: str,
+) -> Tuple[Optional[UserInfo], Optional[BaseException]]:
+    try:
+        return await fetch(telegram_id), None
+    except Exception as exc:
+        _LOGGER.warning(
+            "Не удалось получить профиль из %s для telegram_id=%s: %r",
+            source_name,
+            telegram_id,
+            exc,
+        )
+        return None, exc
 
 
 def check_telegram_id(value: int) -> int:
@@ -111,10 +133,10 @@ async def _parse_json_response_to_user_info(data: dict) -> UserInfo:
         if key not in data:
             raise ValidationExternalResponseError(f"В ответе нет ключа: {key}")
 
-    tariff_value = data[TARIFF]
+    tariff_value = _normalize_tariff(data[TARIFF])
     if tariff_value not in ALL_TARIFFS:
         raise ValidationExternalResponseError(
-            f"Получено некорректное значение для тарифа: {tariff_value}."
+            f"Получено некорректное значение для тарифа: {data[TARIFF]}."
             f" Ожидались: {ALL_TARIFFS}."
         )
 
@@ -137,3 +159,12 @@ async def _parse_json_response_to_user_info(data: dict) -> UserInfo:
         last_name=data[LAST_NAME],
         tariff=tariff_value,
     )
+
+
+def _normalize_tariff(tariff_value):
+    if (
+        isinstance(tariff_value, str)
+        and tariff_value.strip().lower() in EMPTY_TARIFF_ALIASES
+    ):
+        return None
+    return tariff_value
