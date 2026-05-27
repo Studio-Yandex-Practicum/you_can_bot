@@ -123,6 +123,40 @@ class GetUserInfoFromLkTests(unittest.IsolatedAsyncioTestCase):
 
         self.assertIs(ctx.exception, youcanby_error)
 
+    async def test_youcanby_none_and_robotguru_fail_reraises_robotguru_error(self):
+        robotguru_error = ValidationExternalResponseError("rg broken")
+
+        with patch.object(
+            service,
+            "_get_user_info_from_youcanby",
+            new=AsyncMock(return_value=None),
+        ), patch.object(
+            service,
+            "_get_user_info_from_robotguru",
+            new=AsyncMock(side_effect=robotguru_error),
+        ):
+            with self.assertRaises(ValidationExternalResponseError) as ctx:
+                await get_user_info_from_lk(123)
+
+        self.assertIs(ctx.exception, robotguru_error)
+
+    async def test_youcanby_fail_and_robotguru_none_reraises_youcanby_error(self):
+        youcanby_error = ValidationExternalResponseError("yc broken")
+
+        with patch.object(
+            service,
+            "_get_user_info_from_youcanby",
+            new=AsyncMock(side_effect=youcanby_error),
+        ), patch.object(
+            service,
+            "_get_user_info_from_robotguru",
+            new=AsyncMock(return_value=None),
+        ):
+            with self.assertRaises(ValidationExternalResponseError) as ctx:
+                await get_user_info_from_lk(123)
+
+        self.assertIs(ctx.exception, youcanby_error)
+
     async def test_picks_higher_tariff_when_both_succeed(self):
         with patch.object(
             service,

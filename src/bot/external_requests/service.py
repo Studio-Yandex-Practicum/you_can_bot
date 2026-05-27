@@ -55,8 +55,9 @@ async def get_user_info_from_lk(telegram_id: int) -> Optional[UserInfo]:
     )
 
     if user_info_from_youcanby is None and user_info_from_robotguru is None:
-        if youcanby_error is not None and robotguru_error is not None:
-            raise youcanby_error
+        lk_error = youcanby_error or robotguru_error
+        if lk_error is not None:
+            raise lk_error
         raise UserNotFound()
     if user_info_from_robotguru is None:
         return user_info_from_youcanby
