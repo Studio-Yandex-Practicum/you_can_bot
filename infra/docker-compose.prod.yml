@@ -17,7 +17,7 @@ services:
     backend:
       image: ghcr.io/studio-yandex-practicum/you_can_bot:prod
       container_name: backend
-      command: bash -c "cd backend/ && gunicorn backend.wsgi:application --bind 0:8000"
+      command: bash -c "cd backend/ && gunicorn backend.wsgi:application --bind 0:8000 --workers 2 --threads 4 --timeout 60"
       restart: always
       volumes:
         - static_value:/app/backend/static/
