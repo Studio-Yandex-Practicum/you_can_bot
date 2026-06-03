@@ -1,9 +1,11 @@
+import asyncio
 import logging
 import os
 from dataclasses import asdict
-from typing import List, Type, TypeVar, Union
+from typing import List, Optional, Type, TypeVar, Union
 from urllib.parse import urljoin
 
+import httpx
 from httpx import AsyncClient, Response
 
 from internal_requests.entities import (
@@ -23,6 +25,49 @@ _LOGGER = logging.getLogger(__name__)
 Model = TypeVar("Model")
 
 INTERNAL_API_URL = os.getenv("INTERNAL_API_URL", "http://127.0.0.1:8000/api/v1/")
+DEFAULT_READ_TIMEOUT_SECONDS = 15.0
+
+REQUEST_MAX_ATTEMPTS = 3
+REQUEST_INITIAL_DELAY_SECONDS = 1.0
+
+
+def _read_timeout_from_env() -> float:
+    """Прочитать INTERNAL_API_TIMEOUT, при некорректном значении взять default."""
+    raw_value = os.getenv("INTERNAL_API_TIMEOUT")
+    if raw_value is None:
+        return DEFAULT_READ_TIMEOUT_SECONDS
+    try:
+        return float(raw_value)
+    except ValueError:
+        _LOGGER.warning(
+            "Ignoring invalid INTERNAL_API_TIMEOUT=%r, using default %.1fs",
+            raw_value,
+            DEFAULT_READ_TIMEOUT_SECONDS,
+        )
+        return DEFAULT_READ_TIMEOUT_SECONDS
+
+
+INTERNAL_API_READ_TIMEOUT = _read_timeout_from_env()
+
+_TIMEOUT = httpx.Timeout(
+    connect=5.0, read=INTERNAL_API_READ_TIMEOUT, write=10.0, pool=5.0
+)
+_LIMITS = httpx.Limits(max_keepalive_connections=10, max_connections=20)
+
+_client: Optional[AsyncClient] = None
+
+
+def _get_client() -> AsyncClient:
+    """Вернуть общий AsyncClient, создавая его лениво при первом обращении.
+
+    Lock не нужен: между проверкой `is None` и присваиванием ниже нет await,
+    а конструктор AsyncClient() синхронный, поэтому event loop asyncio не может
+    переключить задачи в середине инициализации и создать второй клиент.
+    """
+    global _client
+    if _client is None:
+        _client = AsyncClient(timeout=_TIMEOUT, limits=_LIMITS)
+    return _client
 
 
 async def get_messages_with_question(
@@ -54,8 +99,15 @@ async def get_info_about_user(telegram_id: int) -> UserFromTelegram:
 
 
 async def update_user_info(telegram_id: int, data: dict):
+    """Обновление информации о пользователе.
+
+    PATCH-эндпоинт идемпотентен: DRF partial_update присваивает поля
+    (name/surname) существующей записи без счётчиков и побочных эффектов
+    (см. backend api/views/users.py), поэтому он помечен idempotent=True
+    и безопасен для повтора того же payload.
+    """
     endpoint_run = f"users/{telegram_id}/"
-    response = await _patch_request(data, endpoint_run)
+    response = await _patch_request(data, endpoint_run, idempotent=True)
     user_info_updated = await _parse_api_response_to_user_info(response)
     return user_info_updated
 
@@ -136,7 +188,12 @@ async def delete_mentor(telegram_id: int) -> Response:
 
 
 async def create_question_from_user(problem: Problem) -> Response:
-    """Запрос на занесение вопроса от пользователя в БД."""
+    """Запрос на занесение вопроса от пользователя в БД.
+
+    Эндпоинт problems/ НЕ идемпотентен: на каждый вызов он создаёт новую
+    запись Problem и шлёт уведомление ментору (см. backend
+    api/views/problems.py), поэтому этот POST не повторяется.
+    """
     data = asdict(problem)
     endpoint_urn = f"users/{problem.telegram_id}/problems/"
     response = await _post_request(data, endpoint_urn)
@@ -144,10 +201,17 @@ async def create_question_from_user(problem: Problem) -> Response:
 
 
 async def create_answer(answer: Answer) -> Response:
-    """Запрос на занесение ответа от пользователя на вопрос задания."""
+    """Запрос на занесение ответа от пользователя на вопрос задания.
+
+    Эндпоинт answers/ идемпотентен: существующий ответ на тот же вопрос
+    обновляется, а не дублируется (см. backend api/views/answer.py),
+    поэтому он помечен idempotent=True и безопасен для повтора.
+    """
     endpoint_urn = f"users/{answer.telegram_id}/tasks/{answer.task_number}/answers/"
     response = await _post_request(
-        {"number": answer.number, "content": answer.content}, endpoint_urn
+        {"number": answer.number, "content": answer.content},
+        endpoint_urn,
+        idempotent=True,
     )
     return response
 
@@ -161,67 +225,81 @@ async def get_task_8_question(question_number: int, params: List) -> List[Messag
 
 
 async def _get_request_with_params(endpoint_url: str, params) -> Response:
-    async with AsyncClient() as client:
-        response = await client.request(
-            method="GET",
-            url=urljoin(
-                base=INTERNAL_API_URL,
-                url=endpoint_url,
-            ),
-            json=params,
-        )
-    response.raise_for_status()
-    return response
+    return await _request("GET", endpoint_url, json=params, idempotent=True)
 
 
 async def _get_request(endpoint_url: str) -> Response:
-    async with AsyncClient() as client:
-        response = await client.get(
-            url=urljoin(
-                base=INTERNAL_API_URL,
-                url=endpoint_url,
+    return await _request("GET", endpoint_url, idempotent=True)
+
+
+async def _post_request(
+    data: dict, endpoint_url: str, idempotent: bool = False
+) -> Response:
+    return await _request("POST", endpoint_url, json=data, idempotent=idempotent)
+
+
+async def _patch_request(
+    data: dict, endpoint_url: str, idempotent: bool = False
+) -> Response:
+    return await _request("PATCH", endpoint_url, json=data, idempotent=idempotent)
+
+
+async def _delete_request(endpoint_url: str, idempotent: bool = False) -> Response:
+    return await _request("DELETE", endpoint_url, idempotent=idempotent)
+
+
+async def _request(
+    method: str,
+    endpoint_url: str,
+    json=None,
+    idempotent: bool = False,
+) -> Response:
+    """Отправить запрос через общий клиент, повторяя при транзиентных сбоях.
+
+    Повтор выполняется только для безопасных для повтора вызовов: всех GET и
+    любых не-GET методов, явно помеченных как idempotent. Повторяемые сбои —
+    это transport-ошибки (таймауты connect/read и т.п.) и 5xx-ответы; 4xx и
+    успешные ответы возвращаются без повтора.
+    """
+    url = urljoin(base=INTERNAL_API_URL, url=endpoint_url)
+    for attempt in range(1, REQUEST_MAX_ATTEMPTS + 1):
+        is_last_attempt = attempt == REQUEST_MAX_ATTEMPTS
+        try:
+            response = await _get_client().request(method=method, url=url, json=json)
+        except httpx.TransportError as error:
+            if not idempotent or is_last_attempt:
+                raise
+            await _wait_before_retry(method, endpoint_url, attempt, repr(error))
+            continue
+        if _should_retry_response(response) and idempotent and not is_last_attempt:
+            await _wait_before_retry(
+                method, endpoint_url, attempt, f"status {response.status_code}"
             )
-        )
-    response.raise_for_status()
-    return response
+            continue
+        response.raise_for_status()
+        return response
 
 
-async def _post_request(data: dict, endpoint_url: str) -> Response:
-    async with AsyncClient() as client:
-        response = await client.post(
-            url=urljoin(
-                base=INTERNAL_API_URL,
-                url=endpoint_url,
-            ),
-            json=data,
-        )
-    response.raise_for_status()
-    return response
+def _should_retry_response(response: Response) -> bool:
+    """Вернуть, требует ли код статуса ответа повтора (только 5xx)."""
+    return response.status_code >= 500
 
 
-async def _patch_request(data: dict, endpoint_url: str) -> Response:
-    async with AsyncClient() as client:
-        response = await client.patch(
-            url=urljoin(
-                base=INTERNAL_API_URL,
-                url=endpoint_url,
-            ),
-            json=data,
-        )
-    response.raise_for_status()
-    return response
-
-
-async def _delete_request(endpoint_url: str) -> Response:
-    async with AsyncClient() as client:
-        response = await client.delete(
-            url=urljoin(
-                base=INTERNAL_API_URL,
-                url=endpoint_url,
-            )
-        )
-    response.raise_for_status()
-    return response
+async def _wait_before_retry(
+    method: str, endpoint_url: str, attempt: int, reason: str
+) -> None:
+    """Залогировать предупреждение и поспать с экспоненциальным backoff."""
+    delay = REQUEST_INITIAL_DELAY_SECONDS * 2 ** (attempt - 1)
+    _LOGGER.warning(
+        "Transient failure on %s %s (%s), attempt %d/%d, retrying in %.1fs",
+        method,
+        endpoint_url,
+        reason,
+        attempt,
+        REQUEST_MAX_ATTEMPTS,
+        delay,
+    )
+    await asyncio.sleep(delay)
 
 
 async def _parse_api_response_to_messages(response: Response) -> List[Message]:
