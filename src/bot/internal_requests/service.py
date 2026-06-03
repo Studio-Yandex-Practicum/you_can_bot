@@ -99,11 +99,14 @@ async def get_info_about_user(telegram_id: int) -> UserFromTelegram:
 
 
 async def update_user_info(telegram_id: int, data: dict):
+    """Обновление информации о пользователе.
+
+    PATCH-эндпоинт идемпотентен: DRF partial_update присваивает поля
+    (name/surname) существующей записи без счётчиков и побочных эффектов
+    (см. backend api/views/users.py), поэтому он помечен idempotent=True
+    и безопасен для повтора того же payload.
+    """
     endpoint_run = f"users/{telegram_id}/"
-    # The user PATCH endpoint is idempotent: it assigns the same fields
-    # (name/surname) on the existing row via DRF's partial_update, with no
-    # counters or side effects (see backend api/views/users.py and
-    # UserFromTelegramUpdateSerializer), so retrying the same payload is safe.
     response = await _patch_request(data, endpoint_run, idempotent=True)
     user_info_updated = await _parse_api_response_to_user_info(response)
     return user_info_updated
@@ -185,22 +188,26 @@ async def delete_mentor(telegram_id: int) -> Response:
 
 
 async def create_question_from_user(problem: Problem) -> Response:
-    """Запрос на занесение вопроса от пользователя в БД."""
+    """Запрос на занесение вопроса от пользователя в БД.
+
+    Эндпоинт problems/ НЕ идемпотентен: на каждый вызов он создаёт новую
+    запись Problem и шлёт уведомление ментору (см. backend
+    api/views/problems.py), поэтому этот POST не повторяется.
+    """
     data = asdict(problem)
     endpoint_urn = f"users/{problem.telegram_id}/problems/"
-    # The problems endpoint is NOT idempotent: it creates a new Problem row and
-    # notifies the mentor on every call (see backend api/views/problems.py), so
-    # this POST must not be retried.
     response = await _post_request(data, endpoint_urn)
     return response
 
 
 async def create_answer(answer: Answer) -> Response:
-    """Запрос на занесение ответа от пользователя на вопрос задания."""
+    """Запрос на занесение ответа от пользователя на вопрос задания.
+
+    Эндпоинт answers/ идемпотентен: существующий ответ на тот же вопрос
+    обновляется, а не дублируется (см. backend api/views/answer.py),
+    поэтому он помечен idempotent=True и безопасен для повтора.
+    """
     endpoint_urn = f"users/{answer.telegram_id}/tasks/{answer.task_number}/answers/"
-    # The answers endpoint is idempotent: it checks for an existing answer to
-    # the same question and updates it instead of creating a duplicate
-    # (see backend api/views/answer.py), so retrying a POST is safe.
     response = await _post_request(
         {"number": answer.number, "content": answer.content},
         endpoint_urn,
