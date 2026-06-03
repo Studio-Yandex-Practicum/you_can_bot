@@ -32,7 +32,7 @@ REQUEST_INITIAL_DELAY_SECONDS = 1.0
 
 
 def _read_timeout_from_env() -> float:
-    """Read INTERNAL_API_TIMEOUT, falling back to the default on bad values."""
+    """Прочитать INTERNAL_API_TIMEOUT, при некорректном значении взять default."""
     raw_value = os.getenv("INTERNAL_API_TIMEOUT")
     if raw_value is None:
         return DEFAULT_READ_TIMEOUT_SECONDS
@@ -58,11 +58,11 @@ _client: Optional[AsyncClient] = None
 
 
 def _get_client() -> AsyncClient:
-    """Return the shared AsyncClient, creating it lazily on first use.
+    """Вернуть общий AsyncClient, создавая его лениво при первом обращении.
 
-    No lock is needed: the check and assignment below have no await between
-    them and AsyncClient() is a synchronous constructor, so the asyncio event
-    loop cannot switch tasks mid-initialization and create a second client.
+    Lock не нужен: между проверкой `is None` и присваиванием ниже нет await,
+    а конструктор AsyncClient() синхронный, поэтому event loop asyncio не может
+    переключить задачи в середине инициализации и создать второй клиент.
     """
     global _client
     if _client is None:
@@ -254,12 +254,12 @@ async def _request(
     json=None,
     idempotent: bool = False,
 ) -> Response:
-    """Send a request through the shared client, retrying transient failures.
+    """Отправить запрос через общий клиент, повторяя при транзиентных сбоях.
 
-    Retries are attempted only for safe-to-repeat calls: every GET, and any
-    non-GET method explicitly marked as idempotent. Retryable failures are
-    transport errors (connect/read timeouts, etc.) and 5xx responses; 4xx and
-    successful responses are returned without retry.
+    Повтор выполняется только для безопасных для повтора вызовов: всех GET и
+    любых не-GET методов, явно помеченных как idempotent. Повторяемые сбои —
+    это transport-ошибки (таймауты connect/read и т.п.) и 5xx-ответы; 4xx и
+    успешные ответы возвращаются без повтора.
     """
     url = urljoin(base=INTERNAL_API_URL, url=endpoint_url)
     for attempt in range(1, REQUEST_MAX_ATTEMPTS + 1):
@@ -281,14 +281,14 @@ async def _request(
 
 
 def _should_retry_response(response: Response) -> bool:
-    """Return whether the response status code warrants a retry (5xx only)."""
+    """Вернуть, требует ли код статуса ответа повтора (только 5xx)."""
     return response.status_code >= 500
 
 
 async def _wait_before_retry(
     method: str, endpoint_url: str, attempt: int, reason: str
 ) -> None:
-    """Log a warning and sleep with exponential backoff before the next attempt."""
+    """Залогировать предупреждение и поспать с экспоненциальным backoff."""
     delay = REQUEST_INITIAL_DELAY_SECONDS * 2 ** (attempt - 1)
     _LOGGER.warning(
         "Transient failure on %s %s (%s), attempt %d/%d, retrying in %.1fs",

@@ -26,7 +26,7 @@ def _patch_client(request_mock: AsyncMock):
 
 @patch.object(service.asyncio, "sleep", new=AsyncMock())
 class RequestRetryTests(IsolatedAsyncioTestCase):
-    """Retry behaviour of the shared internal HTTP client."""
+    """Поведение повторов общего внутреннего HTTP-клиента."""
 
     async def test_successful_request_returns_response(self):
         request = AsyncMock(return_value=_response(200))
@@ -101,7 +101,7 @@ class RequestRetryTests(IsolatedAsyncioTestCase):
 
 
 class IdempotencyWiringTests(IsolatedAsyncioTestCase):
-    """Each caller marks its request idempotent according to the endpoint."""
+    """Каждый вызывающий помечает свой запрос idempotent в соответствии с эндпоинтом."""
 
     @patch.object(service, "_request", new_callable=AsyncMock)
     async def test_create_answer_marks_request_idempotent(self, request_mock):
@@ -132,7 +132,7 @@ class IdempotencyWiringTests(IsolatedAsyncioTestCase):
 
 
 class SharedClientTests(IsolatedAsyncioTestCase):
-    """A single AsyncClient instance is reused across calls."""
+    """Единственный экземпляр AsyncClient переиспользуется между вызовами."""
 
     def setUp(self):
         service._client = None
