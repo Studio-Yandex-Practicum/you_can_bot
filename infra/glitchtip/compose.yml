@@ -1,0 +1,101 @@
+name: glitchtip
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    command:
+      - postgres
+      - -c
+      - shared_buffers=32MB
+      - -c
+      - work_mem=2MB
+      - -c
+      - maintenance_work_mem=32MB
+      - -c
+      - max_connections=30
+      - -c
+      - max_locks_per_transaction=512
+      - -c
+      - max_wal_size=256MB
+    environment:
+      POSTGRES_DB: glitchtip
+      POSTGRES_USER: glitchtip
+      POSTGRES_PASSWORD: ${GLITCHTIP_DB_PASSWORD:?Set GLITCHTIP_DB_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    mem_limit: 256m
+    memswap_limit: 256m
+    cpus: 0.25
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U glitchtip -d glitchtip"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: "3"
+
+  web:
+    image: glitchtip/glitchtip:7.0.0
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:8001:8000"
+    environment:
+      DATABASE_URL: postgres://glitchtip:${GLITCHTIP_DB_PASSWORD:?Set GLITCHTIP_DB_PASSWORD}@postgres:5432/glitchtip
+      SECRET_KEY: ${GLITCHTIP_SECRET_KEY:?Set GLITCHTIP_SECRET_KEY}
+      VALKEY_URL: ""
+      EMAIL_URL: consolemail://
+      GLITCHTIP_DOMAIN: http://localhost:8001
+      ALLOWED_HOSTS: localhost,127.0.0.1,glitchtip
+      CSRF_TRUSTED_ORIGINS: http://localhost:8001,http://127.0.0.1:8001
+      ENABLE_USER_REGISTRATION: "False"
+      ENABLE_ORGANIZATION_CREATION: "False"
+      ENABLE_ADMIN: "False"
+      ENABLE_OPENAPI: "False"
+      GLITCHTIP_ENABLE_MCP: "False"
+      GLITCHTIP_ENABLE_LOGS: "False"
+      GLITCHTIP_ENABLE_UPTIME: "False"
+      GLITCHTIP_ENABLE_DUCKDB: "False"
+      GRANIAN_WORKERS: "1"
+      VTASKS_CONCURRENCY: "2"
+      DATABASE_POOL_MAX_SIZE: "5"
+    volumes:
+      - uploads:/code/uploads
+    networks:
+      default:
+      application:
+        aliases:
+          - glitchtip
+    mem_limit: 512m
+    memswap_limit: 512m
+    cpus: 0.5
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - "import urllib.request; urllib.request.urlopen('http://localhost:8000/_health/', timeout=5)"
+      interval: 30s
+      timeout: 10s
+      start_period: 180s
+      retries: 5
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: "3"
+
+networks:
+  application:
+    external: true
+    name: ${APPLICATION_NETWORK:-infra_default}
+
+volumes:
+  postgres_data:
+  uploads:

@@ -3,15 +3,17 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
+from backend.monitoring import configure_monitoring
+
 load_dotenv()
+configure_monitoring()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv("SECRET_KEY", default="secret_key")
 DEBUG = os.getenv("DEBUG", default="False").lower() in ("true", "1", "yes")
 
 ALLOWED_HOSTS = [
-    host.strip()
-    for host in os.getenv("ALLOWED_HOSTS", default="*").split(",")
+    host.strip() for host in os.getenv("ALLOWED_HOSTS", default="*").split(",")
 ]
 DOMAIN = os.getenv("DOMAIN", default="127.0.0.1")
 TOKEN = os.getenv("TOKEN")

@@ -1,5 +1,6 @@
 import logging
 
+import sentry_sdk
 from telegram.constants import ParseMode
 from telegram.ext import (
     AIORateLimiter,
@@ -46,6 +47,12 @@ async def post_init(application: Application) -> None:
 _LOGGER = logging.getLogger(__name__)
 
 
+async def report_unhandled_error(update, context) -> None:
+    """Report errors outside decorated conversation callbacks."""
+    sentry_sdk.capture_exception(context.error)
+    _LOGGER.error("Unhandled Telegram update error", exc_info=context.error)
+
+
 def create_bot():
     """
     Create telegram bot application
@@ -66,6 +73,7 @@ def create_bot():
         RetryingHTTPXRequest(proxy=SOCKS5_PROXY_URL or None, connection_pool_size=256)
     ).get_updates_request(RetryingHTTPXRequest(proxy=SOCKS5_PROXY_URL or None))
     bot_app = builder.build()
+    bot_app.add_error_handler(report_unhandled_error)
 
     # mentor registration handlers
     bot_app.add_handler(handler=mentor_registration_handler)
