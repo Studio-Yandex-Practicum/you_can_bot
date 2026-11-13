@@ -2,6 +2,7 @@ from functools import wraps
 from logging import Logger
 from typing import Optional
 
+import sentry_sdk
 from httpx import HTTPStatusError
 from telegram import Update
 from telegram.error import BadRequest
@@ -20,6 +21,7 @@ async def handle_error(
     if isinstance(exception, BadRequest) and "not modified" in str(exception).lower():
         logger.debug("Повторный edit_text с тем же содержимым: %s", exception)
         return None
+    sentry_sdk.capture_exception(exception)
     if isinstance(exception, ValidationExternalResponseError):
         await _send_user_error_message(
             update,

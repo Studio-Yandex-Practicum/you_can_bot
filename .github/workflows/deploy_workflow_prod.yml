@@ -71,10 +71,13 @@ jobs:
 
       - name: Executing remote ssh commands to deploy
         uses: appleboy/ssh-action@v1.2.5
+        env:
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
+          envs: SENTRY_DSN
           script: |
             cd ${{ env.DEPLOY_PATH }}
 
@@ -98,6 +101,10 @@ jobs:
             echo EXTERNAL_REQUESTS_ARE_MOCK=${{ vars.EXTERNAL_REQUESTS_ARE_MOCK }} >> .env
             echo MAIN_MENTOR_ID=${{ secrets.MAIN_MENTOR_ID }} >> .env
             echo DEVELOPER_CHAT_ID=${{ secrets.DEVELOPER_CHAT_ID }} >> .env
+
+            printf 'SENTRY_DSN=%s\n' "$SENTRY_DSN" >> .env
+            echo SENTRY_ENVIRONMENT=production >> .env
+            chmod 600 .env
 
             docker pull ${{ env.REGISTRY }}/${{ env.REP_OWNER }}/${{ env.IMAGE_NAME }}:prod
 
