@@ -66,6 +66,13 @@ jobs:
       run: |
         poetry run python src/backend/manage.py test src/backend
     -
+      name: Django metrics tests
+      env:
+        NEED_SQLITE: True
+        PROMETHEUS_ENABLED: 'true'
+      run: |
+        poetry run python src/backend/manage.py test backend.test_metrics
+    -
       name: Bot tests
       env:
         NEED_SQLITE: True

@@ -9,8 +9,14 @@ https://docs.djangoproject.com/en/4.2/howto/deployment/wsgi/
 
 import os
 
+from django.conf import settings
 from django.core.wsgi import get_wsgi_application
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "backend.settings")
 
 application = get_wsgi_application()
+
+if settings.PROMETHEUS_ENABLED:
+    from backend.metrics_wsgi import MonitoringApplication
+
+    application = MonitoringApplication(application)

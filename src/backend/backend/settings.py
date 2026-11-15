@@ -42,6 +42,35 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
+
+PROMETHEUS_ENABLED = os.getenv("PROMETHEUS_ENABLED", "false").lower() == "true"
+PROMETHEUS_EXPORT_MIGRATIONS = False
+PROMETHEUS_LATENCY_BUCKETS = (
+    0.005,
+    0.01,
+    0.025,
+    0.05,
+    0.1,
+    0.25,
+    0.5,
+    1,
+    2.5,
+    5,
+    10,
+    30,
+    60,
+    float("inf"),
+)
+if PROMETHEUS_ENABLED:
+    INSTALLED_APPS.append("django_prometheus")
+    # Wrap application middleware to observe the final response status, including
+    # redirects and errors raised during response processing.
+    MIDDLEWARE = [
+        "backend.metrics.BeforeMiddleware",
+        "backend.metrics.AfterMiddleware",
+        *MIDDLEWARE,
+    ]
+
 ROOT_URLCONF = "backend.urls"
 
 TEMPLATES = [
@@ -82,6 +111,17 @@ else:
             "PORT": os.getenv("DB_PORT", default=5432),
         }
     }
+
+if PROMETHEUS_ENABLED:
+    instrumented_engines = {
+        "django.db.backends.sqlite3": "backend.db.sqlite3",
+        "django.db.backends.postgresql": "backend.db.postgresql",
+        "django.db.backends.postgresql_psycopg2": "backend.db.postgresql",
+    }
+    for database in DATABASES.values():
+        database["ENGINE"] = instrumented_engines.get(
+            database["ENGINE"], database["ENGINE"]
+        )
 
 AUTH_PASSWORD_VALIDATORS = [
     {
