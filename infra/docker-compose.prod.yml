@@ -17,7 +17,7 @@ services:
     backend:
       image: ghcr.io/studio-yandex-practicum/you_can_bot:prod
       container_name: backend
-      command: bash -c "cd backend/ && gunicorn backend.wsgi:application --bind 0:8000 --workers 2 --threads 4 --timeout 60"
+      command: bash -c "cd backend/ && gunicorn backend.wsgi:application --config backend/gunicorn.conf.py --workers 2 --threads 4 --timeout 60"
       restart: always
       volumes:
         - static_value:/app/backend/static/
@@ -25,6 +25,13 @@ services:
         - ../.data/logs/:/app/.data/logs/
       expose:
         - "8000"
+      ports:
+        - "127.0.0.1:8002:8002"
+      environment:
+        PROMETHEUS_ENABLED: "true"
+        PROMETHEUS_MULTIPROC_DIR: /run/backend-metrics
+      tmpfs:
+        - /run/backend-metrics:size=16m,mode=0700
       env_file:
         - ../.env
       depends_on:

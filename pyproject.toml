@@ -19,6 +19,7 @@ python-slugify = "^8.0.4"
 django-tinymce = "^4.1.0"
 httpx = "^0.28.1"
 sentry-sdk = ">=2.75.0,<3.0.0"
+django-prometheus = ">=2.5,<3"
 
 [tool.poetry.group.dev.dependencies]
 pre-commit = "^4.2.0"
